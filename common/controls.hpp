@@ -1,6 +1,8 @@
 #ifndef CONTROLS_HPP
 #define CONTROLS_HPP
 
+#define MOVE_VIEW false
+
 float getWidth();
 float getHeight();
 

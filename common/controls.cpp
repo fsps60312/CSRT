@@ -86,13 +86,14 @@ void computeMatricesFromInputs(){
 	// Get mouse position
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
+	if (MOVE_VIEW) {
+		// Reset mouse position for next frame
+		glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
 
-	// Reset mouse position for next frame
-	glfwSetCursorPos(window, WIDTH/2, HEIGHT/2);
-
-	// Compute new orientation
-	horizontalAngle += mouseSpeed * float(WIDTH/2 - xpos);
-	verticalAngle   += mouseSpeed * float(HEIGHT/2 - ypos);
+		// Compute new orientation
+		horizontalAngle += mouseSpeed * float(WIDTH / 2 - xpos);
+		verticalAngle += mouseSpeed * float(HEIGHT / 2 - ypos);
+	}
 
 	//horizontalAngle = 3.14f, verticalAngle = 0.0f;
 	//horizontalAngle = 0.0f, verticalAngle = 0.0f;
