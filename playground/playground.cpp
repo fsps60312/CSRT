@@ -105,7 +105,7 @@ int main(void)
 	// --------------------
 #if 1
 	// Load Shader & Get a handle for uniform
-	texture_shader.Load("MyTextureVertexShader.txt", "MyTextureFragmentShader.txt", 1);
+	texture_shader.Load("MyTextureVertexShader.glsl", "MyTextureFragmentShader.glsl", 1);
 
 	// Identify frame Buffer Object
 	GLuint frameBuffer_texture[3];
@@ -175,7 +175,7 @@ int main(void)
 	// --------------------
 #if 1
 	// Load Shader & Get a handle for uniform
-	compute_shader.Load("MyComputeShader.txt");
+	compute_shader.Load("MyComputeShader.glsl");
 
 	// Identify Texture
 	GLuint computeTexture;
