@@ -27,15 +27,11 @@ private:
 	int layout_num = 0;
 public:
 	void Load(char v[], char f[], int l) {
-		program = LoadShaders(v, f);
-		layout_num = l;
-	}
-	void Load(char v[], char g[], char f[], int l) {
-		program = LoadShaders(v, g, f);
+		program = LoadAndCompileShaders(v, f);
 		layout_num = l;
 	}
 	void Load(char c[]) {
-		program = LoadShaders(c);
+		program = LoadAndCompileShader(c, GL_COMPUTE_SHADER);
 		layout_num = 0;
 	}
 	GLuint GetVariable(char name[]) { return glGetUniformLocation(program, name); }

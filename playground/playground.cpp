@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include<GL/glew.h>
+#include<GLFW/glfw3.h>
+
+#include <common/gl_check_error.hpp>
 #include <common/mylib.hpp>
 
 #define NOW_MODEL "suzanne" //"suzanne" , "teapot" , "monster"
@@ -38,12 +42,18 @@ int main(void)
 			return -1;
 		}
 
-		glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+		//glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
+		//gl_check_error();
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.X
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // We want OpenGL X.3
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
+		gl_check_error(false);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.X
+		//gl_check_error();
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // We want OpenGL X.3
+		//gl_check_error();
+		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+		//gl_check_error();
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
+		//gl_check_error();
 
 		// Open a window and create its OpenGL context
 		window = glfwCreateWindow(width * WIDTH_SCALE, height * HEIGHT_SCALE, "Compute_Shader_Ray_Tracing", NULL, NULL);
