@@ -7,9 +7,40 @@
 #include "gl_check_error.hpp"
 
 void glfw_check_error(bool halt) {
-	//int code = glfwGetError(NULL);
-	//if (code != GLFW_NO_ERROR)return;
-		//handle_error(code);
+	auto glfw_error_string = [](int const err)->std::string {
+		switch (err)
+		{
+			// https://www.glfw.org/docs/3.0/group__errors.html
+		case GLFW_NO_ERROR:
+			return "GLFW_NO_ERROR";
+		case GLFW_NOT_INITIALIZED:
+			return "GLFW_NOT_INITIALIZED";
+		case GLFW_NO_CURRENT_CONTEXT:
+			return "GLFW_NO_CURRENT_CONTEXT";
+		case GLFW_INVALID_ENUM:
+			return "GLFW_INVALID_ENUM";
+		case GLFW_INVALID_VALUE:
+			return "GLFW_INVALID_VALUE";
+		case GLFW_OUT_OF_MEMORY:
+			return "GLFW_OUT_OF_MEMORY";
+		case GLFW_API_UNAVAILABLE:
+			return "GLFW_API_UNAVAILABLE";
+		case GLFW_VERSION_UNAVAILABLE:
+			return "GLFW_VERSION_UNAVAILABLE";
+		case GLFW_PLATFORM_ERROR:
+			return "GLFW_PLATFORM_ERROR";
+		case GLFW_FORMAT_UNAVAILABLE:
+			return "GLFW_FORMAT_UNAVAILABLE";
+		default:
+			return "GLFW_UNKNOWN_ERROR";
+		}
+	};
+	const int code = glfwGetError(NULL);
+	if (code != GLFW_NO_ERROR) {
+		std::clog << glfw_error_string(code) << std::endl;
+		system("pause");
+		if (halt)exit(0);
+	}
 }
 void gl_check_error(bool halt) {
 	auto gl_error_string = [](GLenum const err)->std::string {
@@ -37,7 +68,7 @@ void gl_check_error(bool halt) {
 			return "GL_INVALID_FRAMEBUFFER_OPERATION";
 			// gles 2, 3 and gl 4 error are handled by the switch above
 		default:
-			return "UNKNOWN_ERROR";
+			return "GL_UNKNOWN_ERROR";
 		}
 	};
 	const GLenum error = glGetError();

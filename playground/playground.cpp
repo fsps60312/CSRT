@@ -32,124 +32,58 @@ int main(void)
 	// --------------------
 	{
 		// Initialise GLFW ( Graphics Library FrameWork )
-		glewExperimental = true; // Needed in core profile
-		if (!glfwInit())
-		{
+		//glewExperimental = true; // Needed in core profile
+		const int glfw_init_result = glfwInit(); glfw_check_error();
+		if (glfw_init_result != GLFW_TRUE) {
 			fprintf(stderr, "Failed to initialize GLFW\n");
 			system("pause");
 			exit(0);
 		}
 
-		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-		gl_check_error(false);
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); glfw_check_error();
 
 		// Open a window and create its OpenGL context
-		window = glfwCreateWindow(width , height , "Compute_Shader_Ray_Tracing", NULL, NULL);
+		window = glfwCreateWindow(width , height , "Compute_Shader_Ray_Tracing", NULL, NULL); glfw_check_error();
 		if (window == NULL) {
 			fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-			glfwTerminate();
+			glfwTerminate(); glfw_check_error();
 			system("pause");
 			exit(0);
 		}
-		glfwMakeContextCurrent(window);
+		glfwMakeContextCurrent(window); glfw_check_error();
 
 		// Initialize GLEW ( OpenGL Extension Wrangler Library )
-		glewExperimental = true; // Needed in core profile
-		if (glewInit() != GLEW_OK) {
+		const GLenum glew_init_result = glewInit();
+		if (glew_init_result != GLEW_OK) {
 			fprintf(stderr, "Failed to initialize GLEW\n");
-			getchar();
-			glfwTerminate();
-			return -1;
+			glfwTerminate(); glfw_check_error();
+			system("pause");
+			exit(0);
 		}
 
 		// Ensure we can capture the keyboard being pressed below
-		glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
-		// Set background color
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-		// Enable depth test
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL); // Accept fragment if it closer to the camera than the former one
-
-		// Cull triangles which normal is not towards the camera
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-
-		// Enable blending
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+		glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE); glfw_check_error();
 	}
 
 
 	// Identify a Vertex Array Object
 	GLuint VertexArray;
-	glGenVertexArrays(1, &VertexArray);
-	glBindVertexArray(VertexArray);
+	glGenVertexArrays(1, &VertexArray); gl_check_error();
+	glBindVertexArray(VertexArray); gl_check_error();
 
 	// Load OBJ
-#if 1
-	obj["plane"] = Buffer("plane.obj");
-	obj["cube"] = Buffer("cube.obj");
+	//obj["plane"] = Buffer("plane.obj");
+	//obj["cube"] = Buffer("cube.obj");
 	obj["suzanne"] = Buffer("suzanne.obj");
-	obj["teapot"] = Buffer("teapot.obj");
-	obj["monster"] = Buffer("monster.obj");
-#endif
+	//obj["teapot"] = Buffer("teapot.obj");
+	//obj["monster"] = Buffer("monster.obj");
 	
 
 	// --------------------
 	// Load Texture Shader
 	// --------------------
-#if 1
 	// Load Shader & Get a handle for uniform
 	texture_shader.Load("MyTextureVertexShader.glsl", "MyTextureFragmentShader.glsl", 1);
-
-	// Identify frame Buffer Object
-	GLuint frameBuffer_texture[3];
-	glGenFramebuffers(3, frameBuffer_texture);
-
-	// Identify Texture
-	GLuint renderedTexture[3];
-	glGenTextures(3, renderedTexture);
-
-	// Identify Depth Texture
-	GLuint renderedTexture_depth[3];
-	glGenRenderbuffers(3, renderedTexture_depth);
-
-	for (int i = 0; i < 3; ++i)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer_texture[i]);
-
-		glBindTexture(GL_TEXTURE_2D, renderedTexture[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, 0);
-
-		// filtering
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		// Put Texture in the frame Buffer
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture[i], 0);
-
-		glBindRenderbuffer(GL_RENDERBUFFER, renderedTexture_depth[i]);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-
-		// Put depth render Buffer in the frame Buffer
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderedTexture_depth[i]);
-	}
-
-	// Set draw buffers.
-	glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		fprintf(stderr, "Failed to set Render To Texture.\n");
-		getchar();
-		glfwTerminate();
-		return -1;
-	}
 
 	// The fullscreen FBO
 	static const GLfloat g_window_vertex_buffer_data[] = {
@@ -162,10 +96,9 @@ int main(void)
 	};
 
 	// Identify a vertex Buffer Object
-	glGenBuffers(1, &vertexBuffer_window);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_window);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_window_vertex_buffer_data), g_window_vertex_buffer_data, GL_STATIC_DRAW);
-#endif
+	glGenBuffers(1, &vertexBuffer_window); gl_check_error();
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_window); gl_check_error();
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_window_vertex_buffer_data), g_window_vertex_buffer_data, GL_STATIC_DRAW); gl_check_error();
 
 
 	// --------------------
@@ -177,19 +110,19 @@ int main(void)
 
 	// Identify Texture
 	GLuint computeTexture;
-	glGenTextures(1, &computeTexture);
+	glGenTextures(1, &computeTexture); gl_check_error();
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, computeTexture);
+	glActiveTexture(GL_TEXTURE0); gl_check_error();
+	glBindTexture(GL_TEXTURE_2D, computeTexture); gl_check_error();
 	
 	// filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); gl_check_error();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); gl_check_error();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); gl_check_error();
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, 0);
-	glBindImageTexture(0, computeTexture, 0, GL_FLOAT, 0, GL_WRITE_ONLY, GL_RGBA16F);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
+	glBindImageTexture(0, computeTexture, 0, GL_FLOAT, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
 #endif
 
 
@@ -317,9 +250,6 @@ int main(void)
 			glDeleteTextures(1, &(it->second));
 
 		// Texture Shader
-		glDeleteFramebuffers(3, frameBuffer_texture);
-		glDeleteTextures(3, renderedTexture);
-		glDeleteRenderbuffers(3, renderedTexture_depth);
 		glDeleteBuffers(1, &vertexBuffer_window);
 		texture_shader.Delete();
 		
