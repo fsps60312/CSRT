@@ -9,24 +9,17 @@
 
 #define NOW_MODEL "suzanne" //"suzanne" , "teapot" , "monster"
 
-glm::vec3 light(0.0f, 10.0f, 5.0f);
-GLfloat borderColor[]  = { 1.0f, 1.0f, 1.0f, 1.0f }, window_mode = 1.0f;
-GLenum  DrawBuffers[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-
-Shader texture_shader, compute_shader;
-std::map<std::string, Buffer> obj;
-std::map<std::string, GLuint> texture;
-
 GLFWwindow* window;
-GLfloat width = getWidth(), height = getHeight();
-GLuint  vertexBuffer_window = 0;
 
-void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, GLfloat m, GLuint t);
-void TtoT(GLuint f, GLuint t, GLfloat m, GLuint b);
-void Draw_Scene_1();
+void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, GLfloat m, GLuint t, Shader& texture_shader, GLuint vertexBuffer_window);
 
 int main(void)
 {
+	glm::vec3 light(0.0f, 10.0f, 5.0f);
+	GLfloat  window_mode = 1.0f;
+	Shader texture_shader, compute_shader;
+	std::map<std::string, Buffer> obj;
+	GLfloat width = getWidth(), height = getHeight();
 	// --------------------
 	// Set Window
 	// --------------------
@@ -96,6 +89,7 @@ int main(void)
 	};
 
 	// Identify a vertex Buffer Object
+	GLuint  vertexBuffer_window;
 	glGenBuffers(1, &vertexBuffer_window); gl_check_error();
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_window); gl_check_error();
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_window_vertex_buffer_data), g_window_vertex_buffer_data, GL_STATIC_DRAW); gl_check_error();
@@ -227,7 +221,7 @@ int main(void)
 
 			compute_shader.Disable();
 
-			DrawSubWindow(0.0f, 0.0f, width, height, 1.0f, computeTexture);
+			DrawSubWindow(0.0f, 0.0f, width, height, 1.0f, computeTexture, texture_shader, vertexBuffer_window);
 		}
 
 
@@ -246,8 +240,6 @@ int main(void)
 		// Buffer & Obj & Model
 		for (std::map<std::string, Buffer>::iterator it = obj.begin(); it != obj.end(); ++it)
 			(it->second).Delete();
-		for (std::map<std::string, GLuint>::iterator it = texture.begin(); it != texture.end(); ++it)
-			glDeleteTextures(1, &(it->second));
 
 		// Texture Shader
 		glDeleteBuffers(1, &vertexBuffer_window);
@@ -266,7 +258,7 @@ int main(void)
 	return 0;
 }
 
-void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, GLfloat m, GLuint t)
+void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, GLfloat m, GLuint t, Shader& texture_shader,GLuint vertexBuffer_window)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(x, y, w, h);
@@ -290,82 +282,4 @@ void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, GLfloat m, GLuint
 	glDrawArrays(GL_TRIANGLES, 0, 3 * 2); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
 	texture_shader.Disable();
-}
-
-void TtoT(GLuint f, GLuint t, GLfloat m, GLuint b = 0)
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, f);
-	glViewport(0, 0, width, height);
-
-	// Use shader
-	texture_shader.Use();
-
-	glUniform1f(texture_shader.GetVariable("Mode"), m);
-	glUniform1i(texture_shader.GetVariable("BlurSize"), b);
-
-	// Send Texture
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, t);
-	glUniform1i(texture_shader.GetVariable("RenderedTexture"), 0);
-
-	// 1st attribute buffer : vertices
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_window);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	/// Draw Rendered Texture
-	glDrawArrays(GL_TRIANGLES, 0, 3 * 2); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-	texture_shader.Disable();
-}
-
-void Draw_Scene_1()
-{
-	const int tri_num = 14;
-	const std::vector<float> vertices = {
-		-5.0f, -1.0f, -5.0f, -5.0f, -1.0f, 5.0f, 5.0f, -1.0f, -5.0f,
-		5.0f, -1.0f, 5.0f, 5.0f, -1.0f, -5.0f, -5.0f, -1.0f, 5.0f,
-
-		0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-
-		0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-
-		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-
-		0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-
-		1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-
-		0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f
-	};
-	const std::vector<int> materials = {
-		0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-	};
-
-	GLuint vertexBuffer = 0, materialBuffer = 0;
-
-	// Identify a vertex Buffer Object
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertexBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float) * vertices.size(), &vertices[0], GL_DYNAMIC_COPY);
-
-	// Identify a material Buffer Object
-	glGenBuffers(1, &materialBuffer);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * materials.size(), &materials[0], GL_DYNAMIC_COPY);
-
-
-	glUniform1i(compute_shader.GetVariable("tri_num"), vertices.size() / 9);
-
-	// 1st buffer : vertices
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, vertexBuffer);
-
-	// 2nd buffer : vertices
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, materialBuffer);
 }
