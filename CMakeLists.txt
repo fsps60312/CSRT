@@ -35,14 +35,14 @@ endif(INCLUDE_DISTRIB)
 include_directories(
 	external/glfw/include/
 	external/glm-0.9.7.1/
-	external/glew-1.13.0/include/
+	external/glew/include/
 	.
 )
 
 set(ALL_LIBS
 	${OPENGL_LIBRARY}
 	glfw
-	GLEW_1130
+	GLEW
 	SOIL
 )
 

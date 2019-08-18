@@ -11,9 +11,38 @@ add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
 )
 
+### GLEW ###
+
+if ((NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glew) OR
+	(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glew/src/glew.c))
+	execute_process(COMMAND git clone
+		#		https://github.com/nigels-com/glew.git
+		https://github.com/Perlmint/glew-cmake.git
+		glew
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+set(GLEW_SOURCE
+	glew/src/glew.c
+)
+
+set(GLEW_HEADERS
+)
+
+
+add_library( GLEW STATIC
+	${GLEW_SOURCE}
+	${GLEW_INCLUDE}
+)
+
+target_link_libraries(GLEW
+	${OPENGL_LIBRARY}
+	${EXTRA_LIBS}
+)
+
 ### GLFW ###
-if ((NOT EXISTS ./glfw) OR
-	(NOT EXISTS ./glfw/include/GLFW))
+if ((NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glfw) OR
+	(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include/GLFW))
 	execute_process(COMMAND git clone
 		https://github.com/glfw/glfw.git
 		glfw
@@ -24,7 +53,7 @@ add_subdirectory (glfw)
 
 include_directories(
 	glfw/include/GLFW/
-	glew-1.13.0/include/
+	glew/include/
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -42,25 +71,6 @@ set(OPENGL_LIBRARY
 )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
-### GLEW ###
-
-set(GLEW_SOURCE
-	glew-1.13.0/src/glew.c
-)
-
-set(GLEW_HEADERS
-)
-
-
-add_library( GLEW_1130 STATIC
-	${GLEW_SOURCE}
-	${GLEW_INCLUDE}
-)
-
-target_link_libraries(GLEW_1130
-	${OPENGL_LIBRARY}
-	${EXTRA_LIBS}
-)
 
 ### SOIL ###
 
