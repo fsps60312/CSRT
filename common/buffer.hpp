@@ -12,41 +12,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <common/shader.hpp>
-#include <common/texture.hpp>
-#include <common/controls.hpp>
-#include <common/objloader.hpp>
-#include <common/vboindexer.hpp>
-#include <common/tangentspace.hpp>
+#include<common/objloader.hpp>
 
 
-class Shader {
-
-private:
-	GLuint program = 0;
-	int layout_num = 0;
-public:
-	void Load(char v[], char f[], int l) {
-		program = LoadAndCompileShaders(v, f);
-		layout_num = l;
-	}
-	void Load(char c[]) {
-		program = LoadAndCompileShader(c, GL_COMPUTE_SHADER);
-		layout_num = 0;
-	}
-	GLuint GetVariable(char name[]) { return glGetUniformLocation(program, name); }
-	GLuint GetProgram() { return program; }
-	void Use() { glUseProgram(program); }
-	void Use(GLuint x, GLuint y, GLuint z) {
-		glUseProgram(program);
-		glDispatchCompute(x, y, z);
-	}
-	void Disable() {
-		for(int i = 0; i < layout_num; ++i)
-			glDisableVertexAttribArray(i);
-	}
-	void Delete() { glDeleteProgram(program); }
-};
 
 // Delete after Assimp finish
 class Buffer {

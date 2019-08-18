@@ -15,7 +15,17 @@
 #include <common/gl_check_error.hpp>
 #include "shader.hpp"
 
-std::string ReadFile(const std::string& file_path) {
+#pragma region Shader
+void Shader::Load(char v[], char f[], int l) {
+	program = LoadAndCompileShaders(v, f);
+	layout_num = l;
+}
+void Shader::Load(char c[]) {
+	program = LoadAndCompileShader(c, GL_COMPUTE_SHADER);
+	layout_num = 0;
+}
+
+std::string Shader::ReadFile(const std::string& file_path) {
 	std::ifstream file_stream(file_path, std::ios::in);
 	if (!file_stream.is_open()) {
 		fprintf(stderr, "Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", file_path.c_str());
@@ -24,7 +34,7 @@ std::string ReadFile(const std::string& file_path) {
 	// https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
 	return std::string(std::istreambuf_iterator<char>(file_stream), std::istreambuf_iterator<char>());
 }
-GLuint LoadAndCompileShaders(const char* vertex_file_path, const char* fragment_file_path) {
+GLuint Shader::LoadAndCompileShaders(const char* vertex_file_path, const char* fragment_file_path) {
 	const std::string vertex_code = ReadFile(vertex_file_path), fragment_code = ReadFile(fragment_file_path);
 	fprintf(stderr, "Compiling vertex shader: %s\n", vertex_file_path);
 	const GLuint vertex_ID = CompileShader(vertex_code, GL_VERTEX_SHADER);
@@ -48,7 +58,7 @@ GLuint LoadAndCompileShaders(const char* vertex_file_path, const char* fragment_
 	return program_ID;
 }
 
-GLuint LoadAndCompileShader(const char* shader_file_path,GLenum shader_type) {
+GLuint Shader::LoadAndCompileShader(const char* shader_file_path,GLenum shader_type) {
 	const std::string shader_code = ReadFile(shader_file_path);
 	fprintf(stderr, "Compiling shader: %s\n", shader_file_path);
 	const GLuint shader_ID = CompileShader(shader_code, shader_type);
@@ -65,7 +75,7 @@ GLuint LoadAndCompileShader(const char* shader_file_path,GLenum shader_type) {
 	return program_ID;
 }
 
-void LinkProgram(const GLuint program_ID,const GLuint shader_ID) {
+void Shader::LinkProgram(const GLuint program_ID,const GLuint shader_ID) {
 	glAttachShader(program_ID, shader_ID);
 	gl_check_error();
 	glLinkProgram(program_ID);
@@ -80,7 +90,7 @@ void LinkProgram(const GLuint program_ID,const GLuint shader_ID) {
 	}
 }
 
-GLuint CompileShader(const std::string& shader_code,const GLenum shader_type) {
+GLuint Shader::CompileShader(const std::string& shader_code,const GLenum shader_type) {
 	GLuint shader_ID = glCreateShader(shader_type);
 	gl_check_error();
 
@@ -109,3 +119,4 @@ GLuint CompileShader(const std::string& shader_code,const GLenum shader_type) {
 	}
 	return shader_ID;
 }
+#pragma endregion

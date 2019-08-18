@@ -1,6 +1,6 @@
 #pragma once
 
-#include <common/mylib.hpp>
+#include <common/buffer.hpp>
 
 Buffer::Buffer(char filename[])
 {

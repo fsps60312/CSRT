@@ -5,7 +5,9 @@
 #include<GLFW/glfw3.h>
 
 #include <common/gl_check_error.hpp>
-#include <common/mylib.hpp>
+#include <common/buffer.hpp>
+#include<common/shader.hpp>
+#include<common/controls.hpp>
 
 #define NOW_MODEL "suzanne" //"suzanne" , "teapot" , "monster"
 
