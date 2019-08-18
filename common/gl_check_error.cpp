@@ -2,9 +2,15 @@
 #include <iostream>
 
 #include <GL/glew.h>
+#include<GLFW/glfw3.h>
 
 #include "gl_check_error.hpp"
 
+void glfw_check_error(bool halt) {
+	//int code = glfwGetError(NULL);
+	//if (code != GLFW_NO_ERROR)return;
+		//handle_error(code);
+}
 void gl_check_error(bool halt) {
 	auto gl_error_string = [](GLenum const err)->std::string {
 		switch (err)

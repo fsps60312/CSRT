@@ -57,20 +57,22 @@ add_definitions(
 # User playground
 add_executable(playground 
 	playground/playground.cpp
-	common/shader.cpp
-	common/shader.hpp
 	common/controls.cpp
 	common/controls.hpp
-	common/texture.cpp
-	common/texture.hpp
-	common/objloader.cpp
-	common/objloader.hpp
-	common/vboindexer.cpp
-	common/vboindexer.hpp
-	common/tangentspace.hpp
-	common/tangentspace.cpp
+	common/gl_check_error.hpp
+	common/gl_check_error.cpp
 	common/mylib.hpp
 	common/mylib.cpp
+	common/objloader.cpp
+	common/objloader.hpp
+	common/shader.cpp
+	common/shader.hpp
+	common/tangentspace.hpp
+	common/tangentspace.cpp
+	common/texture.cpp
+	common/texture.hpp
+	common/vboindexer.cpp
+	common/vboindexer.hpp
 )
 target_link_libraries(playground
 	${ALL_LIBS}
