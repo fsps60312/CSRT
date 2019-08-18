@@ -12,11 +12,18 @@ add_definitions(
 )
 
 ### GLFW ###
+if ((NOT EXISTS ./glfw) OR
+	(NOT EXISTS ./glfw/include/GLFW))
+	execute_process(COMMAND git clone
+		https://github.com/glfw/glfw.git
+		glfw
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
 
-add_subdirectory (glfw-3.1.2)
+add_subdirectory (glfw)
 
 include_directories(
-	glfw-3.1.2/include/GLFW/
+	glfw/include/GLFW/
 	glew-1.13.0/include/
 )
 
