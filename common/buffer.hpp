@@ -26,7 +26,7 @@ private:
 	int mode = 0;
 public:
 	Buffer() {};
-	Buffer(char filename[]);
+	Buffer(std::string filename);
 	void Send();
 	int GetTriangleNum() { return tri_num; };
 	void Delete() {

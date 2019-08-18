@@ -69,7 +69,7 @@ int main(void)
 	// Load OBJ
 	//obj["plane"] = Buffer("plane.obj");
 	//obj["cube"] = Buffer("cube.obj");
-	obj["suzanne"] = Buffer("suzanne.obj");
+	obj[NOW_MODEL] = Buffer(NOW_MODEL + std::string(".obj"));
 	//obj["teapot"] = Buffer("teapot.obj");
 	//obj["monster"] = Buffer("monster.obj");
 	

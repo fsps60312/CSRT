@@ -2,12 +2,12 @@
 
 #include <common/buffer.hpp>
 
-Buffer::Buffer(char filename[])
+Buffer::Buffer(std::string filename)
 {
 	std::vector<float> vertices;
 	std::vector<float> uvs;
 	std::vector<float> normals;
-	loadOBJ(filename, vertices, uvs, normals);
+	loadOBJ(filename.c_str(), vertices, uvs, normals);
 
 	tri_num = vertices.size() / 9;
 	std::vector<int> materials(tri_num, 1);
