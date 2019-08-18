@@ -71,6 +71,14 @@ set(OPENGL_LIBRARY
 )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+### GLM ###
+if ((NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glm) OR
+	(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glm/glm))
+	execute_process(COMMAND git clone
+		https://github.com/g-truc/glm.git
+		glm
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
 
 ### SOIL ###
 

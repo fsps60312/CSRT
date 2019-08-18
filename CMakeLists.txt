@@ -34,7 +34,7 @@ endif(INCLUDE_DISTRIB)
 
 include_directories(
 	external/glfw/include/
-	external/glm-0.9.7.1/
+	external/glm/
 	external/glew/include/
 	.
 )
