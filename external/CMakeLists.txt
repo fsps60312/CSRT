@@ -80,6 +80,15 @@ if ((NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glm) OR
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
+### rpavlik-cmake-modules ###
+
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/rpavlik-cmake-modules)
+	execute_process(COMMAND git clone
+		https://github.com/rpavlik/cmake-modules.git
+		rpavlik-cmake-modules
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 ### SOIL ###
 
 set(SOIL_SOURCE
