@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include<chrono>
 
 #include<GL/glew.h>
 #include<GLFW/glfw3.h>
@@ -7,21 +8,22 @@
 #include <common/gl_check_error.hpp>
 #include <common/buffer.hpp>
 #include<common/shader.hpp>
-#include<common/controls.hpp>
+#include<common/camera.hpp>
 
 #define NOW_MODEL "suzanne" //"suzanne" , "teapot" , "monster"
 
-GLFWwindow* window;
 
 void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, GLfloat m, GLuint t, Shader& texture_shader, GLuint vertexBuffer_window);
 
 int main(void)
 {
+	Camera camera;
 	glm::vec3 light(0.0f, 10.0f, 5.0f);
 	GLfloat  window_mode = 1.0f;
 	Shader texture_shader, compute_shader;
 	std::map<std::string, Buffer> obj;
-	GLfloat width = getWidth(), height = getHeight();
+	GLfloat width = camera.getWidth(), height = camera.getHeight();
+	GLFWwindow* window;
 	// --------------------
 	// Set Window
 	// --------------------
@@ -149,10 +151,10 @@ int main(void)
 		{
 			// FoV
 			if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-				subFoV(1.0f);
+				camera.subFoV(1.0f);
 			if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-				addFoV(1.0f);
-			computeMatricesFromInputs();
+				camera.addFoV(1.0f);
+			camera.computeMatricesFromInputs(window);
 
 			// Light Position
 			if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
@@ -196,11 +198,11 @@ int main(void)
 
 			// Compute Shader
 			compute_shader.Use();
-			glUniform3f(compute_shader.GetVariable("eye"), getPosition().x, getPosition().y, getPosition().z);
-			glUniform3f(compute_shader.GetVariable("view"), getDirection().x, getDirection().y, getDirection().z);
-			glUniform3f(compute_shader.GetVariable("up"), getUp().x, getUp().y, getUp().z);
+			glUniform3f(compute_shader.GetVariable("eye"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+			glUniform3f(compute_shader.GetVariable("view"), camera.getDirection().x, camera.getDirection().y, camera.getDirection().z);
+			glUniform3f(compute_shader.GetVariable("up"), camera.getUp().x, camera.getUp().y, camera.getUp().z);
 			glUniform3f(compute_shader.GetVariable("light"), light.x, light.y, light.z);
-			glUniform1f(compute_shader.GetVariable("fov"), getFoV());
+			glUniform1f(compute_shader.GetVariable("fov"), camera.getFoV());
 #if 1
 			glUniform1i(compute_shader.GetVariable("tri_num"), obj[NOW_MODEL].GetTriangleNum());
 			obj[NOW_MODEL].Send();
