@@ -12,8 +12,9 @@
 
 #include <GL/glew.h>
 
+#include<common/control.hpp>
 #include <common/gl_check_error.hpp>
-#include "shader.hpp"
+#include <common/shader.hpp>
 
 #pragma region Shader
 void Shader::Load(char v[], char f[], int l) {
@@ -58,8 +59,23 @@ GLuint Shader::LoadAndCompileShaders(const char* vertex_file_path, const char* f
 	return program_ID;
 }
 
+std::string Shader::InjectComputeShaderCode(const std::string& code) {
+	std::string ans;
+	int cur = 0;
+	for (; cur < (int)code.size(); cur++) {
+		ans += code[cur];
+		if (code[cur] == '\n')break;
+	}
+	char inject[100];
+	sprintf(inject, "layout(local_size_x = %d, local_size_y = %d) in;", WORK_GROUP_SIZE_X, WORK_GROUP_SIZE_Y);
+	std::clog << "injected: " << inject << std::endl;
+	ans += inject;
+	for (; cur < (int)code.size(); cur++)ans += code[cur];
+	return ans;
+}
+
 GLuint Shader::LoadAndCompileShader(const char* shader_file_path,GLenum shader_type) {
-	const std::string shader_code = ReadFile(shader_file_path);
+	const std::string shader_code = InjectComputeShaderCode(ReadFile(shader_file_path));
 	fprintf(stderr, "Compiling shader: %s\n", shader_file_path);
 	const GLuint shader_ID = CompileShader(shader_code, shader_type);
 	const GLuint program_ID = glCreateProgram();

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include<chrono>
+#include<iostream>
 
 #include<GL/glew.h>
 #include<GLFW/glfw3.h>
@@ -9,8 +10,8 @@
 #include <common/buffer.hpp>
 #include<common/shader.hpp>
 #include<common/camera.hpp>
+#include<common/control.hpp>
 
-#define NOW_MODEL "suzanne" //"suzanne" , "teapot" , "monster"
 
 
 void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, GLfloat m, GLuint t, Shader& texture_shader, GLuint vertexBuffer_window);
@@ -62,11 +63,17 @@ int main(void)
 		glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE); glfw_check_error();
 	}
 
-
-	// Identify a Vertex Array Object
-	GLuint VertexArray;
-	glGenVertexArrays(1, &VertexArray); gl_check_error();
-	glBindVertexArray(VertexArray); gl_check_error();
+	{
+		GLint64 v0,v1,v2;
+		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &v0); gl_check_error();
+		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &v1); gl_check_error();
+		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &v2); gl_check_error();
+		std::clog << "GL_MAX_COMPUTE_WORK_GROUP_COUNT    " << v0 << " " << v1 << " " << v2 << std::endl;
+		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &v0); gl_check_error();
+		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &v1); gl_check_error();
+		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &v2); gl_check_error();
+		std::clog << "GL_MAX_COMPUTE_WORK_GROUP_SIZE     " << v0 << " " << v1 << " " << v2 << std::endl;
+	}
 
 	// Load OBJ
 	//obj["plane"] = Buffer("plane.obj");
@@ -116,8 +123,6 @@ int main(void)
 	// filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); gl_check_error();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); gl_check_error();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); gl_check_error();
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
 	glBindImageTexture(0, computeTexture, 0, GL_FLOAT, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
@@ -203,12 +208,8 @@ int main(void)
 			glUniform3f(compute_shader.GetVariable("up"), camera.getUp().x, camera.getUp().y, camera.getUp().z);
 			glUniform3f(compute_shader.GetVariable("light"), light.x, light.y, light.z);
 			glUniform1f(compute_shader.GetVariable("fov"), camera.getFoV());
-#if 1
 			glUniform1i(compute_shader.GetVariable("tri_num"), obj[NOW_MODEL].GetTriangleNum());
 			obj[NOW_MODEL].Send();
-#else
-			Draw_Scene_1();
-#endif
 		}
 
 
@@ -216,7 +217,7 @@ int main(void)
 		// Compute Shading
 		// --------------------
 		{
-			compute_shader.Use(width / 4.0f, height / 4.0f, 1);
+			compute_shader.Use(width / WORK_GROUP_SIZE_X, height / WORK_GROUP_SIZE_Y, 1);
 
 			// make sure writing to image has finished before read
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -252,8 +253,6 @@ int main(void)
 		// Compute Shader
 		glDeleteTextures(1, &computeTexture);
 		compute_shader.Delete();
-
-		glDeleteVertexArrays(1, &VertexArray);
 	}
 
 	// Close OpenGL window and terminate GLFW

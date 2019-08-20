@@ -1,7 +1,5 @@
 #version 430
 
-layout(local_size_x = 4, local_size_y = 4) in;
-
 layout(rgba16f, binding = 0) uniform image2D img_output;
 
 layout(std430,  binding = 1) buffer vertices
