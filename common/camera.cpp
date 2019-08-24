@@ -1,14 +1,4 @@
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-// Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
-
-#include "camera.hpp"
-
-#include <stdio.h>
+#include <common/camera.hpp>
 
 
 
@@ -48,7 +38,7 @@ void Camera::dPosition(float a, float b, float c)
 	position += glm::vec3(a, b, c);
 }
 
-void Camera::computeMatricesFromInputs(GLFWwindow *window){
+void Camera::computeMatricesFromInputs(Environment &env){
 
 	// glfwGetTime is called only once, the first time this function is called
 	static double lastTime = glfwGetTime();
@@ -58,15 +48,14 @@ void Camera::computeMatricesFromInputs(GLFWwindow *window){
 	float deltaTime = float(currentTime - lastTime);
 
 	// Get mouse position
-	double xpos, ypos;
-	glfwGetCursorPos(window, &xpos, &ypos);
+	const glm::dvec2 mouse_pos = env.GetCursorPos();
 	if (MOVE_VIEW) {
 		// Reset mouse position for next frame
-		glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
+		env.SetCursorPos(glm::dvec2(WIDTH / 2, HEIGHT / 2));
 
 		// Compute new orientation
-		horizontalAngle += mouseSpeed * float(WIDTH / 2 - xpos);
-		verticalAngle += mouseSpeed * float(HEIGHT / 2 - ypos);
+		horizontalAngle += mouseSpeed * float(WIDTH / 2 - mouse_pos.x);
+		verticalAngle += mouseSpeed * float(HEIGHT / 2 - mouse_pos.y);
 		verticalAngle = glm::clamp(verticalAngle, -glm::pi<float>() / 2.0f, glm::pi<float>() / 2.0f);
 	}
 
@@ -88,19 +77,19 @@ void Camera::computeMatricesFromInputs(GLFWwindow *window){
 	up = glm::cross( right, direction );
 
 	// Move forward
-	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS){
+	if (env.IsKeyDown(GLFW_KEY_UP ) ){
 		position += direction * deltaTime * speed;
 	}
 	// Move backward
-	if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS){
+	if (env.IsKeyDown(GLFW_KEY_DOWN )){
 		position -= direction * deltaTime * speed;
 	}
 	// Strafe right
-	if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
+	if (env.IsKeyDown(GLFW_KEY_RIGHT ) ){
 		position += right * deltaTime * speed;
 	}
 	// Strafe left
-	if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS){
+	if (env.IsKeyDown(GLFW_KEY_LEFT ) ){
 		position -= right * deltaTime * speed;
 	}
 

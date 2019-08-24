@@ -9,7 +9,6 @@ layout (location = 0) out vec4 color;
 // Values
 uniform sampler2D RenderedTexture;
 uniform sampler2D BloomTexture;
-uniform float Mode;
 uniform int   BlurSize; // mask_size = blur_size * 2 + 1
 
 const float offset = 1.0f / 1000.0f;
@@ -37,6 +36,7 @@ void main()
 {
 	color = texture(RenderedTexture, UV);
 	
+	#if 0
 	if(Mode == 1.0f)
 	{
 		;
@@ -151,4 +151,5 @@ void main()
 		if(color.r > 0.0f)
 			color.rgb = vec3(1.0f * pow(clamp(dot(normalize(vec), vec_sun), 0.0f, 1.0f), 0.2f) * pow(1.0f - (d / 1.5f), 4.5f));
 	}
+	#endif
 }

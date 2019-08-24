@@ -1,7 +1,19 @@
 #ifndef CONTROLS_HPP
 #define CONTROLS_HPP
 
+#include<GL/glew.h>
+// Include GLM
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+// Include GLFW
+#include <GLFW/glfw3.h>
+
+
+
+#include <stdio.h>
 #include<common/control.hpp>
+#include<common/environment.hpp>
 
 class Camera {
 private:
@@ -24,7 +36,7 @@ public:
 	int getWidth();
 	int getHeight();
 
-	void computeMatricesFromInputs(GLFWwindow* window);
+	void computeMatricesFromInputs(Environment& env);
 
 	glm::vec3 getPosition();
 	float getFoV();

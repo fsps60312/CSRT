@@ -1,19 +1,3 @@
-#include <stdio.h>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <sstream>
-#include <string>
-
-#include <stdlib.h>
-#include <string.h>
-
-#include <GL/glew.h>
-
-#include<common/control.hpp>
-#include <common/gl_check_error.hpp>
 #include <common/shader.hpp>
 
 #pragma region Shader
