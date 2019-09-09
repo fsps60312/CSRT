@@ -1,7 +1,7 @@
 #include<common/game.hpp>
 #include<common/control.hpp>
 void Game::Init() {
-	model = Buffer(NOW_MODEL + std::string(".obj"));
+	model = BufferSystem(NOW_MODEL + std::string(".obj"));
 }
 void Game::Launch() {}
 void Game::Pause(){}

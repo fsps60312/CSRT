@@ -3,12 +3,7 @@
 #include<chrono>
 #include<iostream>
 
-
-#include<common/camera.hpp>
 #include <common/gl_check_error.hpp>
-#include <common/buffer.hpp>
-#include<common/shader.hpp>
-#include<common/control.hpp>
 #include<common/game.hpp>
 #include<common/environment.hpp>
 

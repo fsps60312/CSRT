@@ -1,7 +1,7 @@
 #pragma once
 
 #include<common/world.hpp>
-#include<common/buffer.hpp>
+#include<common/buffer_system.hpp>
 #include<common/camera.hpp>
 
 #include<iostream>
@@ -11,7 +11,7 @@ class Game {
 private:
 	int money = 150;
 	World world;
-	Buffer model;
+	BufferSystem model;
 	Camera camera;
 	glm::vec3 light = glm::vec3(0.0f, 10.0f, 5.0f);
 public:

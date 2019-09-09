@@ -17,7 +17,7 @@
 
 
 // Delete after Assimp finish
-class Buffer {
+class BufferSystem {
 
 private:
 	int tri_num = 0;
@@ -25,10 +25,10 @@ private:
 	GLuint materialBuffer = 0; // index
 	int mode = 0;
 public:
-	Buffer() {};
-	Buffer(std::string filename);
+	BufferSystem() {}
+	BufferSystem(std::string filename);
 	void Send();
-	int GetTriangleNum() { return tri_num; };
+	int GetTriangleNum() { return tri_num; }
 	void Delete() {
 		glDeleteBuffers(1, &vertexBuffer);
 		glDeleteBuffers(1, &materialBuffer);
