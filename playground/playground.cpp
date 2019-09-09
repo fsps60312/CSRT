@@ -15,18 +15,20 @@
 #include<GL/glew.h>
 #include<GLFW/glfw3.h>
 
+void ReceiveKeys(const Environment &env,Game &game);
+
 int main(void)
 {
-	Camera camera;
-	glm::vec3 light(0.0f, 10.0f, 5.0f);
-	GLfloat  window_mode = 1.0f;
 	Environment env;
 	env.Init();
+	Game game;
+	game.Init();
 
-	auto model = Buffer(NOW_MODEL + std::string(".obj"));
 	// For speed computation
 	auto lastTime = std::chrono::steady_clock::now();
 	int nbFrames = 0;
+
+	game.Launch();
 
 	do {
 
@@ -44,64 +46,8 @@ int main(void)
 			}
 		}
 
-
-		// --------------------
-		// Change Value
-		// --------------------
-		{
-			// FoV
-			if (env.IsKeyDown(GLFW_KEY_Z))
-				camera.subFoV(1.0f);
-			if (env.IsKeyDown(GLFW_KEY_X) == GLFW_PRESS)
-				camera.addFoV(1.0f);
-			camera.computeMatricesFromInputs(env);
-
-			// Light Position
-			if (env.IsKeyDown(GLFW_KEY_1))
-				light.z += 0.01f;
-			if (env.IsKeyDown(GLFW_KEY_2))
-				light.x += 0.01f;
-			if (env.IsKeyDown(GLFW_KEY_3))
-				light.y += 0.01f;
-			if (env.IsKeyDown(GLFW_KEY_4))
-				light.y -= 0.01f;
-			if (env.IsKeyDown(GLFW_KEY_5))
-				light.x -= 0.01f;
-			if (env.IsKeyDown(GLFW_KEY_6))
-				light.z -= 0.01f;
-
-			// Window Mode
-			if (env.IsKeyDown(GLFW_KEY_F1))
-				window_mode = 1.0f;
-			if (env.IsKeyDown(GLFW_KEY_F2))
-				window_mode = 2.0f;
-			if (env.IsKeyDown(GLFW_KEY_F3))
-				window_mode = 3.0f;
-			if (env.IsKeyDown(GLFW_KEY_F4))
-				window_mode = 4.0f;
-			if (env.IsKeyDown(GLFW_KEY_F5))
-				window_mode = 5.0f;
-			if (env.IsKeyDown(GLFW_KEY_F6))
-				window_mode = 6.0f;
-			if (env.IsKeyDown(GLFW_KEY_F7))
-				window_mode = 7.0f;
-		}
-
-		auto& compute_shader = env.GetComputeShader();
-		// --------------------
-		// Pass Value
-		// --------------------
-		{
-			// Compute Shader
-			compute_shader.Use();
-			glUniform3f(compute_shader.GetVariable("eye"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
-			glUniform3f(compute_shader.GetVariable("view"), camera.getDirection().x, camera.getDirection().y, camera.getDirection().z);
-			glUniform3f(compute_shader.GetVariable("up"), camera.getUp().x, camera.getUp().y, camera.getUp().z);
-			glUniform3f(compute_shader.GetVariable("light"), light.x, light.y, light.z);
-			glUniform1f(compute_shader.GetVariable("fov"), camera.getFoV());
-			glUniform1i(compute_shader.GetVariable("tri_num"), model.GetTriangleNum());
-			model.Send();
-		}
+		ReceiveKeys(env, game);
+		game.Render(env);
 		env.DispatchShaders();
 
 
@@ -113,4 +59,28 @@ int main(void)
 	glfwTerminate();
 
 	return 0;
+}
+
+void ReceiveKeys(const Environment& env, Game& game) {
+	// FoV
+	if (env.IsKeyDown(GLFW_KEY_Z))game.ReceiveKey(Game::Keys::Z);
+	if (env.IsKeyDown(GLFW_KEY_X))game.ReceiveKey(Game::Keys::X);
+
+
+	// Light Position
+	if (env.IsKeyDown(GLFW_KEY_1))game.ReceiveKey(Game::Keys::D1);
+	if (env.IsKeyDown(GLFW_KEY_2))game.ReceiveKey(Game::Keys::D2);
+	if (env.IsKeyDown(GLFW_KEY_3))game.ReceiveKey(Game::Keys::D3);
+	if (env.IsKeyDown(GLFW_KEY_4))game.ReceiveKey(Game::Keys::D4);
+	if (env.IsKeyDown(GLFW_KEY_5))game.ReceiveKey(Game::Keys::D5);
+	if (env.IsKeyDown(GLFW_KEY_6))game.ReceiveKey(Game::Keys::D6);
+
+	// Window Mode
+	if (env.IsKeyDown(GLFW_KEY_F1))game.ReceiveKey(Game::Keys::F1);
+	if (env.IsKeyDown(GLFW_KEY_F2))game.ReceiveKey(Game::Keys::F2);
+	if (env.IsKeyDown(GLFW_KEY_F3))game.ReceiveKey(Game::Keys::F3);
+	if (env.IsKeyDown(GLFW_KEY_F4))game.ReceiveKey(Game::Keys::F4);
+	if (env.IsKeyDown(GLFW_KEY_F5))game.ReceiveKey(Game::Keys::F5);
+	if (env.IsKeyDown(GLFW_KEY_F6))game.ReceiveKey(Game::Keys::F6);
+	if (env.IsKeyDown(GLFW_KEY_F7))game.ReceiveKey(Game::Keys::F7);
 }

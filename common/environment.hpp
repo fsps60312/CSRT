@@ -26,7 +26,7 @@ private:
 	void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, Shader& texture_shader);
 public:
 	void Init();
-	bool IsKeyDown(int key);
+	bool IsKeyDown(int key)const;
 	void DispatchShaders();
 	glm::dvec2 GetCursorPos();
 	void SetCursorPos(const glm::dvec2& pos);

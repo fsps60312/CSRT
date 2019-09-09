@@ -1,5 +1,5 @@
 #include<common/environment.hpp>
-bool Environment::IsKeyDown(int key) {
+bool Environment::IsKeyDown(int key)const {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 glm::dvec2 Environment::GetCursorPos() {
