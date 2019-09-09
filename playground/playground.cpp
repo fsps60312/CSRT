@@ -25,7 +25,7 @@ int main(void)
 
 	auto model = Buffer(NOW_MODEL + std::string(".obj"));
 	// For speed computation
-	double lastTime = glfwGetTime();
+	auto lastTime = std::chrono::steady_clock::now();
 	int nbFrames = 0;
 
 	do {
@@ -34,13 +34,13 @@ int main(void)
 		// Measure Speed
 		// --------------------
 		{
-			double currentTime = glfwGetTime();
+			auto currentTime = std::chrono::steady_clock::now();
 			nbFrames++;
-			if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1sec ago
+			if (std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastTime).count() / 1000000000.0 >= 1.0) {
 				// printf and reset
-				printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+				printf("%f ms/frame\n", std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastTime).count() / 1000000.0 / double(nbFrames));
 				nbFrames = 0;
-				lastTime += 1.0;
+				lastTime = std::chrono::steady_clock::now();
 			}
 		}
 
