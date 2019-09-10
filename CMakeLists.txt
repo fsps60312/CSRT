@@ -57,16 +57,27 @@ add_definitions(
 # User playground
 add_executable(playground 
 	playground/playground.cpp
-	common/buffer.hpp
-	common/buffer.cpp
-	common/camera.cpp
+	common/control.hpp
+	common/aabb.hpp
+	common/aabb.cpp
+	common/buffer_system.hpp
+	common/buffer_system.cpp
+	common/bvh.hpp
+	common/bvh.cpp
 	common/camera.hpp
+	common/camera.cpp
+	common/environment.hpp
+	common/environment.cpp
+	common/game.hpp
+	common/game.cpp
 	common/gl_check_error.hpp
 	common/gl_check_error.cpp
-	common/objloader.cpp
 	common/objloader.hpp
-	common/shader.cpp
+	common/objloader.cpp
 	common/shader.hpp
+	common/shader.cpp
+	common/world.hpp
+	common/world.cpp
 )
 target_link_libraries(playground
 	${ALL_LIBS}
