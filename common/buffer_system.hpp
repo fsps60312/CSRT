@@ -24,6 +24,7 @@ private:
 	GLuint vertexBuffer = 0;
 	GLuint materialBuffer = 0; // index
 	int mode = 0;
+	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>s)const;
 public:
 	BufferSystem() {}
 	BufferSystem(std::string filename);

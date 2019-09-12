@@ -2,22 +2,15 @@
 
 layout(rgba16f, binding = 0) uniform image2D img_output;
 
-layout(std430,  binding = 1) buffer vertices
-{
-     float vertex[];
-};
+layout(std430,  binding = 1) buffer verticez     { vec3 buf_vertex[];};
 
-layout(std430,  binding = 2) buffer id_materials
-{
-     int id_material[];
-};
+layout(std430,  binding = 2) buffer id_materials { int id_material[];};
 
 const float PI    = 3.14159265f;
 const float T_MAX = 999999.0f;
-const int   RAY_STACK_MAX = 5;
 
 uniform int tri_num;
-const int tri_jmp = 9;
+const int tri_jmp = 3;
 
 const int mtl_num = 2;
 const int mtl_jmp = 10;
@@ -54,9 +47,9 @@ Ray Intersect(Ray r)
 			continue;
 		}
 		
-		vec3  tri_v1 = vec3(vertex[i+0], vertex[i+1], vertex[i+2]),
-			  tri_v2 = vec3(vertex[i+3], vertex[i+4], vertex[i+5]),
-			  tri_v3 = vec3(vertex[i+6], vertex[i+7], vertex[i+8]);
+		vec3  tri_v1 = buf_vertex[i+0],
+			  tri_v2 = buf_vertex[i+1],
+			  tri_v3 = buf_vertex[i+2];
 		
 		vec3  v  = r.pos - tri_v1,
 			  t1 = tri_v2 - tri_v1,
@@ -90,9 +83,9 @@ Ray Intersect(Ray r)
 	{
 		int  id = r.obj * tri_jmp;
 		
-		vec3  tri_v1 = vec3(vertex[id+0], vertex[id+1], vertex[id+2]),
-			  tri_v2 = vec3(vertex[id+3], vertex[id+4], vertex[id+5]),
-			  tri_v3 = vec3(vertex[id+6], vertex[id+7], vertex[id+8]);
+		vec3  tri_v1 = buf_vertex[id+0],
+			  tri_v2 = buf_vertex[id+1],
+			  tri_v3 = buf_vertex[id+2];
 		
 		vec3 t1 = tri_v2 - tri_v1,
 			 t2 = tri_v3 - tri_v1;
