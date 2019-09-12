@@ -4,13 +4,14 @@ layout(rgba16f, binding = 0) uniform image2D img_output;
 
 layout(std430,  binding = 1) buffer verticez     { vec3 buf_vertex[];};
 
-layout(std430,  binding = 2) buffer id_materials { int id_material[];};
+layout(std430,  binding = 2) buffer vertex_ids   { ivec3 buf_vertex_id[];};
+
+layout(std430,  binding = 3) buffer id_materials { int id_material[];};
 
 const float PI    = 3.14159265f;
 const float T_MAX = 999999.0f;
 
 uniform int tri_num;
-const int tri_jmp = 3;
 
 const int mtl_num = 2;
 const int mtl_jmp = 10;
@@ -40,16 +41,18 @@ float random(vec3 seed) {
 
 Ray Intersect(Ray r)
 {
-	for(int i = 0, n = 0; n < tri_num; i+=tri_jmp, ++n)
+	for(int i = 0, n = 0; n < tri_num; i++, ++n)
 	{
 		if(n == r.pre_obj)
 		{
 			continue;
 		}
+
+		ivec3 tri_ids=buf_vertex_id[i];
 		
-		vec3  tri_v1 = buf_vertex[i+0],
-			  tri_v2 = buf_vertex[i+1],
-			  tri_v3 = buf_vertex[i+2];
+		vec3  tri_v1 = buf_vertex[tri_ids.x],
+			  tri_v2 = buf_vertex[tri_ids.y],
+			  tri_v3 = buf_vertex[tri_ids.z];
 		
 		vec3  v  = r.pos - tri_v1,
 			  t1 = tri_v2 - tri_v1,
@@ -81,11 +84,11 @@ Ray Intersect(Ray r)
 	
 	if(r.obj != -1)
 	{
-		int  id = r.obj * tri_jmp;
-		
-		vec3  tri_v1 = buf_vertex[id+0],
-			  tri_v2 = buf_vertex[id+1],
-			  tri_v3 = buf_vertex[id+2];
+		int  id = r.obj;
+		ivec3 tri_ids=buf_vertex_id[id];
+		vec3  tri_v1 = buf_vertex[tri_ids.x],
+			  tri_v2 = buf_vertex[tri_ids.y],
+			  tri_v3 = buf_vertex[tri_ids.z];
 		
 		vec3 t1 = tri_v2 - tri_v1,
 			 t2 = tri_v3 - tri_v1;

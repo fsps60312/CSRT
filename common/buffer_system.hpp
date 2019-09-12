@@ -22,18 +22,16 @@ class BufferSystem {
 private:
 	int tri_num = 0;
 	GLuint vertexBuffer = 0;
+	GLuint vertexIdBuffer = 0;
 	GLuint materialBuffer = 0; // index
 	int mode = 0;
 	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>s)const;
+	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>s)const;
 public:
 	BufferSystem() {}
 	BufferSystem(std::string filename);
 	void Send();
 	int GetTriangleNum() { return tri_num; }
-	void Delete() {
-		glDeleteBuffers(1, &vertexBuffer);
-		glDeleteBuffers(1, &materialBuffer);
-	}
 };
 
 // Not yet !
