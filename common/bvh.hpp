@@ -3,6 +3,7 @@
 
 #include<vector>
 #include<algorithm>
+#include<iostream>
 
 class BVH {
 private:
@@ -15,4 +16,5 @@ private:
 public:
 	BVH(const std::vector<glm::ivec3>& triangles);
 	void Build(const std::vector<glm::vec3>& vertices);
+	std::vector<glm::ivec3>GetTriangles() { return triangles; }
 };

@@ -4,7 +4,7 @@ BVH::BVH(const std::vector<glm::ivec3>& triangles) {
 	this->triangles = triangles;
 }
 void BVH::Build(const std::vector<glm::vec3>& vertices) {
-	const size_t desired_size = vertices.size() * 2 - 1;
+	const size_t desired_size = triangles.size() * 2 - 1;
 	nodes.resize(desired_size);
 	aabbs.resize(desired_size);
 	ranges.resize(desired_size);
@@ -16,12 +16,15 @@ void BVH::Build(const std::vector<glm::vec3>& vertices, const int id, const int 
 	// cal aabb
 	auto& aabb = aabbs[id] = AABB();
 	for (int i = l; i <= r; i++)aabb.AddTriangle(vertices, triangles[i]);
+	if (r - l + 1 <= 2)return;
 	// split
 	const int mid = CalMid(vertices, triangles, id);
 	// dfs
 	const int chsz = mid - l + 1;
-	Build(vertices, id + 1, l, mid);
-	Build(vertices, id + chsz * 2, mid + 1, r);
+	const int lch = nodes[id].x = id + 1, rch = nodes[id].y = id + chsz * 2;
+	nodes[lch].z = nodes[rch].z = id;
+	Build(vertices, lch, l, mid);
+	Build(vertices, rch, mid + 1, r);
 }
 int BVH::CalMid(const std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>& triangles, const int id)const {
 	auto dot_max = [&vertices](const glm::ivec3& t, const glm::vec3& c)->float {
@@ -50,7 +53,7 @@ int BVH::CalMid(const std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>&
 	AABB rigt_aabb;
 	for (long long i = r; i > l; i--) {
 		rigt_aabb.AddTriangle(vertices, triangles[i]);
-		const float sah_cost = (i - l) * surface_area(left_aabbs[i - 1]) + (r - i + 1) * surface_area(rigt_aabb);
+		const float sah_cost = (i - l) * surface_area(left_aabbs[i - l - 1]) + (r - i + 1) * surface_area(rigt_aabb);
 		if (sah_cost < best_sah_cost) {
 			best_sah_cost = sah_cost;
 			best_mid = i - 1;

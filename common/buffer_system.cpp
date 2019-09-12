@@ -10,6 +10,10 @@ BufferSystem::BufferSystem(std::string filename)
 	std::vector<glm::ivec3>vertex_ids,uv_ids,normal_ids;
 	loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
 
+	BVH bvh(vertex_ids);
+	bvh.Build(vertices);
+	vertex_ids = bvh.GetTriangles();
+
 	tri_num = vertex_ids.size();
 	std::vector<int> materials(tri_num, 1);
 

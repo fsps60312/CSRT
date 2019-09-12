@@ -13,6 +13,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include<common/objloader.hpp>
+#include<common/bvh.hpp>
 
 
 
@@ -23,8 +24,7 @@ private:
 	int tri_num = 0;
 	GLuint vertexBuffer = 0;
 	GLuint vertexIdBuffer = 0;
-	GLuint materialBuffer = 0; // index
-	int mode = 0;
+	GLuint materialBuffer = 0;
 	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>s)const;
 	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>s)const;
 public:
