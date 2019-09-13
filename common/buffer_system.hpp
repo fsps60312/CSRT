@@ -25,6 +25,9 @@ private:
 	GLuint vertexBuffer = 0;
 	GLuint vertexIdBuffer = 0;
 	GLuint materialBuffer = 0;
+	GLuint bvhNodeBuffer = 0;
+	GLuint bvhAabbBuffer = 0;
+	GLuint bvhRangeBuffer = 0;
 	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>s)const;
 	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>s)const;
 public:

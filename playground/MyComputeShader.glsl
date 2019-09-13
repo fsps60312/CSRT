@@ -2,11 +2,12 @@
 
 layout(rgba16f, binding = 0) uniform image2D img_output;
 
+layout(std430,  binding = 0) buffer id_materials { int id_material[];};
 layout(std430,  binding = 1) buffer verticez     { vec3 buf_vertex[];};
-
 layout(std430,  binding = 2) buffer vertex_ids   { ivec3 buf_vertex_id[];};
-
-layout(std430,  binding = 3) buffer id_materials { int id_material[];};
+layout(std430,  binding = 3) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
+layout(std430,  binding = 4) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
+layout(std430,  binding = 5) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
 
 const float PI    = 3.14159265f;
 const float T_MAX = 999999.0f;
@@ -39,47 +40,50 @@ float random(vec3 seed) {
 	return dt - floor(dt);
 }
 
+void TriangleIntersect(inout Ray r,in int obj_id){
+	ivec3 tri_ids=buf_vertex_id[obj_id];
+	
+	vec3  tri_v1 = buf_vertex[tri_ids.x],
+		  tri_v2 = buf_vertex[tri_ids.y],
+		  tri_v3 = buf_vertex[tri_ids.z];
+	
+	vec3  v  = r.pos - tri_v1,
+		  t1 = tri_v2 - tri_v1,
+		  t2 = tri_v3 - tri_v1;
+	
+	/*
+	// Face Culling
+	if(dot(cross(t1, t2), -r.dir) < 0.0f)
+	{
+		continue;
+	}
+	*/
+	
+	float temp = dot(cross(r.dir, t2), t1);
+	
+	if(temp != 0.0f)
+	{
+		float s1 = dot(cross(r.dir, t2), v) / temp,
+			  s2 = dot(cross(v, t1), r.dir) / temp,
+			  t  = dot(cross(v, t1), t2) / temp;
+		
+		if(t > 0.0f && t < r.t && s1 >= 0.0f && s2 >= 0.0f && s1+s2 <= 1.0f)
+		{
+			r.obj = obj_id;
+			r.t   = t;
+		}
+	}
+}
+
 Ray Intersect(Ray r)
 {
-	for(int i = 0, n = 0; n < tri_num; i++, ++n)
+	for(int n = 0; n < tri_num; ++n)
 	{
 		if(n == r.pre_obj)
 		{
 			continue;
 		}
-
-		ivec3 tri_ids=buf_vertex_id[i];
-		
-		vec3  tri_v1 = buf_vertex[tri_ids.x],
-			  tri_v2 = buf_vertex[tri_ids.y],
-			  tri_v3 = buf_vertex[tri_ids.z];
-		
-		vec3  v  = r.pos - tri_v1,
-			  t1 = tri_v2 - tri_v1,
-			  t2 = tri_v3 - tri_v1;
-		
-		/*
-		// Face Culling
-		if(dot(cross(t1, t2), -r.dir) < 0.0f)
-		{
-			continue;
-		}
-		*/
-		
-		float temp = dot(cross(r.dir, t2), t1);
-		
-		if(temp != 0.0f)
-		{
-			float s1 = dot(cross(r.dir, t2), v) / temp,
-				  s2 = dot(cross(v, t1), r.dir) / temp,
-				  t  = dot(cross(v, t1), t2) / temp;
-			
-			if(t > 0.0f && t < r.t && s1 >= 0.0f && s2 >= 0.0f && s1+s2 <= 1.0f)
-			{
-				r.obj = n;
-				r.t   = t;
-			}
-		}
+		TriangleIntersect(r,n);
 	}
 	
 	if(r.obj != -1)
