@@ -11,6 +11,8 @@ layout(std430,  binding = 5) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
 
 const float PI    = 3.14159265f;
 const float T_MAX = 999999.0f;
+// https://stackoverflow.com/questions/16069959/glsl-how-to-ensure-largest-possible-float-value-without-overflow
+const float FLT_MAX=3.402823466e+38f;
 
 uniform int tri_num;
 
@@ -41,6 +43,7 @@ float random(vec3 seed) {
 }
 
 void TriangleIntersect(inout Ray r,in int obj_id){
+	if(obj_id==r.pre_obj)return;
 	ivec3 tri_ids=buf_vertex_id[obj_id];
 	
 	vec3  tri_v1 = buf_vertex[tri_ids.x],
@@ -75,17 +78,62 @@ void TriangleIntersect(inout Ray r,in int obj_id){
 	}
 }
 
-Ray Intersect(Ray r)
-{
+float AABBIntersect(in Ray r, in int aabb_id){
+	// r.pos, r.dir
+	const mat2x3 aabb=buf_bvh_aabb[aabb_id];
+	const vec3 v1=(aabb[0]-r.pos)/r.dir;
+	const vec3 v2=(aabb[1]-r.pos)/r.dir;
+	const vec3 mn=min(v1,v2),mx=max(v1,v2);
+	const float mn_v=max(max(mn.x,mn.y),mn.z),mx_v=min(min(mx.x,mx.y),min(mx.z,r.t));
+	if(mn_v>=mx_v)return FLT_MAX;
+	return mn_v;
+}
+
+void BVHIntersect(inout Ray r){
+#define BVH
+#ifdef BVH
+	/*if(abs(buf_bvh_aabb[1][0].x-(-1.36719f))<1e-3&&abs(buf_bvh_aabb[1][1].y-(0.984375f))<1e-3){
+		for(int i=0;i<tri_num;i++)TriangleIntersect(r,i);
+		return;
+	}*/
+	int id=0;
+	uint goto_sibling=0;
+	while(true){
+		// trace down
+		while(true){
+			const ivec3 node=buf_bvh_node[id];
+			if(node.x==-1){
+				for(int i=buf_bvh_range[id].x;i<=buf_bvh_range[id].y;i++)TriangleIntersect(r,i);
+				break;
+			}
+			const float tx=AABBIntersect(r,node.x);
+			const float ty=AABBIntersect(r,node.y);
+			if(tx==FLT_MAX&&ty==FLT_MAX)break;
+			id=tx<=ty?node.x:node.y;
+			goto_sibling<<=1;
+			if(max(tx,ty)!=FLT_MAX)goto_sibling|=1;
+		}
+		// trace back
+		while(goto_sibling!=0&&(goto_sibling&1)==0){
+			goto_sibling>>=1;
+			id=buf_bvh_node[id].z;
+		}
+		if(goto_sibling==0)return;
+		const ivec3 node=buf_bvh_node[buf_bvh_node[id].z];
+		id=id==node.x?node.y:node.x;
+		goto_sibling^=1;
+	}
+#else
 	for(int n = 0; n < tri_num; ++n)
 	{
-		if(n == r.pre_obj)
-		{
-			continue;
-		}
 		TriangleIntersect(r,n);
 	}
-	
+#endif
+}
+
+void Intersect(inout Ray r)
+{
+	BVHIntersect(r);
 	if(r.obj != -1)
 	{
 		int  id = r.obj;
@@ -98,8 +146,6 @@ Ray Intersect(Ray r)
 			 t2 = tri_v3 - tri_v1;
 		r.n = normalize(cross(t1, t2));
 	}
-	
-	return r;
 }
 
 vec3 PhongLighting(Ray ray_hit, float rate)
@@ -112,7 +158,8 @@ vec3 PhongLighting(Ray ray_hit, float rate)
 	vec3  h   = normalize(-ray_hit.dir + l);
 	vec3  rgb = vec3(0.0f);
 	
-	Ray ray_light = Intersect(Ray(ray_hit.obj, -1, T_MAX, ray_hit.i, p, l, vec3(0.0f)));
+	Ray ray_light = Ray(ray_hit.obj, -1, T_MAX, ray_hit.i, p, l, vec3(0.0f));
+	Intersect(ray_light);
 	if(ray_light.obj != -1)
 	{
 		rgb = vec3(r,g,b) * 0.1f;
@@ -146,7 +193,7 @@ vec3 RayTracing(Ray ray_trace)
 	while(ray_trace.i > 0.1f)
 	{
 		// Intersect
-		ray_trace = Intersect(ray_trace);
+		Intersect(ray_trace);
 		
 		if(ray_trace.obj != -1)
 		{
@@ -172,7 +219,8 @@ vec3 RayTracing(Ray ray_trace)
 				rgb += PhongLighting(ray_trace, 1.0f - refract);
 				
 				vec3 new_pos = ray_trace.pos + ray_trace.dir * ray_trace.t;
-				Ray ray_test = Intersect(Ray(ray_trace.obj, -1, T_MAX, refract * ray_trace.i, new_pos, ray_trace.dir, vec3(0.0f)));
+				Ray ray_test = Ray(ray_trace.obj, -1, T_MAX, refract * ray_trace.i, new_pos, ray_trace.dir, vec3(0.0f));
+				Intersect(ray_test);
 				nr = dot(-ray_test.dir, ray_test.n) > 0.0f ? 1.0f/nr : nr;
 				vec3 temp = nr * (ray_trace.dir - ray_trace.n * dot(ray_trace.dir, ray_trace.n));
 				if(length(temp) < 1.0f)

@@ -17,6 +17,7 @@ BufferSystem::BufferSystem(std::string filename)
 	const auto aabbs_raw = bvh.GetAabbs();
 	std::vector<glm::mat2x3>aabbs;
 	for (const auto& aabb : aabbs_raw)aabbs.push_back(glm::mat2x3(aabb.GetMn(), aabb.GetMx()));
+	std::clog << aabbs[1][0].x << " " << aabbs[1][0].y << " " << aabbs[1][0].z << ", " << aabbs[1][1].x << " " << aabbs[1][1].y << " " << aabbs[1][1].z << std::endl;
 	const std::vector<glm::ivec2> ranges = bvh.GetRanges();
 
 	tri_num = vertex_ids.size();
@@ -41,7 +42,7 @@ BufferSystem::BufferSystem(std::string filename)
 
 	glGenBuffers(1, &bvhAabbBuffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhAabbBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat2x3) * aabbs.size(), aabbs.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+	glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3)+8U) * aabbs.size(), Padded(aabbs).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 
 	glGenBuffers(1, &bvhRangeBuffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhRangeBuffer);
@@ -69,5 +70,10 @@ std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>s)const 
 std::vector<glm::ivec4> BufferSystem::Padded(const std::vector<glm::ivec3>s)const {
 	std::vector<glm::ivec4>ret;
 	for (const auto& v : s)ret.push_back(glm::ivec4(v, 0.0f));
+	return ret;
+}
+std::vector<glm::mat2x4> BufferSystem::Padded(const std::vector<glm::mat2x3>s)const {
+	std::vector<glm::mat2x4>ret;
+	for (const auto& v : s)ret.push_back(glm::mat2x3(glm::vec4(v[0], 0.0f), glm::vec4(v[1], 0.0f)));
 	return ret;
 }

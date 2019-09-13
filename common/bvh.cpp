@@ -9,6 +9,10 @@ void BVH::Build(const std::vector<glm::vec3>& vertices) {
 	aabbs.resize(desired_size);
 	ranges.resize(desired_size);
 	Build(vertices, 0, 0, (int)triangles.size() - 1);
+	std::clog << "bvh size: " << nodes.size() << std::endl;
+	int counter = 0;
+	TryTraverse(0, counter);
+	std::clog << "traverse result: " << counter << std::endl;
 }
 void BVH::Build(const std::vector<glm::vec3>& vertices, const int id, const int l, const int r) {
 	// range
@@ -16,7 +20,10 @@ void BVH::Build(const std::vector<glm::vec3>& vertices, const int id, const int 
 	// cal aabb
 	auto& aabb = aabbs[id] = AABB();
 	for (int i = l; i <= r; i++)aabb.AddTriangle(vertices, triangles[i]);
-	if (r - l + 1 <= 2)return;
+	if (r - l + 1 <= 2) {
+		nodes[id].x = nodes[id].y = -1;
+		return;
+	}
 	// split
 	const int mid = CalMid(vertices, triangles, id);
 	// dfs
@@ -61,4 +68,16 @@ int BVH::CalMid(const std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>&
 	}
 	assert(best_mid != -1);
 	return best_mid;
+}
+void BVH::TryTraverse(const int id,int &counter) {
+	//std::clog << "id=" << id << std::endl;
+	counter++;
+	assert((nodes[id].x == -1) == (nodes[id].y == -1));
+	if (nodes[id].x == -1) {
+		return;
+	}
+	assert(nodes[nodes[id].x].z == id);
+	assert(nodes[nodes[id].y].z == id);
+	TryTraverse(nodes[id].x,counter);
+	TryTraverse(nodes[id].y,counter);
 }

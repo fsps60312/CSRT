@@ -30,6 +30,7 @@ private:
 	GLuint bvhRangeBuffer = 0;
 	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>s)const;
 	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>s)const;
+	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>s)const;
 public:
 	BufferSystem() {}
 	BufferSystem(std::string filename);
