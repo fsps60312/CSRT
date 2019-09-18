@@ -26,7 +26,7 @@ BufferSystem::BufferSystem(std::string filename)
 	// Identify a vertex Buffer Object
 	glGenBuffers(1, &materialBuffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * materials.size(), &materials[0], GL_DYNAMIC_COPY); // Give id_materials to OpenGL.
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * materials.size(), materials.data(), GL_DYNAMIC_COPY); // Give id_materials to OpenGL.
 
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertexBuffer);

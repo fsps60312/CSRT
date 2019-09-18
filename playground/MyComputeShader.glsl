@@ -108,12 +108,6 @@ float AABBIntersect(in Ray r, in int aabb_id){
 }
 
 void BVHIntersect(inout Ray r){
-#define BVH
-#ifdef BVH
-	/*if(abs(buf_bvh_aabb[1][0].x-(-1.36719f))<1e-3&&abs(buf_bvh_aabb[1][1].y-(0.984375f))<1e-3){
-		for(int i=0;i<tri_num;i++)TriangleIntersect(r,i);
-		return;
-	}*/
 	int id=0;
 	uint goto_sibling=0;
 	while(true){
@@ -141,12 +135,6 @@ void BVHIntersect(inout Ray r){
 		id=id==node.x?node.y:node.x;
 		goto_sibling^=1;
 	}
-#else
-	for(int n = 0; n < tri_num; ++n)
-	{
-		TriangleIntersect(r,n);
-	}
-#endif
 }
 
 void Intersect(inout Ray r)
@@ -184,9 +172,9 @@ vec3 PhongLighting(Ray ray)
 		float t, i;
 		vec3  pos, dir, n;
 	};*/
-	Ray ray_light = Ray(ray.obj, -1, T_MAX, 0.0f, ray.pos, light_dir, vec3(0.0f));
+	Ray ray_light = Ray(-1, ray.obj, T_MAX, 0.0f, ray.pos, light_dir, vec3(0.0f));
 	Intersect(ray_light);
-	if(ray_light.obj == -1)
+	if(ray_light.obj != -1)
 	{
 		rgb = vec3(r,g,b) * 0.1f;
 	}
@@ -219,10 +207,11 @@ vec3 RayTracing(Ray ray_trace)
 		Intersect(ray_trace);
 		
 		if(ray_trace.obj == -1)break;
-		float reflect_factor = 0.5, refract_factor = 0.5;
 		
 		rgb += PhongLighting(ray_trace);
 		break;
+		
+		float reflect_factor = 0.5, refract_factor = 0.5;
 		if(reflect_factor > 0.0f && (refract_factor <= 0.0f || (random_float() < 0.5f))){ // must reflect, or give 0.5 possibility if inward-hit
 			ray_trace.dir     = -reflect(ray_trace.dir,ray_trace.n);
 			ray_trace.i *= reflect_factor;
