@@ -133,6 +133,8 @@ void BVHIntersect(inout Ray r){
 
 void Intersect(inout Ray r)
 {
+	r.t=T_MAX;
+	r.obj=-1;
 	BVHIntersect(r);
 	if(r.obj != -1)
 	{
@@ -145,45 +147,52 @@ void Intersect(inout Ray r)
 		vec3 t1 = tri_v2 - tri_v1,
 			 t2 = tri_v3 - tri_v1;
 		r.n = normalize(cross(t1, t2));
+		r.pos+=r.dir*r.t;
 	}
 }
 
-vec3 PhongLighting(Ray ray_hit, float rate)
+vec3 PhongLighting(Ray ray)
 {
-	int   id  = id_material[ray_hit.obj] * mtl_jmp;
+	int   id  = id_material[ray.obj] * mtl_jmp;
 	float r   = materials[id+0], g  = materials[id+1], b  = materials[id+2], ia = 1.0f,
-		  ka  = materials[id+3], kd = materials[id+4], ks = materials[id+5], exp = materials[id+6];
-	vec3  p   = ray_hit.pos + ray_hit.dir * ray_hit.t;
-	vec3  l   = normalize(light - p);
-	vec3  h   = normalize(-ray_hit.dir + l);
+		  ka  = materials[id+3], kd = materials[id+4], ks = materials[id+5], ks_exp = materials[id+6];
+	vec3  light_dir   = normalize(light - ray.pos);
+	vec3  h   = normalize(-ray.dir + light_dir);
 	vec3  rgb = vec3(0.0f);
 	
-	Ray ray_light = Ray(ray_hit.obj, -1, T_MAX, ray_hit.i, p, l, vec3(0.0f));
+	/*struct Ray {
+		int   pre_obj, obj;
+		float t, i;
+		vec3  pos, dir, n;
+	};*/
+	Ray ray_light = Ray(ray.obj, -1, T_MAX, 0.0f, ray.pos, light_dir, vec3(0.0f));
 	Intersect(ray_light);
-	if(ray_light.obj != -1)
+	if(ray_light.obj == -1)
 	{
 		rgb = vec3(r,g,b) * 0.1f;
 	}
 	else
 	{
-		float cosDiffuse  = clamp(dot(ray_hit.n, l), 0.0f, 1.0f);
-		float cosSpecular = pow(clamp(dot(ray_hit.n, h), 0.0f, 1.0f), exp);
-		//float intensity = (ka*ia + kd*cosDiffuse + ks*cosSpecular);
-		//rgb =  vec3(clamp(r*intensity, 0.0f, 1.0f), clamp(g*intensity, 0.0f, 1.0f), clamp(b*intensity, 0.0f, 1.0f));
+		float diffuse_factor  = clamp(dot(ray.n, light_dir), 0.0f, 1.0f);
+		float specular_factor = pow(clamp(dot(ray.n, h), 0.0f, 1.0f), ks_exp);
 		
-		
-		vec3  Diffuse  = vec3(r,g,b);
-		vec3  Ambient  = Diffuse * 0.1f;
-		vec3  Specular = vec3(0.3f);
-		float distance = length(light - p), LightPower = 100.0f;
+		vec3  diffuse_color  = vec3(r,g,b);
+		vec3  ambient_color  = diffuse_color * 0.1f;
+		vec3  specular_color = vec3(0.3f);
+		float dist = length(light - ray.pos), light_power = 100.0f;
 		rgb =
-			Ambient  +
-			Diffuse  * LightPower * cosDiffuse  / (distance * distance) +
-			Specular * LightPower * cosSpecular / (distance * distance);
+			ambient_color  +
+			diffuse_color  * light_power * diffuse_factor  / (dist * dist) +
+			specular_color * light_power * specular_factor / (dist * dist);
 		
 	}
 	
-	return rgb * (ray_hit.i * rate);
+	return rgb * ray.i;
+}
+
+void RayAdvance(inout Ray ray){
+	ray.pos=ray.pos+ray.dir*ray.t;
+	ray.pre_obj=ray.obj;
 }
 
 vec3 RayTracing(Ray ray_trace)
@@ -195,57 +204,24 @@ vec3 RayTracing(Ray ray_trace)
 		// Intersect
 		Intersect(ray_trace);
 		
-		if(ray_trace.obj != -1)
-		{
-			int   id = id_material[ray_trace.obj] * mtl_jmp;
-			float reflect = materials[id+7], refract = materials[id+8], nr = materials[id+9];
-			
-			float random_num = random(ray_trace.dir + vec3( reflect, refract, nr));
-			
-			if((reflect > 0.0f && refract <= 0.0f) || (dot(-ray_trace.dir, ray_trace.n) > 0.0f && random_num > 0.5f))
-			{
-				rgb += PhongLighting(ray_trace, 1.0f - reflect);
-				
-				ray_trace.pre_obj = ray_trace.obj;
-				ray_trace.obj     = -1;
-				ray_trace.pos     = ray_trace.pos + ray_trace.dir * ray_trace.t;
-				ray_trace.dir     = ray_trace.dir + 2.0f * dot(-ray_trace.dir, ray_trace.n) * ray_trace.n;
-				ray_trace.t       = T_MAX;
-				ray_trace.n       = vec3(0.0f);
-				ray_trace.i       = reflect * ray_trace.i;
-			}
-			else if(refract > 0.0f)
-			{
-				rgb += PhongLighting(ray_trace, 1.0f - refract);
-				
-				vec3 new_pos = ray_trace.pos + ray_trace.dir * ray_trace.t;
-				Ray ray_test = Ray(ray_trace.obj, -1, T_MAX, refract * ray_trace.i, new_pos, ray_trace.dir, vec3(0.0f));
-				Intersect(ray_test);
-				nr = dot(-ray_test.dir, ray_test.n) > 0.0f ? 1.0f/nr : nr;
-				vec3 temp = nr * (ray_trace.dir - ray_trace.n * dot(ray_trace.dir, ray_trace.n));
-				if(length(temp) < 1.0f)
-				{
-					ray_trace.pre_obj = ray_trace.obj;
-					ray_trace.obj     = -1;
-					ray_trace.pos     = new_pos;
-					ray_trace.dir     = temp - ray_trace.n * sqrt(1 - length(temp) * length(temp));
-					ray_trace.t       = T_MAX;
-					ray_trace.n       = vec3(0.0f);
-					ray_trace.i       = refract * ray_trace.i;
-				}
-				else
-				{
-					break;
-				}
-			}
-			else
-			{
-				rgb += PhongLighting(ray_trace, 1.0f);
-				break;
-			}
+		if(ray_trace.obj == -1)break;
+		float reflect_factor = 0.5, refract_factor = 0.5;
+		
+		float random_num = random(ray_trace.dir + vec3( reflect_factor, refract_factor, 0.0f));
+		rgb += PhongLighting(ray_trace);
+		if(reflect_factor > 0.0f && (refract_factor <= 0.0f || (random_num > 0.5f))){ // must reflect, or give 0.5 possibility if inward-hit
+			ray_trace.dir     = -reflect(ray_trace.dir,ray_trace.n);
+			ray_trace.i *= reflect_factor;
 		}
-		else
-		{
+		else if(refract_factor > 0.0f){
+			float nr=1.5;
+			if(dot(ray_trace.dir, ray_trace.n)>0.0f)nr=1.0/nr;
+			vec3 new_dir = refract(ray_trace.dir,ray_trace.n,nr);
+			if(new_dir==vec3(0.0f))break;
+			ray_trace.dir=new_dir;
+			ray_trace.i *= refract_factor;
+		}
+		else{
 			break;
 		}
 	}
