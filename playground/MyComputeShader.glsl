@@ -218,6 +218,7 @@ vec3 RayTracing(Ray ray_trace)
 		float reflect_factor = 0.5, refract_factor = 0.5;
 		
 		rgb += PhongLighting(ray_trace);
+		break;
 		if(reflect_factor > 0.0f && (refract_factor <= 0.0f || (random_float() < 0.5f))){ // must reflect, or give 0.5 possibility if inward-hit
 			ray_trace.dir     = -reflect(ray_trace.dir,ray_trace.n);
 			ray_trace.i *= reflect_factor;
