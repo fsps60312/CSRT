@@ -1,5 +1,8 @@
 #include<common/game.hpp>
 #include<common/control.hpp>
+
+#include<random>
+#include<iostream>
 void Game::Init() {
 	model = BufferSystem(NOW_MODEL + std::string(".obj"));
 }
@@ -19,6 +22,9 @@ void Game::Render(Environment &env){
 	glUniform3f(compute_shader.GetVariable("light"), light.x, light.y, light.z);
 	glUniform1f(compute_shader.GetVariable("fov"), camera.getFoV());
 	glUniform1i(compute_shader.GetVariable("tri_num"), model.GetTriangleNum());
+	static std::default_random_engine rand(7122);
+	//std::clog << rand() << std::endl;
+	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), rand());
 	model.Send();
 	world.SendToShader();
 }

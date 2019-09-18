@@ -29,6 +29,7 @@ uniform vec3  view;  // horizontalAngle = 2.5f, verticalAngle = -0.5f;
 uniform vec3  up;
 uniform vec3  light; // vec3( -2.0f, 10.0f, -2.0f );
 uniform float fov;   // 90.0f;
+uniform uint initial_random_seed;
 
 struct Ray {
 	int   pre_obj, obj;
@@ -37,9 +38,22 @@ struct Ray {
 };
 
 // Returns a random number based on a vec3.
-float random(vec3 seed) {
-	float dt = dot(seed, vec3(12.9898f, 78.233f, 45.164f)) * 43758.5453f;
-	return dt - floor(dt);
+uint random_seed;
+uint random() {
+	random_seed*=0xdefaced;
+	random_seed+=0x20190918;
+	random_seed+=random_seed>>20;
+	return random_seed;
+}
+//https://stackoverflow.com/questions/4200224/random-noise-functions-for-glsl
+float random_float(){
+	const uint ieee_mantissa=0x007FFFFFu;
+	const uint ieee_one    =0x3F800000u;
+	uint r=random();
+	r&=ieee_mantissa;
+	r|=ieee_one;
+	float f=uintBitsToFloat(r);
+	return f-1.0f;
 }
 
 void TriangleIntersect(inout Ray r,in int obj_id){
@@ -134,6 +148,7 @@ void BVHIntersect(inout Ray r){
 void Intersect(inout Ray r)
 {
 	r.t=T_MAX;
+	r.pre_obj=r.obj;
 	r.obj=-1;
 	BVHIntersect(r);
 	if(r.obj != -1)
@@ -190,11 +205,6 @@ vec3 PhongLighting(Ray ray)
 	return rgb * ray.i;
 }
 
-void RayAdvance(inout Ray ray){
-	ray.pos=ray.pos+ray.dir*ray.t;
-	ray.pre_obj=ray.obj;
-}
-
 vec3 RayTracing(Ray ray_trace)
 {
 	vec3 rgb = vec3(0.0f);
@@ -207,9 +217,8 @@ vec3 RayTracing(Ray ray_trace)
 		if(ray_trace.obj == -1)break;
 		float reflect_factor = 0.5, refract_factor = 0.5;
 		
-		float random_num = random(ray_trace.dir + vec3( reflect_factor, refract_factor, 0.0f));
 		rgb += PhongLighting(ray_trace);
-		if(reflect_factor > 0.0f && (refract_factor <= 0.0f || (random_num > 0.5f))){ // must reflect, or give 0.5 possibility if inward-hit
+		if(reflect_factor > 0.0f && (refract_factor <= 0.0f || (random_float() < 0.5f))){ // must reflect, or give 0.5 possibility if inward-hit
 			ray_trace.dir     = -reflect(ray_trace.dir,ray_trace.n);
 			ray_trace.i *= reflect_factor;
 		}
@@ -231,6 +240,7 @@ vec3 RayTracing(Ray ray_trace)
 
 void main()
 {
+	random_seed=initial_random_seed^(gl_GlobalInvocationID.x)^(1000000007*gl_GlobalInvocationID.y);
 	// Get Index in Global Work Group
 	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
 	
