@@ -64,7 +64,7 @@ void TriangleIntersect(inout Ray r,in int obj_id){
 		  tri_v2 = buf_vertex[tri_ids.y],
 		  tri_v3 = buf_vertex[tri_ids.z];
 	
-	vec3  v  = r.pos - tri_v1,
+	vec3  o  = r.pos - tri_v1,
 		  t1 = tri_v2 - tri_v1,
 		  t2 = tri_v3 - tri_v1;
 	
@@ -75,14 +75,18 @@ void TriangleIntersect(inout Ray r,in int obj_id){
 		continue;
 	}
 	*/
+	vec3 t_c=cross(t1,t2);
+	vec3 s1_c=cross(r.dir,t2);
+	vec3 s2_c=cross(r.dir,t1);
+	float t_i=dot(t_c,r.dir);
+	float s1_i=dot(s1_c,t1);
+	float s2_i=dot(s2_c,t2);
 	
-	float temp = dot(cross(r.dir, t2), t1);
-	
-	if(temp != 0.0f)
+	if(t_i != 0.0f && s1_i!=0.0f && s2_i!=0.0f)
 	{
-		float s1 = dot(cross(r.dir, t2), v) / temp,
-			  s2 = dot(cross(v, t1), r.dir) / temp,
-			  t  = dot(cross(v, t1), t2) / temp;
+		float s1 = dot(s1_c, o) / s1_i,
+			  s2 = dot(s2_c, o) / s2_i,
+			  t  = dot(t_c, -o) / t_i;
 		
 		if(t > 0.0f && t < r.t && s1 >= 0.0f && s2 >= 0.0f && s1+s2 <= 1.0f)
 		{
