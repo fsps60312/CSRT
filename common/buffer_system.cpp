@@ -11,7 +11,7 @@ BufferSystem::BufferSystem(std::string filename)
 	loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
 
 	BVH bvh(vertex_ids);
-	bvh.Build(vertices);
+	bvh.Build(vertices, new VisibleObject()); // TODO
 	vertex_ids = bvh.GetTriangles();
 	const std::vector<glm::ivec3>nodes = bvh.GetNodes();
 	const auto aabbs_raw = bvh.GetAabbs();

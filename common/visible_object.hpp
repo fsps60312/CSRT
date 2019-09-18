@@ -4,8 +4,8 @@
 #include<vector>
 class VisibleObject {
 private:
-	std::vector<VisibleObject>children;
-	std::vector<glm::ivec3>triangles;
+	std::vector<VisibleObject*>children;
+	int triangles_left, triangles_rigt;
 	glm::mat4 transform;
 	glm::mat4 TranslateMatrix(const glm::vec3& offset);
 	glm::mat4 RotateMatrix(const glm::vec3& axis, const float theta);

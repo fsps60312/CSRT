@@ -3,7 +3,7 @@
 BVH::BVH(const std::vector<glm::ivec3>& triangles) {
 	this->triangles = triangles;
 }
-void BVH::Build(const std::vector<glm::vec3>& vertices) {
+void BVH::Build(const std::vector<glm::vec3>& vertices, VisibleObject* model) {
 	const size_t desired_size = triangles.size() * 2 - 1;
 	nodes.resize(desired_size);
 	aabbs.resize(desired_size);
