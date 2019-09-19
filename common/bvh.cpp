@@ -9,10 +9,10 @@ void BVH::Build(const std::vector<glm::vec3>& vertices, VisibleObject* model) {
 	aabbs.resize(desired_size);
 	ranges.resize(desired_size);
 	Build(vertices, 0, 0, (int)triangles.size() - 1);
-	std::clog << "bvh size: " << nodes.size() << std::endl;
+	//std::clog << "bvh size: " << nodes.size() << std::endl;
 	int counter = 0;
 	TryTraverse(0, counter);
-	std::clog << "traverse result: " << counter << std::endl;
+	//std::clog << "traverse result: " << counter << std::endl;
 }
 void BVH::Build(const std::vector<glm::vec3>& vertices, const int id, const int l, const int r) {
 	// range

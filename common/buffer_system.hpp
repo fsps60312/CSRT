@@ -21,6 +21,12 @@
 class BufferSystem {
 
 private:
+	BVH bvh;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
+	std::vector<int> materials;
 	int tri_num = 0;
 	GLuint vertexBuffer = 0;
 	GLuint vertexIdBuffer = 0;
