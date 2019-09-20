@@ -8,12 +8,37 @@ void BVH::Build(const std::vector<glm::vec3>& vertices, VisibleObject* model) {
 	nodes.resize(desired_size);
 	aabbs.resize(desired_size);
 	ranges.resize(desired_size);
-	Build(vertices, 0, 0, (int)triangles.size() - 1);
+	Build(vertices, 0, model);
 	//std::clog << "bvh size: " << nodes.size() << std::endl;
 	int counter = 0;
 	TryTraverse(0, counter);
 	//std::clog << "traverse result: " << counter << std::endl;
 }
+
+void BVH::Build(const std::vector<glm::vec3>& vertices, const int id, VisibleObject* model) {
+	const int l = model->GetL(), r = model->GetR();
+	std::vector<VisibleObject*>& model_children = model->GetChildren();
+	if (model_children.empty()) {
+		Build(vertices, id, l, r);
+	} else if (model_children.size() == 1) {
+		Build(vertices, id, model_children[0]);
+	}
+
+	// range
+	ranges[id] = glm::ivec2(l, r);
+	// cal aabb
+	auto& aabb = aabbs[id] = AABB();
+	for (int i = l; i <= r; i++)aabb.AddTriangle(vertices, triangles[i]);
+	// split
+	const int mid = CalMid(vertices, triangles, id);
+	// dfs
+	const int chsz = mid - l + 1;
+	const int lch = nodes[id].x = id + 1, rch = nodes[id].y = id + chsz * 2;
+	nodes[lch].z = nodes[rch].z = id;
+	Build(vertices, lch, l, mid);
+	Build(vertices, rch, mid + 1, r);
+}
+
 void BVH::Build(const std::vector<glm::vec3>& vertices, const int id, const int l, const int r) {
 	// range
 	ranges[id] = glm::ivec2(l, r);

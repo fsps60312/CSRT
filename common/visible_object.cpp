@@ -1,6 +1,8 @@
 #include<common/visible_object.hpp>
 #include<cmath>
-VisibleObject::VisibleObject() :transform(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) {
+VisibleObject::VisibleObject(const int l, const int r):
+	L(l),R(r),
+	transform(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) {
 }
 
 void VisibleObject::Translate(const glm::vec3& offset) {

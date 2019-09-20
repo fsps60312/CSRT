@@ -7,21 +7,15 @@ BufferSystem::BufferSystem(std::string filename)
 	loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
 
 	bvh = BVH(vertex_ids);
-	bvh.Build(vertices, new VisibleObject()); // TODO
+	bvh.Build(vertices, new VisibleObject(0, vertex_ids.size() - 1)); // TODO
 
 	// Identify a vertex Buffer Object
 	glGenBuffers(1, &materialBuffer);
-
 	glGenBuffers(1, &vertexBuffer);
-
 	glGenBuffers(1, &vertexIdBuffer);
-
 	glGenBuffers(1, &bvhNodeBuffer);
-
 	glGenBuffers(1, &bvhAabbBuffer);
-
 	glGenBuffers(1, &bvhRangeBuffer);
-
 }
 
 void BufferSystem::Send()
