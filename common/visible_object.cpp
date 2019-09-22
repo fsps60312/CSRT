@@ -1,7 +1,6 @@
 #include<common/visible_object.hpp>
 #include<cmath>
-VisibleObject::VisibleObject(const int l, const int r):
-	L(l),R(r),
+VisibleObject::VisibleObject():
 	transform(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) {
 }
 

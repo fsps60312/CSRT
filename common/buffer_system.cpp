@@ -5,14 +5,19 @@
 BufferSystem::BufferSystem(std::string filename)
 {
 	loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
-
-	bvh = BVH(vertex_ids);
-	bvh.Build(vertices, new VisibleObject(0, vertex_ids.size() - 1)); // TODO
+	std::vector<glm::mat3>triangles;
+	for (int i = 0; i < (int)vertex_ids.size(); i++)
+		triangles.push_back(glm::mat3(
+			vertices[vertex_ids[i].x],
+			vertices[vertex_ids[i].y],
+			vertices[vertex_ids[i].z]
+		));
+	bvh = BVH(triangles);
+	bvh.Build(); // TODO
 
 	// Identify a vertex Buffer Object
 	glGenBuffers(1, &materialBuffer);
-	glGenBuffers(1, &vertexBuffer);
-	glGenBuffers(1, &vertexIdBuffer);
+	glGenBuffers(1, &trianglesBuffer);
 	glGenBuffers(1, &bvhNodeBuffer);
 	glGenBuffers(1, &bvhAabbBuffer);
 	glGenBuffers(1, &bvhRangeBuffer);
@@ -20,7 +25,7 @@ BufferSystem::BufferSystem(std::string filename)
 
 void BufferSystem::Send()
 {
-	vertex_ids = bvh.GetTriangles();
+	triangles = bvh.GetTriangles();
 	tri_num = vertex_ids.size();
 	materials = std::vector<int>(tri_num, 1);
 
@@ -32,10 +37,8 @@ void BufferSystem::Send()
 	const std::vector<glm::ivec2> ranges = bvh.GetRanges();
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialBuffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * materials.size(), materials.data(), GL_DYNAMIC_COPY); // Give id_materials to OpenGL.
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertexBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::vec3) + 4U) * vertices.size(), Padded(vertices).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, vertexIdBuffer);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * vertex_ids.size(), Padded(vertex_ids).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat3) + 12U) * triangles.size(), Padded(triangles).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhNodeBuffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * nodes.size(), Padded(nodes).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhAabbBuffer);
@@ -46,11 +49,10 @@ void BufferSystem::Send()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, materialBuffer);
 
 	// 2nd buffer : vertices
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, vertexBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, vertexIdBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhNodeBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhAabbBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, bvhRangeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, trianglesBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bvhNodeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhAabbBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhRangeBuffer);
 }
 
 std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>s)const {
@@ -66,5 +68,10 @@ std::vector<glm::ivec4> BufferSystem::Padded(const std::vector<glm::ivec3>s)cons
 std::vector<glm::mat2x4> BufferSystem::Padded(const std::vector<glm::mat2x3>s)const {
 	std::vector<glm::mat2x4>ret;
 	for (const auto& v : s)ret.push_back(glm::mat2x3(glm::vec4(v[0], 0.0f), glm::vec4(v[1], 0.0f)));
+	return ret;
+}
+std::vector<glm::mat3x4> BufferSystem::Padded(const std::vector<glm::mat3>s)const {
+	std::vector<glm::mat3x4>ret;
+	for (const auto& v : s)ret.push_back(glm::mat3x4(glm::vec4(v[0], 0.0f), glm::vec4(v[1], 0.0f), glm::vec4(v[2], 0.0f)));
 	return ret;
 }

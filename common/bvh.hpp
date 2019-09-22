@@ -10,18 +10,17 @@
 class BVH {
 private:
 	std::vector<glm::ivec3>nodes;
-	std::vector<glm::ivec3>triangles;
+	std::vector<glm::mat3>triangles;
 	std::vector<AABB>aabbs;
 	std::vector<glm::ivec2>ranges;
-	void Build(const std::vector<glm::vec3>& vertices, const int id, VisibleObject* model);
-	void Build(const std::vector<glm::vec3>& vertices, const int id, const int l, const int r);
-	int CalMid(const std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>& triangles, const int id)const;
+	void Build(const int id, const int l, const int r);
+	int CalMid(std::vector<glm::mat3>& triangles, const int id)const;
 	void TryTraverse(const int id, int& counter);
 public:
 	BVH(){}
-	BVH(const std::vector<glm::ivec3>& triangles);
-	void Build(const std::vector<glm::vec3>& vertices, VisibleObject* model);
-	std::vector<glm::ivec3>GetTriangles() { return triangles; }
+	BVH(const std::vector<glm::mat3>& triangles);
+	void Build();
+	std::vector<glm::mat3>GetTriangles() { return triangles; }
 	std::vector<glm::ivec3>GetNodes() { return nodes; }
 	std::vector<AABB>GetAabbs() { return aabbs; }
 	std::vector<glm::ivec2>GetRanges() { return ranges; }

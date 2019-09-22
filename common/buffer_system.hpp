@@ -26,10 +26,10 @@ private:
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals;
 	std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
+	std::vector<glm::mat3>triangles;
 	std::vector<int> materials;
 	int tri_num = 0;
-	GLuint vertexBuffer = 0;
-	GLuint vertexIdBuffer = 0;
+	GLuint trianglesBuffer = 0;
 	GLuint materialBuffer = 0;
 	GLuint bvhNodeBuffer = 0;
 	GLuint bvhAabbBuffer = 0;
@@ -37,6 +37,7 @@ private:
 	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>s)const;
 	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>s)const;
 	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>s)const;
+	std::vector<glm::mat3x4> Padded(const std::vector<glm::mat3>s)const;
 public:
 	BufferSystem() {}
 	BufferSystem(std::string filename);

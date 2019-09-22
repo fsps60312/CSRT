@@ -3,11 +3,10 @@
 layout(rgba16f, binding = 0) uniform image2D img_output;
 
 layout(std430,  binding = 0) buffer id_materials { int id_material[];};
-layout(std430,  binding = 1) buffer verticez     { vec3 buf_vertex[];};
-layout(std430,  binding = 2) buffer vertex_ids   { ivec3 buf_vertex_id[];};
-layout(std430,  binding = 3) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
-layout(std430,  binding = 4) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
-layout(std430,  binding = 5) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
+layout(std430,  binding = 1) buffer trianglez     { mat3 buf_triangle[];};
+layout(std430,  binding = 2) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
+layout(std430,  binding = 3) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
+layout(std430,  binding = 4) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
 
 const float PI    = 3.14159265f;
 const float T_MAX = 999999.0f;
@@ -58,15 +57,11 @@ float random_float(){
 
 void TriangleIntersect(inout Ray r,in int obj_id){
 	if(obj_id==r.pre_obj)return;
-	ivec3 tri_ids=buf_vertex_id[obj_id];
+	mat3 tri=buf_triangle[obj_id];
 	
-	vec3  tri_v1 = buf_vertex[tri_ids.x],
-		  tri_v2 = buf_vertex[tri_ids.y],
-		  tri_v3 = buf_vertex[tri_ids.z];
-	
-	vec3  o  = r.pos - tri_v1,
-		  t1 = tri_v2 - tri_v1,
-		  t2 = tri_v3 - tri_v1;
+	vec3  o  = r.pos - tri[0],
+		  t1 = tri[1] - tri[0],
+		  t2 = tri[2] - tri[0];
 	
 	/*
 	// Face Culling
@@ -146,13 +141,10 @@ void Intersect(inout Ray r)
 	if(r.obj != -1)
 	{
 		int  id = r.obj;
-		ivec3 tri_ids=buf_vertex_id[id];
-		vec3  tri_v1 = buf_vertex[tri_ids.x],
-			  tri_v2 = buf_vertex[tri_ids.y],
-			  tri_v3 = buf_vertex[tri_ids.z];
+		mat3 tri=buf_triangle[id];
 		
-		vec3 t1 = tri_v2 - tri_v1,
-			 t2 = tri_v3 - tri_v1;
+		vec3 t1 = tri[1] - tri[0],
+			 t2 = tri[2] - tri[0];
 		r.n = normalize(cross(t1, t2));
 		r.pos+=r.dir*r.t;
 	}
