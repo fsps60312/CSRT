@@ -10,6 +10,7 @@ void BVHNode::NewNode() {
 	glob_bvh_aabbs.push_back(AABB());
 	glob_tri_ranges.push_back(glm::ivec2(-1));
 	glob_transforms.push_back(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+	//glob_transforms.back() = RotateMatrix(glm::vec3(0, 0, 1), glm::acos(-1) / 6);
 }
 
 BVHNode::BVHNode(BVHNode *parent) :l(NULL), r(NULL), p(parent) {
@@ -123,15 +124,30 @@ glm::mat4 BVHNode::RotateMatrix(const glm::vec3& axis, const float theta) {
 	//https://zh.wikipedia.org/zh-tw/旋转矩阵
 	return glm::mat4(
 		std::cos(theta) + (1 - std::cos(theta)) * axis.x * axis.x,
-		(1 - std::cos(theta)) * axis.x * axis.y - std::sin(theta) * axis.z,
-		(1 - std::cos(theta)) * axis.x * axis.z - std::sin(theta) * axis.y,
+		(1 - std::cos(theta)) * axis.y * axis.x + std::sin(theta) * axis.z,
+		(1 - std::cos(theta)) * axis.z * axis.x - std::sin(theta) * axis.y,
 		0,
-		(1 - std::cos(theta)) * axis.y * axis.x - std::sin(theta) * axis.z,
+		(1 - std::cos(theta))* axis.x* axis.y - std::sin(theta) * axis.z,
+		std::cos(theta) + (1 - std::cos(theta)) * axis.y * axis.y,
+		(1 - std::cos(theta)) * axis.z * axis.y + std::sin(theta) * axis.x,
+		0,
+		(1 - std::cos(theta))* axis.x* axis.z + std::sin(theta) * axis.y,
+		(1 - std::cos(theta))* axis.y* axis.z - std::sin(theta) * axis.x,
+		std::cos(theta) + (1 - std::cos(theta)) * axis.z * axis.z,
+		0,
+		0, 0, 0, 1
+	);
+	return glm::mat4(
+		std::cos(theta) + (1 - std::cos(theta)) * axis.x * axis.x,
+		(1 - std::cos(theta)) * axis.x * axis.y - std::sin(theta) * axis.z,
+		(1 - std::cos(theta)) * axis.x * axis.z + std::sin(theta) * axis.y,
+		0,
+		(1 - std::cos(theta)) * axis.y * axis.x + std::sin(theta) * axis.z,
 		std::cos(theta) + (1 - std::cos(theta)) * axis.y * axis.y,
 		(1 - std::cos(theta)) * axis.y * axis.z - std::sin(theta) * axis.x,
 		0,
 		(1 - std::cos(theta)) * axis.z * axis.x - std::sin(theta) * axis.y,
-		(1 - std::cos(theta)) * axis.z * axis.y - std::sin(theta) * axis.x,
+		(1 - std::cos(theta)) * axis.z * axis.y + std::sin(theta) * axis.x,
 		std::cos(theta) + (1 - std::cos(theta)) * axis.z * axis.z,
 		0,
 		0, 0, 0, 1

@@ -26,6 +26,7 @@ BufferSystem::BufferSystem(std::string filename)
 	glGenBuffers(1, &bvhNodeBuffer);
 	glGenBuffers(1, &bvhAabbBuffer);
 	glGenBuffers(1, &bvhRangeBuffer);
+	glGenBuffers(1, &transformBuffer);
 }
 
 void BufferSystem::Send()
@@ -54,6 +55,8 @@ void BufferSystem::Send()
 	glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3) + 8U) * aabbs.size(), Padded(aabbs).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhRangeBuffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::ivec2) * ranges.size(), ranges.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, transformBuffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat4) * BVHNode::glob_transforms.size(), BVHNode::glob_transforms.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 	// 1st buffer : materials
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, materialBuffer);
 
@@ -62,6 +65,7 @@ void BufferSystem::Send()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bvhNodeBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhAabbBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhRangeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, transformBuffer);
 }
 
 std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>s)const {
