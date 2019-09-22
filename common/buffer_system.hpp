@@ -13,7 +13,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include<common/objloader.hpp>
-#include<common/bvh.hpp>
+#include<common/visible_object.hpp>
 
 
 
