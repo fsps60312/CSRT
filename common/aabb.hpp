@@ -11,6 +11,7 @@ public:
 	AABB();
 	void AddPoint(const glm::vec3& p);
 	void AddTriangle(const glm::mat3& t);
+	void AddAABB(const AABB& aabb);
 	glm::vec3 GetMn()const;
 	glm::vec3 GetMx()const;
 	int LongestAxis()const;

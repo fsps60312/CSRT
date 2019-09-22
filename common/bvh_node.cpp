@@ -1,5 +1,4 @@
 #include<common/bvh_node.hpp>
-#include<cmath>
 std::vector<glm::ivec3>BVHNode::glob_bvh_nodes;
 std::vector<AABB>BVHNode::glob_bvh_aabbs;
 std::vector<glm::ivec2>BVHNode::glob_tri_ranges;
@@ -12,11 +11,91 @@ void BVHNode::NewNode() {
 	glob_tri_ranges.push_back(glm::ivec2(-1));
 	glob_transforms.push_back(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
 }
-BVHNode::BVHNode(BVHNode *parent) :is_leaf(false), l(NULL), r(NULL), p(parent) {
+
+BVHNode::BVHNode(BVHNode *parent) :l(NULL), r(NULL), p(parent) {
 	NewNode();
 }
-BVHNode::BVHNode(BVHNode* parent, const std::vector<glm::mat3>& triangles) : is_leaf(true), l(NULL), r(NULL), p(parent), triangles(triangles) {
+
+BVHNode::BVHNode(BVHNode* parent, const std::vector<glm::mat3>& triangles) :l(NULL), r(NULL), p(parent), triangles(triangles) {
 	NewNode();
+}
+
+void BVHNode::Build(const int l, const int r) {
+	// range
+	glob_tri_ranges[id] = glm::ivec2(l, r);
+	// cal aabb
+	auto& aabb = glob_bvh_aabbs[id] = AABB();
+	for (int i = l; i <= r; i++)aabb.AddTriangle(glob_triangles[i]);
+	if (r - l + 1 <= 2) {
+		return;
+	}
+	// split
+	const int mid = CalMid(id);
+	// dfs
+	BVHNode* lch = new BVHNode(this), * rch = new BVHNode(this);
+	lch->Build(l, mid);
+	rch->Build(mid + 1, r);
+	SetL(lch);
+	SetR(rch);
+}
+int BVHNode::CalMid(const int id) {
+	auto dot_max = [](const glm::mat3& t, const glm::vec3& c)->float {
+		return std::min(std::min(glm::dot(t[0], c), glm::dot(t[1], c)), glm::dot(t[2], c));
+	};
+	auto surface_area = [](const AABB& aabb)->float {
+		const glm::vec3 d = aabb.GetMx() - aabb.GetMn();
+		return 2 * (d.x * d.y + d.x * d.z + d.y * d.z);
+	};
+	// sort along longest axis
+	glm::vec3 c(0); c[glob_bvh_aabbs[id].LongestAxis()] = 1;
+	const int l = glob_tri_ranges[id].x, r = glob_tri_ranges[id].y;
+	std::sort(glob_triangles.begin() + l, glob_triangles.begin() + r + 1, [&c, &dot_max](const glm::mat3& t1, const glm::mat3& t2)->bool {
+		return dot_max(t1, c) < dot_max(t2, c);
+	});
+	// left aabbs
+	std::vector<AABB>left_aabbs(long long(r) - l);
+	AABB left_aabb;
+	for (long long i = l; i < r; i++) {
+		left_aabb.AddTriangle(glob_triangles[i]);
+		left_aabbs[i - l] = left_aabb;
+	}
+	int best_mid = -1;
+	float best_sah_cost = FLT_MAX;
+	// rigt aabbs
+	AABB rigt_aabb;
+	for (long long i = r; i > l; i--) {
+		rigt_aabb.AddTriangle(glob_triangles[i]);
+		const float sah_cost = (i - l) * surface_area(left_aabbs[i - l - 1]) + (r - i + 1) * surface_area(rigt_aabb);
+		if (sah_cost < best_sah_cost) {
+			best_sah_cost = sah_cost;
+			best_mid = i - 1;
+		}
+	}
+	assert(best_mid != -1);
+	return best_mid;
+}
+
+void BVHNode::Build() {
+	auto& aabb = glob_bvh_aabbs[id] = AABB();
+	glob_tri_ranges[id].x = (int)glob_triangles.size();
+	if (l == NULL && r == NULL) {
+		for (const auto t : triangles) {
+			glob_triangles.push_back(t);
+			aabb.AddTriangle(t);
+		}
+		std::clog << "triangles.size=" << triangles.size() << std::endl;
+		Build(glob_tri_ranges[id].x, (int)glob_triangles.size() - 1);
+	} else {
+		if (l != NULL) {
+			l->Build();
+			aabb.AddAABB(glob_bvh_aabbs[l->id]);
+		}
+		if (r != NULL) {
+			r->Build();
+			aabb.AddAABB(glob_bvh_aabbs[r->id]);
+		}
+	}
+	glob_tri_ranges[id].y = (int)glob_triangles.size() - 1;
 }
 
 void BVHNode::Translate(const glm::vec3& offset) {

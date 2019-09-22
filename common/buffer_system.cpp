@@ -4,6 +4,10 @@
 
 BufferSystem::BufferSystem(std::string filename)
 {
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
 	loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
 	std::vector<glm::mat3>triangles;
 	for (int i = 0; i < (int)vertex_ids.size(); i++)
@@ -12,8 +16,9 @@ BufferSystem::BufferSystem(std::string filename)
 			vertices[vertex_ids[i].y],
 			vertices[vertex_ids[i].z]
 		));
-	bvh = BVH(triangles);
-	bvh.Build(); // TODO
+	VisibleObject obj = VisibleObject(triangles);
+	root = obj.Build(NULL);
+	root->Build();
 
 	// Identify a vertex Buffer Object
 	glGenBuffers(1, &materialBuffer);
@@ -25,16 +30,20 @@ BufferSystem::BufferSystem(std::string filename)
 
 void BufferSystem::Send()
 {
-	triangles = bvh.GetTriangles();
-	tri_num = vertex_ids.size();
+	//triangles = bvh.GetTriangles();
+	std::vector<glm::mat3>triangles = BVHNode::glob_triangles;
+	tri_num = triangles.size();
 	materials = std::vector<int>(tri_num, 1);
 
-	const std::vector<glm::ivec3>nodes = bvh.GetNodes();
-	const auto aabbs_raw = bvh.GetAabbs();
+	//const std::vector<glm::ivec3>nodes = bvh.GetNodes();
+	const std::vector<glm::ivec3>nodes = BVHNode::glob_bvh_nodes;
+	//const auto aabbs_raw = bvh.GetAabbs();
+	const auto aabbs_raw = BVHNode::glob_bvh_aabbs;
 	std::vector<glm::mat2x3>aabbs;
 	for (const auto& aabb : aabbs_raw)aabbs.push_back(glm::mat2x3(aabb.GetMn(), aabb.GetMx()));
 	//std::clog << aabbs[1][0].x << " " << aabbs[1][0].y << " " << aabbs[1][0].z << ", " << aabbs[1][1].x << " " << aabbs[1][1].y << " " << aabbs[1][1].z << std::endl;
-	const std::vector<glm::ivec2> ranges = bvh.GetRanges();
+	//const std::vector<glm::ivec2> ranges = bvh.GetRanges();
+	const std::vector<glm::ivec2> ranges = BVHNode::glob_tri_ranges;
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialBuffer);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * materials.size(), materials.data(), GL_DYNAMIC_COPY); // Give id_materials to OpenGL.
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);

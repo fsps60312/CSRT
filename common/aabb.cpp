@@ -9,6 +9,10 @@ void AABB::AddTriangle(const glm::mat3& t) {
 	AddPoint(t[1]);
 	AddPoint(t[2]);
 }
+void AABB::AddAABB(const AABB& aabb) {
+	mn = glm::min(mn, aabb.mn);
+	mx = glm::max(mx, aabb.mx);
+}
 glm::vec3 AABB::GetMn()const {
 	return mn;
 }

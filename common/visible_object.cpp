@@ -1,7 +1,39 @@
 #include<common/visible_object.hpp>
 #include<cmath>
-VisibleObject::VisibleObject():
+VisibleObject::VisibleObject() :
+	is_leaf(false),
 	transform(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) {
+}
+VisibleObject::VisibleObject(const std::vector<glm::mat3>& triangles) :
+	is_leaf(true),
+	triangles(triangles),
+	transform(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)) {
+}
+BVHNode* VisibleObject::Build(BVHNode* parent) {
+	if (is_leaf)return new BVHNode(parent, triangles);
+	if (children.empty())return NULL;
+	BVHNode* o = new BVHNode(parent);
+	Build(o, 0, (int)children.size() - 1);
+	return o;
+}
+void VisibleObject::Build(BVHNode* o, const int l, const int r) {
+	if (l == r) {
+		o->SetL(children[l]->Build(o));
+		return;
+	} else if (l + 1 == r) {
+		o->SetL(children[l]->Build(o));
+		o->SetR(children[r]->Build(o));
+		return;
+	}
+	BVHNode* lch = new BVHNode(o), * rch = new BVHNode(o);
+	const int mid = CalMid(l, r);
+	Build(lch, l, mid);
+	Build(rch, mid + 1, r);
+	o->SetL(lch);
+	o->SetR(rch);
+}
+int VisibleObject::CalMid(const int l, const int r) {
+	return (l + r) / 2;
 }
 
 void VisibleObject::Translate(const glm::vec3& offset) {
