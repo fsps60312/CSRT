@@ -10,7 +10,6 @@ layout(std430,  binding = 4) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
 layout(std430,  binding = 5) buffer transforms   { mat4 buf_transform[]; };
 
 const float PI    = 3.14159265f;
-const float T_MAX = 999999.0f;
 // https://stackoverflow.com/questions/16069959/glsl-how-to-ensure-largest-possible-float-value-without-overflow
 const float FLT_MAX=3.402823466e+38f;
 
@@ -102,6 +101,7 @@ void TriangleIntersect(inout Ray r,in int obj_id){
 }
 
 float AABBIntersect(in Ray r, in int aabb_id){
+	if(aabb_id==-1)return FLT_MAX;
 	// r.pos, r.dir
 	const mat2x3 aabb=buf_bvh_aabb[aabb_id];
 	const vec3 v1=(aabb[0]-r.pos)/r.dir;
@@ -120,7 +120,7 @@ void BVHIntersect(inout Ray r){
 		// trace down
 		while(true){
 			const ivec3 node=buf_bvh_node[id];
-			if(node.x==-1){
+			if(node.x==-1&&node.y==-1){
 				for(int i=buf_bvh_range[id].x;i<=buf_bvh_range[id].y;i++)TriangleIntersect(r,i);
 				break;
 			}
@@ -145,7 +145,7 @@ void BVHIntersect(inout Ray r){
 
 void Intersect(inout Ray r)
 {
-	r.t=T_MAX;
+	r.t=FLT_MAX;
 	r.pre_obj=r.obj;
 	r.obj=-1;
 	BVHIntersect(r);
@@ -175,20 +175,22 @@ vec3 PhongLighting(Ray ray)
 		float t, i;
 		vec3  pos, dir, n;
 	};*/
-	Ray ray_light = Ray(-1, ray.obj, T_MAX, 0.0f, ray.pos, light_dir, vec3(0.0f));
+	Ray ray_light = Ray(-1, ray.obj, FLT_MAX, 0.0f, ray.pos, light_dir, vec3(0.0f));
 	Intersect(ray_light);
+
+	vec3  diffuse_color  = vec3(r,g,b);
+	vec3  specular_color = vec3(0.3f);
+	vec3  ambient_color  = diffuse_color * 0.5f;
+	float diffuse_factor  = clamp(dot(ray.n, light_dir), 0.0f, 1.0f);
+	float specular_factor = pow(clamp(dot(ray.n, h), 0.0f, 1.0f), ks_exp);
+
 	if(ray_light.obj != -1)
 	{
-		rgb = vec3(r,g,b) * 0.1f;
+		rgb = ambient_color;
 	}
 	else
 	{
-		float diffuse_factor  = clamp(dot(ray.n, light_dir), 0.0f, 1.0f);
-		float specular_factor = pow(clamp(dot(ray.n, h), 0.0f, 1.0f), ks_exp);
 		
-		vec3  diffuse_color  = vec3(r,g,b);
-		vec3  ambient_color  = diffuse_color * 0.1f;
-		vec3  specular_color = vec3(0.3f);
 		float dist = length(light - ray.pos), light_power = 100.0f;
 		rgb =
 			ambient_color  +
@@ -251,7 +253,7 @@ void main()
 	// Generate Ray
 	vec3 pos = eye;
 	vec3 dir = normalize(center + x * dx + y * dy - eye);
-	Ray  ray_start = Ray(-1, -1, T_MAX, 1, pos, dir, vec3(0.0f));
+	Ray  ray_start = Ray(-1, -1, FLT_MAX, 1, pos, dir, vec3(0.0f));
 	
 	// Ray Tracing
 	vec4 pixel = vec4(RayTracing(ray_start), 1.0f);

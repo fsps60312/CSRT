@@ -21,7 +21,7 @@
 class BufferSystem {
 
 private:
-	BVHNode* root = NULL;
+	VisibleObject* obj = NULL;
 	std::vector<int> materials;
 	int tri_num = 0;
 	GLuint trianglesBuffer = 0;

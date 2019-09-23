@@ -77,20 +77,28 @@ void Camera::computeMatricesFromInputs(Environment &env){
 	up = glm::cross( right, direction );
 
 	// Move forward
-	if (env.IsKeyDown(GLFW_KEY_UP ) ){
+	if (env.IsKeyDown(GLFW_KEY_W ) ){
 		position += direction * deltaTime * speed;
 	}
 	// Move backward
-	if (env.IsKeyDown(GLFW_KEY_DOWN )){
+	if (env.IsKeyDown(GLFW_KEY_S )){
 		position -= direction * deltaTime * speed;
 	}
 	// Strafe right
-	if (env.IsKeyDown(GLFW_KEY_RIGHT ) ){
+	if (env.IsKeyDown(GLFW_KEY_D ) ){
 		position += right * deltaTime * speed;
 	}
 	// Strafe left
-	if (env.IsKeyDown(GLFW_KEY_LEFT ) ){
+	if (env.IsKeyDown(GLFW_KEY_A ) ){
 		position -= right * deltaTime * speed;
+	}
+	// Move forward
+	if (env.IsKeyDown(GLFW_KEY_E)) {
+		position += up * deltaTime * speed;
+	}
+	// Move backward
+	if (env.IsKeyDown(GLFW_KEY_Q)) {
+		position -= up * deltaTime * speed;
 	}
 
 	float FoV = initialFoV;// - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires setting up a callback for this. It's a bit too complicated for this beginner's tutorial, so it's disabled instead.
