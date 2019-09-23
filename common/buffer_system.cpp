@@ -2,6 +2,8 @@
 
 #include <common/buffer_system.hpp>
 
+BufferSystem::BufferSystem(){}
+
 BufferSystem::BufferSystem(std::string filename)
 {
 	{
@@ -39,14 +41,20 @@ BufferSystem::BufferSystem(std::string filename)
 		glGenBuffers(1, &bvhRangeBuffer);
 		glGenBuffers(1, &transformBuffer);
 	}
+}
+
+int BufferSystem::GetTriangleNum() { return tri_num; }
+
+void BufferSystem::Send()
+{
 	{
 		//triangles = bvh.GetTriangles();
 		/*obj->children[0]->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
 		obj->children[1]->Rotate(glm::vec3(1, 0, 0), -glm::acos(-1) / 100);
 		obj->children[2]->Rotate(glm::vec3(0, 0, 1), -glm::acos(-1) / 100);
 		obj->Update();*/
-		/*for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
-		obj->Update();*/
+		for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
+		obj->Update();
 		std::vector<glm::mat3>triangles = BVHNode::glob_triangles;
 		tri_num = triangles.size();
 		materials = std::vector<int>(tri_num, 1);
@@ -74,10 +82,6 @@ BufferSystem::BufferSystem(std::string filename)
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, transformBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat4) * transforms.size(), transforms.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 	}
-}
-
-void BufferSystem::Send()
-{
 	// 1st buffer : materials
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, materialBuffer);
 

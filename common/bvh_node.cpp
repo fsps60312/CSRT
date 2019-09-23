@@ -5,10 +5,16 @@ std::vector<glm::ivec2>BVHNode::glob_tri_ranges;
 std::vector<glm::mat3>BVHNode::glob_triangles;
 std::vector<glm::mat4>BVHNode::glob_transforms;
 
+int BVHNode::GetId(BVHNode* o) { return o ? o->id : -1; }
+void BVHNode::SetL(BVHNode* l) { this->l = l; glob_bvh_nodes[id].x = GetId(l); }
+void BVHNode::SetR(BVHNode* r) { this->r = r; glob_bvh_nodes[id].y = GetId(r); }
+void BVHNode::SetRangeL() { glob_tri_ranges[id].x = (int)glob_triangles.size(); }
+void BVHNode::SetRangeR() { glob_tri_ranges[id].y = (int)glob_triangles.size() - 1; }
+
 int BVHNode::Verify() {
 	if (l == NULL && r == NULL) {
 		return 1;
-	} else if (l != NULL&&r!=NULL) {
+	} else if (l != NULL && r != NULL) {
 		assert(glob_bvh_nodes[l->id].z == id && glob_bvh_nodes[id].x == l->id);
 		assert(glob_bvh_nodes[r->id].z == id && glob_bvh_nodes[id].y == r->id);
 		assert(glob_tri_ranges[l->id].x == glob_tri_ranges[id].x);
@@ -47,16 +53,16 @@ void BVHNode::UpdateAABB() {
 	if (l == NULL && r == NULL) {
 		for (int i = glob_tri_ranges[id].x; i <= glob_tri_ranges[id].y; i++)aabb.AddTriangle(TransformedTriangle(glob_triangles[i]));
 	} else {
-		if (l)aabb.AddAABB(glob_bvh_aabbs[l->id]);
-		if (r)aabb.AddAABB(glob_bvh_aabbs[r->id]);
+		if (l != NULL)aabb.AddAABB(glob_bvh_aabbs[l->id]);
+		if (r != NULL)aabb.AddAABB(glob_bvh_aabbs[r->id]);
 	}
 }
 
 void BVHNode::UpdateTransform(glm::mat4 transform) {
 	transform = transform * this->transform;
 	glob_transforms[id] = transform;
-	if (l)l->UpdateTransform(transform);
-	if (r)r->UpdateTransform(transform);
+	if (l != NULL)l->UpdateTransform(transform);
+	if (r != NULL)r->UpdateTransform(transform);
 	UpdateAABB();
 }
 

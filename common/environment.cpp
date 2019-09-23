@@ -1,4 +1,7 @@
 #include<common/environment.hpp>
+bool Environment::IsWindowClosed() { return glfwWindowShouldClose(window) != 0; }
+Shader& Environment::GetTextureShader() { return texture_shader; }
+Shader& Environment::GetComputeShader() { return compute_shader; }
 bool Environment::IsKeyDown(int key)const {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }

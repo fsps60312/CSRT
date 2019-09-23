@@ -30,7 +30,7 @@ public:
 	void DispatchShaders();
 	glm::dvec2 GetCursorPos();
 	void SetCursorPos(const glm::dvec2& pos);
-	bool IsWindowClosed() { return glfwWindowShouldClose(window) != 0; }
-	Shader& GetTextureShader() { return texture_shader; }
-	Shader& GetComputeShader() { return compute_shader; }
+	bool IsWindowClosed();
+	Shader& GetTextureShader();
+	Shader& GetComputeShader();
 };

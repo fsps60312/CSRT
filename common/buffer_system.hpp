@@ -35,10 +35,10 @@ private:
 	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>s)const;
 	std::vector<glm::mat3x4> Padded(const std::vector<glm::mat3>s)const;
 public:
-	BufferSystem() {}
+	BufferSystem();
 	BufferSystem(std::string filename);
 	void Send();
-	int GetTriangleNum() { return tri_num; }
+	int GetTriangleNum();
 };
 
 // Not yet !

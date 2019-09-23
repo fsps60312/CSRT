@@ -30,16 +30,10 @@ private:
 public:
 	void Load(char v[], char f[], int l);
 	void Load(char c[]);
-	GLuint GetVariable(char name[]) { return glGetUniformLocation(program, name); }
-	GLuint GetProgram() { return program; }
-	void Use() { glUseProgram(program); }
-	void Use(GLuint x, GLuint y, GLuint z) {
-		glUseProgram(program);
-		glDispatchCompute(x, y, z);
-	}
-	void Disable() {
-		for (int i = 0; i < layout_num; ++i)
-			glDisableVertexAttribArray(i);
-	}
-	void Delete() { glDeleteProgram(program); }
+	GLuint GetVariable(char name[]);
+	GLuint GetProgram();
+	void Use();
+	void Use(GLuint x, GLuint y, GLuint z);
+	void Disable();
+	void Delete();
 };

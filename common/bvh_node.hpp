@@ -22,7 +22,7 @@ private:
 	std::vector<glm::mat3>triangles;
 	glm::mat4 TranslateMatrix(const glm::vec3& offset);
 	glm::mat4 RotateMatrix(const glm::vec3& axis, const float theta);
-	static int GetId(BVHNode* o) { return o ? o->id : -1; }
+	static int GetId(BVHNode* o);
 	void NewNode();
 	void Build(const int l, const int r);
 	int CalMid(const int id);
@@ -32,10 +32,10 @@ private:
 public:
 	BVHNode(BVHNode* parent);
 	BVHNode(BVHNode* parent, const std::vector<glm::mat3>& triangles);
-	void SetL(BVHNode* l) { this->l = l; glob_bvh_nodes[id].x = GetId(l); }
-	void SetR(BVHNode* r) { this->r = r; glob_bvh_nodes[id].y = GetId(r); }
-	void SetRangeL() { glob_tri_ranges[id].x = (int)glob_triangles.size(); }
-	void SetRangeR() { glob_tri_ranges[id].y = (int)glob_triangles.size() - 1; }
+	void SetL(BVHNode* l);
+	void SetR(BVHNode* r);
+	void SetRangeL();
+	void SetRangeR();
 	void UpdateTransform();
 	void Build();
 	int Verify();

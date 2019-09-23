@@ -1,6 +1,18 @@
 #include <common/shader.hpp>
 
 #pragma region Shader
+GLuint Shader::GetVariable(char name[]) { return glGetUniformLocation(program, name); }
+GLuint Shader::GetProgram() { return program; }
+void Shader::Use() { glUseProgram(program); }
+void Shader::Use(GLuint x, GLuint y, GLuint z) {
+	glUseProgram(program);
+	glDispatchCompute(x, y, z);
+}
+void Shader::Disable() {
+	for (int i = 0; i < layout_num; ++i)
+		glDisableVertexAttribArray(i);
+}
+void Shader::Delete() { glDeleteProgram(program); }
 void Shader::Load(char v[], char f[], int l) {
 	program = LoadAndCompileShaders(v, f);
 	layout_num = l;
