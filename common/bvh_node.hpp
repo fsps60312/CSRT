@@ -28,7 +28,7 @@ private:
 	int CalMid(const int id);
 	void UpdateTransform(const glm::mat4 transform);
 	void UpdateAABB();
-	glm::mat3 TransformedTriangle(const glm::mat3& triangle);
+	glm::mat3 TransformedTriangle(const int triangle_id);
 public:
 	BVHNode(BVHNode* parent);
 	BVHNode(BVHNode* parent, const std::vector<glm::mat3>& triangles);

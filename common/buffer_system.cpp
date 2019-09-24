@@ -22,6 +22,7 @@ BufferSystem::BufferSystem(std::string filename)
 		obj = new VisibleObject();
 		obj->children.push_back(new VisibleObject(triangles));
 		obj->children.push_back(new VisibleObject(triangles));
+		obj->children.push_back(new VisibleObject(triangles));
 		BVHNode* root = obj->Build(NULL);
 		root->Build();
 		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
@@ -32,6 +33,7 @@ BufferSystem::BufferSystem(std::string filename)
 		std::clog << "triangles.size = " << BVHNode::glob_triangles.size() << std::endl;
 		std::clog << "bvh.size       = " << BVHNode::glob_bvh_nodes.size() << std::endl;
 		std::clog << "verify result  = " << root->Verify() << std::endl;
+		tri_num = BVHNode::glob_triangles.size();
 
 		// Identify a vertex Buffer Object
 		glGenBuffers(1, &materialBuffer);
@@ -56,7 +58,6 @@ void BufferSystem::Send()
 		for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
 		obj->Update();
 		std::vector<glm::mat3>triangles = BVHNode::glob_triangles;
-		tri_num = triangles.size();
 		materials = std::vector<int>(tri_num, 1);
 
 		//const std::vector<glm::ivec3>nodes = bvh.GetNodes();
@@ -69,6 +70,7 @@ void BufferSystem::Send()
 		//const std::vector<glm::ivec2> ranges = bvh.GetRanges();
 		const std::vector<glm::ivec2> ranges = BVHNode::glob_tri_ranges;
 		const std::vector<glm::mat4>transforms = BVHNode::glob_transforms;
+		assert(materials.size() == triangles.size() && transforms.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * materials.size(), materials.data(), GL_DYNAMIC_COPY); // Give id_materials to OpenGL.
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);

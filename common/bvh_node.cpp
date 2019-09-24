@@ -37,10 +37,10 @@ int BVHNode::Verify() {
 	}
 }
 
-glm::mat3 BVHNode::TransformedTriangle(const glm::mat3& triangle) {
+glm::mat3 BVHNode::TransformedTriangle(const int triangle_id) {
 	glm::mat3 ret;
 	for (int i = 0; i < 3; i++) {
-		auto res = (glob_transforms[id] * glm::vec4(triangle[i], 1.0f));
+		auto res = (glob_transforms[triangle_id] * glm::vec4(glob_triangles[triangle_id][i], 1.0f));
 		ret[i].x = res.x;
 		ret[i].y = res.y;
 		ret[i].z = res.z;
@@ -51,7 +51,7 @@ glm::mat3 BVHNode::TransformedTriangle(const glm::mat3& triangle) {
 void BVHNode::UpdateAABB() {
 	auto& aabb = glob_bvh_aabbs[id] = AABB();
 	if (l == NULL && r == NULL) {
-		for (int i = glob_tri_ranges[id].x; i <= glob_tri_ranges[id].y; i++)aabb.AddTriangle(TransformedTriangle(glob_triangles[i]));
+		for (int i = glob_tri_ranges[id].x; i <= glob_tri_ranges[id].y; i++)aabb.AddTriangle(TransformedTriangle(i));
 	} else {
 		if (l != NULL)aabb.AddAABB(glob_bvh_aabbs[l->id]);
 		if (r != NULL)aabb.AddAABB(glob_bvh_aabbs[r->id]);
@@ -60,7 +60,10 @@ void BVHNode::UpdateAABB() {
 
 void BVHNode::UpdateTransform(glm::mat4 transform) {
 	transform = transform * this->transform;
-	glob_transforms[id] = transform;
+	if (is_leaf) {
+		for(int i=glob_tri_ranges[id].x;i<=glob_tri_ranges[id].y;i++)
+			glob_transforms[i] = transform;
+	}
 	if (l != NULL)l->UpdateTransform(transform);
 	if (r != NULL)r->UpdateTransform(transform);
 	UpdateAABB();
@@ -74,8 +77,6 @@ void BVHNode::NewNode() {
 	glob_bvh_nodes.push_back(glm::ivec3(GetId(l), GetId(r), GetId(p)));
 	glob_bvh_aabbs.push_back(AABB());
 	glob_tri_ranges.push_back(glm::ivec2(-1));
-	glob_transforms.push_back(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
-	//glob_transforms.back() = RotateMatrix(glm::vec3(0, 0, 1), glm::acos(-1) / 6);
 }
 
 BVHNode::BVHNode(BVHNode* parent) :id((int)glob_bvh_nodes.size()), is_leaf(false), p(parent) {
@@ -87,6 +88,8 @@ BVHNode::BVHNode(BVHNode* parent, const std::vector<glm::mat3>& triangles) : id(
 	SetRangeL();
 	for (const auto t : triangles) {
 		glob_triangles.push_back(t);
+		glob_transforms.push_back(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+		//glob_transforms.back() = RotateMatrix(glm::vec3(0, 0, 1), glm::acos(-1) / 6);
 	}
 	SetRangeR();
 }
