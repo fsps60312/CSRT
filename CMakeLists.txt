@@ -62,8 +62,8 @@ add_executable(playground
 	common/aabb.cpp
 	common/buffer_system.hpp
 	common/buffer_system.cpp
-	common/bvh.hpp
-	common/bvh.cpp
+	common/bvh_node.hpp
+	common/bvh_node.cpp
 	common/camera.hpp
 	common/camera.cpp
 	common/environment.hpp
@@ -76,6 +76,8 @@ add_executable(playground
 	common/objloader.cpp
 	common/shader.hpp
 	common/shader.cpp
+	common/visible_object.hpp
+	common/visible_object.cpp
 	common/world.hpp
 	common/world.cpp
 )
