@@ -18,10 +18,7 @@ private:
 	const int id;
 	const bool is_leaf;
 	BVHNode* l = NULL, * r = NULL, * p = NULL;
-	glm::mat4 transform = glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 	std::vector<glm::mat3>triangles;
-	glm::mat4 TranslateMatrix(const glm::vec3& offset);
-	glm::mat4 RotateMatrix(const glm::vec3& axis, const float theta);
 	static int GetId(BVHNode* o);
 	void NewNode();
 	void Build(const int l, const int r);
@@ -30,8 +27,11 @@ private:
 	void UpdateAABB();
 	glm::mat3 TransformedTriangle(const int triangle_id);
 public:
+	glm::mat4 transform = glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 	BVHNode(BVHNode* parent);
 	BVHNode(BVHNode* parent, const std::vector<glm::mat3>& triangles);
+	static void ClearVectors();
+	static void DeleteTree(BVHNode* root);
 	void SetL(BVHNode* l);
 	void SetR(BVHNode* r);
 	void SetRangeL();
@@ -39,8 +39,4 @@ public:
 	void UpdateTransform();
 	void Build();
 	int Verify();
-	void Translate(const glm::vec3& offset);
-	void TranslatePrepend(const glm::vec3& offset);
-	void Rotate(const glm::vec3& axis, const float theta);
-	void RotatePrepend(const glm::vec3& axis, const float theta);
 };

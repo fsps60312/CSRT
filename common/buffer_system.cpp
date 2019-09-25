@@ -23,17 +23,13 @@ BufferSystem::BufferSystem(std::string filename)
 		obj->children.push_back(new VisibleObject(triangles));
 		obj->children.push_back(new VisibleObject(triangles));
 		obj->children.push_back(new VisibleObject(triangles));
-		BVHNode* root = obj->Build(NULL);
-		root->Build();
 		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->Translate(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
 		}
-		obj->Update();
 		std::clog << "triangles.size = " << BVHNode::glob_triangles.size() << std::endl;
 		std::clog << "bvh.size       = " << BVHNode::glob_bvh_nodes.size() << std::endl;
-		std::clog << "verify result  = " << root->Verify() << std::endl;
-		tri_num = BVHNode::glob_triangles.size();
+		//std::clog << "verify result  = " << root->Verify() << std::endl;
 
 		// Identify a vertex Buffer Object
 		glGenBuffers(1, &materialBuffer);
@@ -45,20 +41,25 @@ BufferSystem::BufferSystem(std::string filename)
 	}
 }
 
-int BufferSystem::GetTriangleNum() { return tri_num; }
+int BufferSystem::GetTriangleNum() { return (int)BVHNode::glob_triangles.size(); }
 
 void BufferSystem::Send()
 {
+	for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
 	{
+		BVHNode::DeleteTree(root);
+		BVHNode::ClearVectors();
+		root = obj->Build(NULL);
+		obj->Update();
+		root->Build();
+		root->UpdateTransform();
 		//triangles = bvh.GetTriangles();
 		/*obj->children[0]->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
 		obj->children[1]->Rotate(glm::vec3(1, 0, 0), -glm::acos(-1) / 100);
 		obj->children[2]->Rotate(glm::vec3(0, 0, 1), -glm::acos(-1) / 100);
 		obj->Update();*/
-		for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
-		obj->Update();
 		std::vector<glm::mat3>triangles = BVHNode::glob_triangles;
-		materials = std::vector<int>(tri_num, 1);
+		materials = std::vector<int>(GetTriangleNum(), 1);
 
 		//const std::vector<glm::ivec3>nodes = bvh.GetNodes();
 		const std::vector<glm::ivec3>nodes = BVHNode::glob_bvh_nodes;

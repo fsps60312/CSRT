@@ -25,6 +25,8 @@ void Game::Render(Environment &env){
 	static std::default_random_engine rand(7122);
 	//std::clog << rand() << std::endl;
 	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), rand());
+	if (env.IsKeyDown(GLFW_KEY_EQUAL))model.Add();
+	if (env.IsKeyDown(GLFW_KEY_MINUS))model.Remove();
 	model.Send();
 	world.SendToShader();
 }

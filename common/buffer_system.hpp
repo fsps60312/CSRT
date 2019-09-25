@@ -14,6 +14,7 @@
 
 #include<common/objloader.hpp>
 #include<common/visible_object.hpp>
+#include<common/control.hpp>
 
 
 
@@ -22,8 +23,8 @@ class BufferSystem {
 
 private:
 	VisibleObject* obj = NULL;
+	BVHNode* root = NULL;
 	std::vector<int> materials;
-	int tri_num = 0;
 	GLuint trianglesBuffer = 0;
 	GLuint materialBuffer = 0;
 	GLuint bvhNodeBuffer = 0;
@@ -37,6 +38,42 @@ private:
 public:
 	BufferSystem();
 	BufferSystem(std::string filename);
+	void Add(){
+		std::string filename = NOW_MODEL + std::string(".obj");
+		std::vector<glm::vec3> vertices;
+		std::vector<glm::vec2> uvs;
+		std::vector<glm::vec3> normals;
+		std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
+		loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
+		std::vector<glm::mat3>triangles;
+		for (int i = 0; i < (int)vertex_ids.size(); i++)
+			triangles.push_back(glm::mat3(
+				vertices[vertex_ids[i].x],
+				vertices[vertex_ids[i].y],
+				vertices[vertex_ids[i].z]
+			));
+		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
+			const float dx = 3, dz = -3;
+			obj->children[i]->TranslatePrepend(-glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
+		}
+		obj->children.push_back(new VisibleObject(triangles));
+		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
+			const float dx = 3, dz = -3;
+			obj->children[i]->TranslatePrepend(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
+		}
+	}
+	void Remove() {
+		if (obj->children.size()<=1)return;
+		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
+			const float dx = 3, dz = -3;
+			obj->children[i]->TranslatePrepend(-glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
+		}
+		obj->children.pop_back();
+		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
+			const float dx = 3, dz = -3;
+			obj->children[i]->TranslatePrepend(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
+		}
+	}
 	void Send();
 	int GetTriangleNum();
 };
