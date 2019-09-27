@@ -113,7 +113,8 @@ int BVHNode::CalMid(const int id) {
 	return best_mid;
 }
 
-void BVHNode::Build() {
+BVHNode* BVHNode::Build() {
 	BVHNode* o = new BVHNode(NULL);
 	o->Build(0, (int)(glob_triangles.size() - 1));
+	return o;
 }

@@ -62,7 +62,7 @@ public:
 		}
 	}
 	void Remove() {
-		if (obj->children.size()<=1)return;
+		if (obj->children.size()<=0)return;
 		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->TranslatePrepend(-glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));

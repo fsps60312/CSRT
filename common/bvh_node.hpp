@@ -24,7 +24,7 @@ public:
 	BVHNode(BVHNode* parent);
 	static void ClearVectors();
 	static void DeleteTree(BVHNode* root);
-	static void Build();
+	static BVHNode* Build();
 	void SetL(BVHNode* l);
 	void SetR(BVHNode* r);
 	void SetRangeL();
