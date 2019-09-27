@@ -1,50 +1,30 @@
 #include<common/visible_object.hpp>
 #include<cmath>
 VisibleObject::VisibleObject() :
-	is_leaf(false),
-	bvh_node(NULL) {
+	is_leaf(false) {
 }
 VisibleObject::VisibleObject(const std::vector<glm::mat3>& triangles) :
 	is_leaf(true),
-	triangles(triangles),
-	bvh_node(NULL) {
+	triangles(triangles) {
 }
-BVHNode* VisibleObject::Build(BVHNode* parent) {
+void VisibleObject::Build(const glm::mat4 &parent_transform)const {
+	const glm::mat4& transform = parent_transform * this->transform;
 	if (is_leaf) {
-		bvh_node = new BVHNode(parent, triangles);
+		for (const auto& t : triangles) {
+			glm::mat3 ret;
+			for (int i = 0; i < 3; i++) {
+				auto res = (transform * glm::vec4(t[i], 1.0f));
+				ret[i].x = res.x;
+				ret[i].y = res.y;
+				ret[i].z = res.z;
+			}
+			BVHNode::glob_triangles.push_back(ret);
+		}
 	} else {
-		if (children.empty())return NULL;
-		bvh_node = new BVHNode(parent);
-		Build(bvh_node, 0, (int)children.size() - 1);
+		for (const auto ch : children)ch->Build(transform);
 	}
-	return bvh_node;
-}
-void VisibleObject::Build(BVHNode* o, const int l, const int r) {
-	assert(o != NULL);
-	o->SetRangeL();
-	if (l == r) {
-		o->SetL(children[l]->Build(o));
-	} else if (l + 1 == r) {
-		o->SetL(children[l]->Build(o));
-		o->SetR(children[r]->Build(o));
-	} else {
-		BVHNode* lch = new BVHNode(o), * rch = new BVHNode(o);
-		const int mid = CalMid(l, r);
-		Build(lch, l, mid);
-		Build(rch, mid + 1, r);
-		o->SetL(lch);
-		o->SetR(rch);
-	}
-	o->SetRangeR();
-}
-int VisibleObject::CalMid(const int l, const int r) {
-	return (l + r) / 2;
 }
 
-void VisibleObject::Update() {
-	bvh_node->transform = this->transform;
-	for (auto child : children)child->Update();
-}
 void VisibleObject::Translate(const glm::vec3& offset) {
 	transform = transform * TranslateMatrix(offset);
 }

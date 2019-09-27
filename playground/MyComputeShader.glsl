@@ -7,7 +7,6 @@ layout(std430,  binding = 1) buffer trianglez     { mat3 buf_triangle[];};
 layout(std430,  binding = 2) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
 layout(std430,  binding = 3) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
 layout(std430,  binding = 4) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
-layout(std430,  binding = 5) buffer transforms   { mat4 buf_transform[]; };
 
 const float PI    = 3.14159265f;
 // https://stackoverflow.com/questions/16069959/glsl-how-to-ensure-largest-possible-float-value-without-overflow
@@ -57,10 +56,6 @@ float random_float(){
 
 mat3 GetTriangle(in int obj_id){
 	mat3 tri=buf_triangle[obj_id];
-	mat4 trans=buf_transform[obj_id];
-	tri[0]=(trans*vec4(tri[0],1.0f)).xyz;
-	tri[1]=(trans*vec4(tri[1],1.0f)).xyz;
-	tri[2]=(trans*vec4(tri[2],1.0f)).xyz;
 	return tri;
 }
 

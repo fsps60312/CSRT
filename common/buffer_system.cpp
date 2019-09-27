@@ -37,7 +37,6 @@ BufferSystem::BufferSystem(std::string filename)
 		glGenBuffers(1, &bvhNodeBuffer);
 		glGenBuffers(1, &bvhAabbBuffer);
 		glGenBuffers(1, &bvhRangeBuffer);
-		glGenBuffers(1, &transformBuffer);
 	}
 }
 
@@ -49,10 +48,8 @@ void BufferSystem::Send()
 	{
 		BVHNode::DeleteTree(root);
 		BVHNode::ClearVectors();
-		root = obj->Build(NULL);
-		obj->Update();
-		root->Build();
-		root->UpdateTransform();
+		obj->Build(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+		BVHNode::Build();
 		//triangles = bvh.GetTriangles();
 		/*obj->children[0]->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
 		obj->children[1]->Rotate(glm::vec3(1, 0, 0), -glm::acos(-1) / 100);
@@ -70,8 +67,7 @@ void BufferSystem::Send()
 		//std::clog << aabbs[1][0].x << " " << aabbs[1][0].y << " " << aabbs[1][0].z << ", " << aabbs[1][1].x << " " << aabbs[1][1].y << " " << aabbs[1][1].z << std::endl;
 		//const std::vector<glm::ivec2> ranges = bvh.GetRanges();
 		const std::vector<glm::ivec2> ranges = BVHNode::glob_tri_ranges;
-		const std::vector<glm::mat4>transforms = BVHNode::glob_transforms;
-		assert(materials.size() == triangles.size() && transforms.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
+		assert(materials.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(int) * materials.size(), materials.data(), GL_DYNAMIC_COPY); // Give id_materials to OpenGL.
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);
@@ -82,8 +78,6 @@ void BufferSystem::Send()
 		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3) + 8U) * aabbs.size(), Padded(aabbs).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhRangeBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::ivec2) * ranges.size(), ranges.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, transformBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::mat4) * transforms.size(), transforms.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 	}
 	// 1st buffer : materials
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, materialBuffer);
@@ -93,7 +87,6 @@ void BufferSystem::Send()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bvhNodeBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhAabbBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhRangeBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, transformBuffer);
 }
 
 std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>s)const {
