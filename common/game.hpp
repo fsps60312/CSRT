@@ -26,7 +26,7 @@ public:
 	void Resume();
 	void ReadSaveFile(std::ifstream &file_stream);
 	void WriteSaveFile(std::ofstream &file_stream);
-	void Render(Environment& env);
+	void Render();
 	void Advance(std::chrono::nanoseconds timespan);
 	void ReceiveKey(Keys key);
 };

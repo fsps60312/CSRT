@@ -38,7 +38,7 @@ void Camera::dPosition(float a, float b, float c)
 	position += glm::vec3(a, b, c);
 }
 
-void Camera::computeMatricesFromInputs(Environment &env){
+void Camera::computeMatricesFromInputs(){
 
 	// glfwGetTime is called only once, the first time this function is called
 	static double lastTime = glfwGetTime();
@@ -48,10 +48,10 @@ void Camera::computeMatricesFromInputs(Environment &env){
 	float deltaTime = float(currentTime - lastTime);
 
 	// Get mouse position
-	const glm::dvec2 mouse_pos = env.GetCursorPos();
+	const glm::dvec2 mouse_pos = environment::GetCursorPos();
 	if (MOVE_VIEW) {
 		// Reset mouse position for next frame
-		env.SetCursorPos(glm::dvec2(WIDTH / 2, HEIGHT / 2));
+		environment::SetCursorPos(glm::dvec2(WIDTH / 2, HEIGHT / 2));
 
 		// Compute new orientation
 		horizontalAngle += mouseSpeed * float(WIDTH / 2 - mouse_pos.x);
@@ -77,27 +77,27 @@ void Camera::computeMatricesFromInputs(Environment &env){
 	up = glm::cross( right, direction );
 
 	// Move forward
-	if (env.IsKeyDown(GLFW_KEY_W ) ){
+	if (environment::IsKeyDown(GLFW_KEY_W ) ){
 		position += direction * deltaTime * speed;
 	}
 	// Move backward
-	if (env.IsKeyDown(GLFW_KEY_S )){
+	if (environment::IsKeyDown(GLFW_KEY_S )){
 		position -= direction * deltaTime * speed;
 	}
 	// Strafe right
-	if (env.IsKeyDown(GLFW_KEY_D ) ){
+	if (environment::IsKeyDown(GLFW_KEY_D ) ){
 		position += right * deltaTime * speed;
 	}
 	// Strafe left
-	if (env.IsKeyDown(GLFW_KEY_A ) ){
+	if (environment::IsKeyDown(GLFW_KEY_A ) ){
 		position -= right * deltaTime * speed;
 	}
-	// Move forward
-	if (env.IsKeyDown(GLFW_KEY_E)) {
+	// Move downward
+	if (environment::IsKeyDown(GLFW_KEY_E)) {
 		position += up * deltaTime * speed;
 	}
-	// Move backward
-	if (env.IsKeyDown(GLFW_KEY_Q)) {
+	// Move upward
+	if (environment::IsKeyDown(GLFW_KEY_Q)) {
 		position -= up * deltaTime * speed;
 	}
 

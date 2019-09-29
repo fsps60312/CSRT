@@ -11,10 +11,10 @@ void Game::Pause(){}
 void Game::Resume(){}
 void Game::ReadSaveFile(std::ifstream& file_stream){}
 void Game::WriteSaveFile(std::ofstream& file_stream){}
-void Game::Render(Environment &env){
-	camera.computeMatricesFromInputs(env);
+void Game::Render(){
+	camera.computeMatricesFromInputs();
 	// Compute Shader
-	auto compute_shader = env.GetComputeShader();
+	auto compute_shader = environment::GetComputeShader();
 	compute_shader.Use();
 	glUniform3f(compute_shader.GetVariable("eye"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 	glUniform3f(compute_shader.GetVariable("view"), camera.getDirection().x, camera.getDirection().y, camera.getDirection().z);
@@ -25,8 +25,8 @@ void Game::Render(Environment &env){
 	static std::default_random_engine rand(7122);
 	//std::clog << rand() << std::endl;
 	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), rand());
-	if (env.IsKeyDown(GLFW_KEY_EQUAL))model.Add();
-	if (env.IsKeyDown(GLFW_KEY_MINUS))model.Remove();
+	if (environment::IsKeyDown(GLFW_KEY_EQUAL))model.Add();
+	if (environment::IsKeyDown(GLFW_KEY_MINUS))model.Remove();
 	model.Send();
 	world.SendToShader();
 }

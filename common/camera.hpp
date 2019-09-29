@@ -36,7 +36,7 @@ public:
 	int getWidth();
 	int getHeight();
 
-	void computeMatricesFromInputs(Environment& env);
+	void computeMatricesFromInputs();
 
 	glm::vec3 getPosition();
 	float getFoV();
