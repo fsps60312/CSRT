@@ -1,15 +1,39 @@
 #include<common/pod/pod_body.hpp>
 namespace pod {
+	void PodBody::MaintainRotationZ(const double secs) {
+		//TODO
+	}
+	void PodBody::MaintainRotationY(const double secs) {
+		//TODO
+	}
+	void PodBody::MaintainRigidBody(const double secs) {
+		//TODO
+	}
+	void PodBody::Advance(const double secs) {
+		MaintainRotationY(secs);
+		MaintainRotationZ(secs);
+		{
+			rb.position.z = rb.velocity.z = 0;
+			rb.force = glm::dvec3();
+			rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
+			//rb.force += new glm::dvec3(-sin(rb.theta) * propeller.LiftForce(), cos(rb.theta) * propeller.LiftForce(), 0);
+			MaintainRigidBody(secs);
+		}
+		{
+			// TODO
+		}
+	}
+	const double PodBody::body_radius = 1.5;
 	std::vector<glm::mat3> PodBody::GetTriangles() {
 		glm::vec3 ps[8] = {
-			glm::vec3(-1,-1, 1),
-			glm::vec3( 1,-1, 1),
-			glm::vec3(-1,-1,-1),
-			glm::vec3( 1,-1,-1),
-			glm::vec3(-1, 1, 1),
-			glm::vec3( 1, 1, 1),
-			glm::vec3(-1, 1,-1),
-			glm::vec3( 1, 1,-1),
+			glm::vec3(-body_radius,-body_radius, body_radius),
+			glm::vec3( body_radius,-body_radius, body_radius),
+			glm::vec3(-body_radius,-body_radius,-body_radius),
+			glm::vec3( body_radius,-body_radius,-body_radius),
+			glm::vec3(-body_radius, body_radius, body_radius),
+			glm::vec3( body_radius, body_radius, body_radius),
+			glm::vec3(-body_radius, body_radius,-body_radius),
+			glm::vec3( body_radius, body_radius,-body_radius),
 		};
 		/*
 		  o----o
@@ -35,5 +59,6 @@ namespace pod {
 		};
 	}
 	PodBody::PodBody() :VisibleObject(GetTriangles()) {
+		rb.mass = 0.8;
 	}
 }

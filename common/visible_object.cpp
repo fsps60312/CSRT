@@ -40,6 +40,9 @@ void VisibleObject::Rotate(const glm::vec3& axis, const float theta) {
 void VisibleObject::RotatePrepend(const glm::vec3& axis, const float theta) {
 	transform = RotateMatrix(axis, theta) * transform;
 }
+glm::mat4 VisibleObject::IdentityMatrix() {
+	return glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+}
 glm::mat4 VisibleObject::TranslateMatrix(const glm::vec3& offset) {
 	return glm::mat4(
 		1, 0, 0, 0,
