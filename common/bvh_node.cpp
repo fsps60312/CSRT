@@ -59,6 +59,7 @@ BVHNode::BVHNode(BVHNode* parent) :id((int)glob_bvh_nodes.size()), p(parent) {
 }
 
 void BVHNode::Build(const int l, const int r) {
+	assert(0 <= l && l <= r && r < (int)glob_triangles.size());
 	// range
 	glob_tri_ranges[id] = glm::ivec2(l, r);
 	// cal aabb
@@ -69,6 +70,7 @@ void BVHNode::Build(const int l, const int r) {
 	}
 	// split
 	const int mid = CalMid(id);
+	assert(l <= mid && mid < r);
 	// dfs
 	BVHNode* lch = new BVHNode(this), * rch = new BVHNode(this);
 	lch->Build(l, mid);

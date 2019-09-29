@@ -25,10 +25,10 @@ void Environment::DispatchShaders() {
 	// Compute Shading
 	// --------------------
 	{
-		compute_shader.Use(WIDTH / WORK_GROUP_SIZE_X, HEIGHT / WORK_GROUP_SIZE_Y, 1);
-
 		// make sure writing to image has finished before read
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+
+		compute_shader.Use(WIDTH / WORK_GROUP_SIZE_X, HEIGHT / WORK_GROUP_SIZE_Y, 1);
 
 		glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
 
