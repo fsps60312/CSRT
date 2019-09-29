@@ -1,8 +1,13 @@
-#include<common/visible_object.hpp>
+#pragma once
+#include<common/pod/pod_interface.hpp>
+#include<common/pod/pod_body.hpp>
 namespace pod {
-	class Pod :public VisibleObject {
+	class Pod :public PodInterface {
+	private:
+		PodBody* body;
 	public:
 		Pod();
-		void Advance(const double secs)override;
+		bool IsOnGround()const override;
+		bool IsPodStopped()const override;
 	};
 }

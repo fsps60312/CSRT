@@ -22,7 +22,6 @@
 class BufferSystem {
 
 private:
-	VisibleObject* obj = NULL;
 	BVHNode* root = NULL;
 	std::vector<int> materials;
 	GLuint trianglesBuffer = 0;
@@ -35,6 +34,7 @@ private:
 	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>s)const;
 	std::vector<glm::mat3x4> Padded(const std::vector<glm::mat3>s)const;
 public:
+	VisibleObject* obj = NULL;
 	BufferSystem();
 	BufferSystem(std::string filename);
 	void Add(){

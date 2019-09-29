@@ -1,9 +1,13 @@
 #include<common/pod/pod.hpp>
-#include<common/pod/pod_body.hpp>
 namespace pod {
-	Pod::Pod() :VisibleObject() {
-		this->children.push_back((VisibleObject*)new PodBody());
+	Pod::Pod() :PodInterface(),
+		body(new PodBody(this)) {
+		this->children.push_back((VisibleObject*)body);
 	}
-	void Pod::Advance(const double secs) {
+	bool Pod::IsOnGround()const {
+		return false;
+	}
+	bool Pod::IsPodStopped()const {
+		return true;
 	}
 }

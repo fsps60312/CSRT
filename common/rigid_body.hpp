@@ -1,3 +1,4 @@
+#pragma once
 #include<glm/glm.hpp>
 #include<common/control.hpp>
 #include<common/matrix_d.hpp>
