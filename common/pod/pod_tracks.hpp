@@ -6,7 +6,6 @@
 #include<cmath>
 namespace pod {
 	class PodTracks :public VisibleObject {
-	private:
 	public:
 		class Track :public VisibleObject {
 		public:
@@ -31,12 +30,17 @@ namespace pod {
 			};
 		private:
 			PodInterface* pod;
-			std::vector<Gear*> gears, groundGears;
+			std::vector<Gear*> gears, ground_gears;
+			std::vector<Tooth*>teeth;
 			glm::dvec3 GetChainTouchPoint(Gear* a, Gear* b)const;
 			double GetChainLength(const std::vector<Gear*>& chain)const;
 			glm::vec3 GetToothPosition(const std::vector<Gear*>& chain, const double ratio);
 		public:
-			Track(PodInterface* pod, const glm::vec3& offset);
+			Track(PodInterface* pod, const glm::dvec3& offset);
 		};
+	private:
+		Track* left_track, * rigt_track;
+	public:
+		PodTracks(PodInterface* pod, const glm::dvec3& offset);
 	};
 }

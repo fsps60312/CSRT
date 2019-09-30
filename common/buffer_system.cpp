@@ -70,7 +70,7 @@ void BufferSystem::Send()
 		std::vector<glm::mat2x3>aabbs;
 		for (const auto& aabb : aabbs_raw)aabbs.push_back(glm::mat2x3(aabb.GetMn(), aabb.GetMx()));
 		const std::vector<glm::ivec2> ranges = BVHNode::glob_tri_ranges;
-		assert(materials.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
+		//assert(materials.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);
 		const auto& padded_triangles = Padded(triangles);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_triangles.size(), padded_triangles.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
