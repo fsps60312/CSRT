@@ -28,9 +28,6 @@ namespace pod {
 			//rb.force += new glm::dvec3(-sin(rb.theta) * propeller.LiftForce(), cos(rb.theta) * propeller.LiftForce(), 0);
 			MaintainRigidBody(secs);
 		}
-		{
-			// TODO
-		}
 	}
 	const double PodBody::body_radius = 1.5;
 	std::vector<glm::mat3> PodBody::GetTriangles() {
