@@ -32,6 +32,7 @@ void Game::Render(){
 }
 void Game::Advance(std::chrono::nanoseconds timespan) {
 	model.obj->Advance(timespan.count() / 1000000000.0);
+	model.obj->Update();
 }
 void Game::ReceiveKey(Keys key) {
 	switch (key) {

@@ -1,7 +1,7 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
 	std::vector<Triangle> PodTracks::Track::Tooth::GetTriangles()const {
-		return Triangle::Cube(glm::vec3(0.1));
+		return Triangle::Cube(glm::vec3(0.1f));
 	}
 	glm::vec3 PodTracks::Track::Tooth::GetPosition()const {
 		return position;

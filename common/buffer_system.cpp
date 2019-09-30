@@ -48,7 +48,7 @@ int BufferSystem::GetTriangleNum() { return (int)BVHNode::glob_triangles.size();
 
 void BufferSystem::Send()
 {
-	for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0), glm::acos(-1) / 100);
+	for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0),float( glm::acos(-1) / 100));
 	{
 		BVHNode::DeleteTree(root);
 		BVHNode::ClearVectors();

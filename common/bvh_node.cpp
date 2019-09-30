@@ -108,7 +108,7 @@ int BVHNode::CalMid(const int id) {
 		const float sah_cost = (i - l) * surface_area(left_aabbs[i - l - 1]) + (r - i + 1) * surface_area(rigt_aabb);
 		if (sah_cost < best_sah_cost) {
 			best_sah_cost = sah_cost;
-			best_mid = i - 1;
+			best_mid = (int)(i - 1);
 		}
 	}
 	assert(best_mid != -1);

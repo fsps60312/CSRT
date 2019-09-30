@@ -19,14 +19,15 @@ public:
 	glm::dvec3 _position;
 	glm::dvec3 _velocity;
 	glm::dvec3 _force;
-	double _theta;
-	double _omega;
-	double _alpha;
+	double _theta = 0;
+	double _omega = 0;
+	double _alpha = 0;
 
 	double mass = 1;
 	double momentOfInertia = 1.0 / 6 * 10; //rectangle's inertia: 1/12 m * (w*2 + h*2)
-	
+
 
 	glm::dvec3 GetVelocityAt(const glm::dvec3& relative_position)const;
-	bool Update(const double secs, std::function<bool(RigidBody*)>accepted = NULL);
+	bool Advance(const double secs, std::function<bool(RigidBody*)>accepted = NULL);
+	void Update();
 };

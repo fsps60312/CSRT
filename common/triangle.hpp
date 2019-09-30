@@ -1,7 +1,7 @@
 #pragma once
 #include<glm/glm.hpp>
 #include<vector>
-class __declspec(align(1)) Triangle {
+class Triangle {
 private:
 	glm::mat3 vertices;
 public:
