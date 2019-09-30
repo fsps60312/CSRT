@@ -2,7 +2,7 @@
 std::vector<glm::ivec3>BVHNode::glob_bvh_nodes;
 std::vector<AABB>BVHNode::glob_bvh_aabbs;
 std::vector<glm::ivec2>BVHNode::glob_tri_ranges;
-std::vector<glm::mat3>BVHNode::glob_triangles;
+std::vector<Triangle>BVHNode::glob_triangles;
 void BVHNode::ClearVectors() {
 	glob_bvh_nodes.clear();
 	glob_bvh_aabbs.clear();
@@ -89,8 +89,8 @@ int BVHNode::CalMid(const int id) {
 	// sort along longest axis
 	glm::vec3 c(0); c[glob_bvh_aabbs[id].LongestAxis()] = 1;
 	const int l = glob_tri_ranges[id].x, r = glob_tri_ranges[id].y;
-	std::sort(glob_triangles.begin() + l, glob_triangles.begin() + r + 1, [&c, &dot_max](const glm::mat3& t1, const glm::mat3& t2)->bool {
-		return dot_max(t1, c) < dot_max(t2, c);
+	std::sort(glob_triangles.begin() + l, glob_triangles.begin() + r + 1, [&c, &dot_max](const Triangle& t1, const Triangle& t2)->bool {
+		return dot_max(t1.GetVertices(), c) < dot_max(t2.GetVertices(), c);
 	});
 	// left aabbs
 	std::vector<AABB>left_aabbs(long long(r) - l);

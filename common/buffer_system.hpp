@@ -23,9 +23,7 @@ class BufferSystem {
 
 private:
 	BVHNode* root = NULL;
-	std::vector<int> materials;
 	GLuint trianglesBuffer = 0;
-	GLuint materialBuffer = 0;
 	GLuint bvhNodeBuffer = 0;
 	GLuint bvhAabbBuffer = 0;
 	GLuint bvhRangeBuffer = 0;
@@ -33,6 +31,7 @@ private:
 	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>s)const;
 	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>s)const;
 	std::vector<glm::mat3x4> Padded(const std::vector<glm::mat3>s)const;
+	std::vector<uint32_t> Padded(const std::vector<Triangle>s)const;
 public:
 	VisibleObject* obj = NULL;
 	BufferSystem();
@@ -44,13 +43,13 @@ public:
 		std::vector<glm::vec3> normals;
 		std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
 		loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
-		std::vector<glm::mat3>triangles;
+		std::vector<Triangle>triangles;
 		for (int i = 0; i < (int)vertex_ids.size(); i++)
-			triangles.push_back(glm::mat3(
+			triangles.push_back(Triangle(glm::mat3(
 				vertices[vertex_ids[i].x],
 				vertices[vertex_ids[i].y],
 				vertices[vertex_ids[i].z]
-			));
+			)));
 		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->TranslatePrepend(-glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));

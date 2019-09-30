@@ -1,6 +1,7 @@
 #pragma once
 #include<glm/glm.hpp>
 #include<common/aabb.hpp>
+#include<common/triangle.hpp>
 #include<vector>
 #include<iostream>
 #include<cmath>
@@ -11,7 +12,7 @@ public:
 	static std::vector<glm::ivec3>glob_bvh_nodes;
 	static std::vector<AABB>glob_bvh_aabbs;
 	static std::vector<glm::ivec2>glob_tri_ranges;
-	static std::vector<glm::mat3>glob_triangles;
+	static std::vector<Triangle>glob_triangles;
 #pragma endregion
 private:
 	const int id;

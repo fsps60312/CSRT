@@ -3,7 +3,7 @@
 VisibleObject::VisibleObject() :
 	is_leaf(false) {
 }
-VisibleObject::VisibleObject(const std::vector<glm::mat3>& triangles) :
+VisibleObject::VisibleObject(const std::vector<Triangle>& triangles) :
 	is_leaf(true),
 	triangles(triangles) {
 }
@@ -14,14 +14,7 @@ void VisibleObject::Build(const glm::mat4 &parent_transform)const {
 	const glm::mat4& transform = parent_transform * this->transform;
 	if (is_leaf) {
 		for (const auto& t : triangles) {
-			glm::mat3 ret;
-			for (int i = 0; i < 3; i++) {
-				auto res = (transform * glm::vec4(t[i], 1.0f));
-				ret[i].x = res.x;
-				ret[i].y = res.y;
-				ret[i].z = res.z;
-			}
-			BVHNode::glob_triangles.push_back(ret);
+			BVHNode::glob_triangles.push_back(t.ApplyTransform(transform));
 		}
 	} else {
 		for (const auto ch : children)ch->Build(transform);

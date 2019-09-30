@@ -2,11 +2,15 @@
 
 layout(rgba16f, binding = 0) uniform image2D img_output;
 
-layout(std430,  binding = 0) buffer id_materials { int id_material[];};
-layout(std430,  binding = 1) buffer trianglez     { mat3 buf_triangle[];};
-layout(std430,  binding = 2) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
-layout(std430,  binding = 3) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
-layout(std430,  binding = 4) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
+struct Triangle{
+	mat3 verticez;
+	int material;
+};
+
+layout(std430,  binding = 0) buffer trianglez    { Triangle buf_triangle[];};
+layout(std430,  binding = 1) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
+layout(std430,  binding = 2) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
+layout(std430,  binding = 3) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
 
 const float PI    = 3.14159265f;
 // https://stackoverflow.com/questions/16069959/glsl-how-to-ensure-largest-possible-float-value-without-overflow
@@ -55,7 +59,7 @@ float random_float(){
 }
 
 mat3 GetTriangle(in int obj_id){
-	mat3 tri=buf_triangle[obj_id];
+	mat3 tri=buf_triangle[obj_id].verticez;
 	return tri;
 }
 
@@ -158,7 +162,7 @@ void Intersect(inout Ray r)
 
 vec3 PhongLighting(Ray ray)
 {
-	int   id  = id_material[ray.obj] * mtl_jmp;
+	int   id  = buf_triangle[ray.obj].material * mtl_jmp;
 	float r   = materials[id+0], g  = materials[id+1], b  = materials[id+2], ia = 1.0f,
 		  ka  = materials[id+3], kd = materials[id+4], ks = materials[id+5], ks_exp = materials[id+6];
 	vec3  light_dir   = normalize(light - ray.pos);

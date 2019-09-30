@@ -1,12 +1,13 @@
 #pragma once
 #include<glm/glm.hpp>
 #include<common/bvh_node.hpp>
+#include<common/triangle.hpp>
 
 #include<vector>
 class VisibleObject {
 private:
 	const bool is_leaf;
-	std::vector<glm::mat3>triangles;
+	std::vector<Triangle>triangles;
 	static glm::mat4 TranslateMatrix(const glm::vec3& offset);
 	static glm::mat4 RotateMatrix(const glm::vec3& axis, const float theta);
 	static glm::mat4 IdentityMatrix();
@@ -14,7 +15,7 @@ public:
 	glm::mat4 transform = IdentityMatrix();
 	std::vector<VisibleObject*>children;
 	VisibleObject();
-	VisibleObject(const std::vector<glm::mat3>& triangles);
+	VisibleObject(const std::vector<Triangle>& triangles);
 	virtual void Advance(const double secs);
 	void Build(const glm::mat4& transform)const;
 	void Translate(const glm::vec3& offset);

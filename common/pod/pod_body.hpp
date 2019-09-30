@@ -11,7 +11,7 @@ namespace pod {
 	class PodBody :public VisibleObject {
 	private:
 		const static double body_radius;
-		std::vector<glm::mat3>GetTriangles();
+		std::vector<Triangle>GetTriangles();
 		double rotation_y = 0;
 		double desired_rotation_y = 0;
 		void MaintainRotationZ(const double secs);

@@ -4,7 +4,8 @@ void AABB::AddPoint(const glm::vec3& p) {
 	mn = glm::min(mn, p);
 	mx = glm::max(mx, p);
 }
-void AABB::AddTriangle(const glm::mat3& t) {
+void AABB::AddTriangle(const Triangle& tri) {
+	const auto& t = tri.GetVertices();
 	AddPoint(t[0]);
 	AddPoint(t[1]);
 	AddPoint(t[2]);
