@@ -21,7 +21,7 @@ namespace environment {
 	void InitWindow();
 	void GLShowInfo();
 	void LoadShaders();
-	void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, Shader& texture_shader);
+	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader);
 //public:
 	void Init();
 	bool IsKeyDown(int key);

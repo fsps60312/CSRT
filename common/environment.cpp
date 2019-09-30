@@ -39,7 +39,7 @@ namespace environment {
 
 			compute_shader.Disable();
 
-			DrawSubWindow(0.0f, 0.0f, WIDTH, HEIGHT, GetTextureShader());
+			DrawSubWindow(0, 0, WIDTH, HEIGHT, GetTextureShader());
 		}
 
 
@@ -48,7 +48,7 @@ namespace environment {
 		glfwPollEvents();
 
 	}
-	void DrawSubWindow(GLfloat x, GLfloat y, GLfloat w, GLfloat h, Shader& texture_shader)
+	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(x, y, w, h);
@@ -111,7 +111,7 @@ namespace environment {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
-		glBindImageTexture(0, compute_texture, 0, GL_FLOAT, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
+		glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
 	}
 	void GLShowInfo() {
 		GLint64 v0, v1, v2;
