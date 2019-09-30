@@ -71,6 +71,7 @@ void TriangleIntersect(inout Ray r,in int obj_id){
 		  t1 = tri[1] - tri[0],
 		  t2 = tri[2] - tri[0];
 	
+	if(dot(cross(t1,t2),-r.dir)<0.0f)return;
 	/*
 	// Face Culling
 	if(dot(cross(t1, t2), -r.dir) < 0.0f)
@@ -174,7 +175,7 @@ vec3 PhongLighting(Ray ray)
 		float t, i;
 		vec3  pos, dir, n;
 	};*/
-	Ray ray_light = Ray(-1, ray.obj, FLT_MAX, 0.0f, ray.pos, light_dir, vec3(0.0f));
+	Ray ray_light = Ray(-1, ray.obj, FLT_MAX, 0.0f, ray.pos+1e-5*light_dir, light_dir, vec3(0.0f));
 	Intersect(ray_light);
 
 	vec3  diffuse_color  = vec3(r,g,b);
@@ -183,7 +184,7 @@ vec3 PhongLighting(Ray ray)
 	float diffuse_factor  = clamp(dot(ray.n, light_dir), 0.0f, 1.0f);
 	float specular_factor = pow(clamp(dot(ray.n, h), 0.0f, 1.0f), ks_exp);
 
-	if(ray_light.obj != -1)
+	if(ray_light.t<distance(light,ray.pos))
 	{
 		rgb = ambient_color;
 	}

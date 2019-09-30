@@ -3,6 +3,7 @@
 #include<common/pod/pod_interface.hpp>
 #include<common/matrix_d.hpp>
 #include<common/control.hpp>
+#include<common/rigid_body.hpp>
 #include<cmath>
 namespace pod {
 	class PodTracks :public VisibleObject {
@@ -21,6 +22,8 @@ namespace pod {
 			class Gear :public VisibleObject {
 			private:
 				PodInterface* pod;
+				RigidBody rb;
+				std::vector<Triangle>GetTriangles(const double radius)const;
 			public:
 				const glm::dvec3 desired_position;
 				const double radius;
