@@ -10,4 +10,7 @@ namespace pod {
 	bool Pod::IsPodStopped()const {
 		return true;
 	}
+	glm::dmat4 Pod::GetMatrixY()const {
+		return body->GetMatrixY();
+	}
 }

@@ -1,5 +1,8 @@
 #include<common/pod/pod_body.hpp>
 namespace pod {
+	glm::dmat4 PodBody::GetMatrixY() {
+		return matrix::RotateD(glm::dvec3(0, -1, 0), rotation_y);
+	}
 	void PodBody::MaintainRotationZ(const double secs) {
 		const double t = -10 * rb.theta - rb.omega;
 		rb.alpha = std::pow(std::abs(t), 1) * t;
@@ -30,7 +33,7 @@ namespace pod {
 		}
 	}
 	const double PodBody::body_radius = 1.5;
-	std::vector<Triangle> PodBody::GetTriangles() {
+	std::vector<Triangle> PodBody::GetTriangles()const {
 		return Triangle::Cube(glm::vec3(body_radius));
 	}
 	PodBody::PodBody(PodInterface* parent) :VisibleObject(GetTriangles()),

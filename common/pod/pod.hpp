@@ -9,5 +9,6 @@ namespace pod {
 		Pod();
 		bool IsOnGround()const override;
 		bool IsPodStopped()const override;
+		glm::dmat4 GetMatrixY()const override;
 	};
 }

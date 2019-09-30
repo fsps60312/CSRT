@@ -11,7 +11,7 @@ namespace pod {
 	class PodBody :public VisibleObject {
 	private:
 		const static double body_radius;
-		std::vector<Triangle>GetTriangles();
+		std::vector<Triangle>GetTriangles()const;
 		double rotation_y = 0;
 		double desired_rotation_y = 0;
 		void MaintainRotationZ(const double secs);
@@ -20,6 +20,7 @@ namespace pod {
 		RigidBody rb;
 		PodInterface* parent;
 	public:
+		glm::dmat4 GetMatrixY();
 		PodBody(PodInterface *parent);
 		void Advance(const double secs)override;
 	};

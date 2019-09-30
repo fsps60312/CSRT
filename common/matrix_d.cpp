@@ -1,5 +1,8 @@
 #include<common/matrix_d.hpp>
 namespace matrix {
+	double AngleBetween(const glm::dvec3 &a, const glm::dvec3 &b) {
+		return glm::acos(glm::dot(glm::normalize(a), glm::normalize(b)));
+	}
 	glm::dmat4 IdentityD() {
 		return glm::dmat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 	}
