@@ -1,51 +1,19 @@
-#ifndef CONTROLS_HPP
-#define CONTROLS_HPP
-
-#include<GL/glew.h>
-// Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-// Include GLFW
-#include <GLFW/glfw3.h>
-
-
-
-#include <stdio.h>
+#pragma once
 #include<common/control.hpp>
 #include<common/environment.hpp>
 
-class Camera {
-private:
+namespace camera {
+	int GetWidth();
+	int GetHeight();
 
-	// Initial position : on +Z
-	glm::vec3 position = glm::vec3(0.0f, 0.0f, 2.0f);
-	// Initial horizontal angle : toward -Z
-	float horizontalAngle = 3.14f; // +Z to +X (Math : +X to +Y)
-	// Initial vertical angle : none
-	float verticalAngle = 0.0f; // +X to + Y (Math : +Z to +Y)
-	// Initial Field of View
-	float initialFoV = 90.0f;
+	void ComputeMatricesFromInputs();
 
-	float speed = 5.0f; // 3 units / second
-	float mouseSpeed = 0.005f;
-	glm::vec3 direction;
-	glm::vec3 right;
-	glm::vec3 up;
-public:
-	int getWidth();
-	int getHeight();
-
-	void computeMatricesFromInputs();
-
-	glm::vec3 getPosition();
-	float getFoV();
-	void addFoV(float num);
-	void subFoV(float num);
-
-	glm::vec3 getDirection();
-	glm::vec3 getUp();
-	void dPosition(float a, float b, float c);
-};
-
-#endif
+	double GetFoV();
+	void AddFoV(double num);
+	void SubFoV(double num);
+	glm::dvec3 GetPosition();
+	glm::dvec3 GetDirection();
+	glm::dvec3 GetUp();
+	void SetPosition(const glm::dvec3& camera_position);
+	void SetDirection(const glm::dvec3& camera_direction);
+}

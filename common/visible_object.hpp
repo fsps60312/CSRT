@@ -11,8 +11,10 @@ private:
 	static glm::mat4 TranslateMatrix(const glm::vec3& offset);
 	static glm::mat4 RotateMatrix(const glm::vec3& axis, const float theta);
 	static glm::mat4 IdentityMatrix();
-public:
 	glm::mat4 transform = IdentityMatrix();
+protected:
+	void SetTransform(const glm::mat4& t);
+public:
 	std::vector<VisibleObject*>children;
 	VisibleObject();
 	VisibleObject(const std::vector<Triangle>& triangles);

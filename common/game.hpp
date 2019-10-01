@@ -2,17 +2,18 @@
 
 #include<common/world.hpp>
 #include<common/buffer_system.hpp>
+#include<common/control.hpp>
 #include<common/camera.hpp>
 
 #include<iostream>
 #include<chrono>
+#include<random>
 
 class Game {
 private:
 	int money = 150;
 	World world;
 	BufferSystem model;
-	Camera camera;
 	glm::vec3 light = glm::vec3(0.0f, 10.0f, 5.0f);
 public:
 	enum Keys {

@@ -6,6 +6,7 @@ Triangle Triangle::ApplyTransform(const glm::mat4& transform)const {
 	const glm::mat3& t = GetVertices();
 	for (int i = 0; i < 3; i++) {
 		auto res = (transform * glm::vec4(t[i], 1.0f));
+		assert(!glm::any(glm::isnan(res)));
 		ret[i].x = res.x;
 		ret[i].y = res.y;
 		ret[i].z = res.z;

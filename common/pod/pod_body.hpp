@@ -5,8 +5,10 @@
 #include<common/control.hpp>
 #include<common/environment.hpp>
 #include<common/mylib.hpp>
+#include<common/camera.hpp>
 #include<iostream>
 #include<vector>
+#include<cmath>
 namespace pod {
 	class PodBody :public VisibleObject {
 	private:
@@ -14,8 +16,10 @@ namespace pod {
 		std::vector<Triangle>GetTriangles()const;
 		double rotation_y = 0;
 		double desired_rotation_y = 0;
-		void DesiredRotationZ();
-		void DesiredRotationY();
+		void UpdateRotationZ();
+		void UpdateRotationY();
+		void UpdateRigidBody();
+		void AdvanceCamera(const double secs);
 		void AdvanceRigidBody(const double secs);
 		RigidBody rb;
 		PodInterface* parent;

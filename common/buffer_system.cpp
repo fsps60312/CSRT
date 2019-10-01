@@ -22,15 +22,11 @@ BufferSystem::BufferSystem(std::string filename)
 			)));
 		obj = new VisibleObject();
 		auto pod = new pod::Pod();
-		pod->Translate(glm::vec3(0, 0, -2));
 		obj->children.push_back((VisibleObject*)pod);
-		obj->children.push_back(new VisibleObject(triangles));
-		obj->children.push_back(new VisibleObject(triangles));
-		obj->children.push_back(new VisibleObject(triangles));
-		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
+		/*if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->Translate(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
-		}
+		}*/
 		//std::clog << "verify result  = " << root->Verify() << std::endl;
 
 		// Identify a vertex Buffer Object
@@ -48,7 +44,7 @@ int BufferSystem::GetTriangleNum() { return (int)BVHNode::glob_triangles.size();
 
 void BufferSystem::Send()
 {
-	for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0),float( glm::acos(-1) / 100));
+	//for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0),float( glm::acos(-1) / 100));
 	{
 		BVHNode::DeleteTree(root);
 		BVHNode::ClearVectors();

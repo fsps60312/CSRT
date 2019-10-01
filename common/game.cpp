@@ -1,8 +1,5 @@
 #include<common/game.hpp>
-#include<common/control.hpp>
 
-#include<random>
-#include<iostream>
 void Game::Init() {
 	model = BufferSystem(NOW_MODEL + std::string(".obj"));
 }
@@ -12,34 +9,32 @@ void Game::Resume(){}
 void Game::ReadSaveFile(std::ifstream& file_stream){}
 void Game::WriteSaveFile(std::ofstream& file_stream){}
 void Game::Render(){
-	camera.computeMatricesFromInputs();
+	camera::ComputeMatricesFromInputs();
 	// Compute Shader
 	auto compute_shader = environment::GetComputeShader();
 	compute_shader.Use();
-	glUniform3f(compute_shader.GetVariable("eye"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
-	glUniform3f(compute_shader.GetVariable("view"), camera.getDirection().x, camera.getDirection().y, camera.getDirection().z);
-	glUniform3f(compute_shader.GetVariable("up"), camera.getUp().x, camera.getUp().y, camera.getUp().z);
+	const glm::dvec3& camera_position = camera::GetPosition();
+	const glm::dvec3& camera_direction = camera::GetDirection();
+	const glm::dvec3& camera_up = camera::GetUp();
+	glUniform3f(compute_shader.GetVariable("eye"), camera_position.x, camera_position.y, camera_position.z);
+	glUniform3f(compute_shader.GetVariable("view"), camera_direction.x, camera_direction.y, camera_direction.z);
+	glUniform3f(compute_shader.GetVariable("up"), camera_up.x, camera_up.y, camera_up.z);
 	glUniform3f(compute_shader.GetVariable("light"), light.x, light.y, light.z);
-	glUniform1f(compute_shader.GetVariable("fov"), camera.getFoV());
+	glUniform1f(compute_shader.GetVariable("fov"), camera::GetFoV());
 	glUniform1i(compute_shader.GetVariable("tri_num"), model.GetTriangleNum());
 	static std::default_random_engine rand(7122);
 	//std::clog << rand() << std::endl;
 	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), rand());
-	if (environment::IsKeyDown(GLFW_KEY_EQUAL))model.Add();
-	if (environment::IsKeyDown(GLFW_KEY_MINUS))model.Remove();
 	model.Send();
 	world.SendToShader();
 }
 void Game::Advance(std::chrono::nanoseconds timespan) {
 	model.obj->Update();
-	model.obj->Advance(timespan.count() / 1000000000.0);
+	//model.obj->Advance(timespan.count() / 1000000000.0);
+	model.obj->Advance(0.01);
 }
 void Game::ReceiveKey(Keys key) {
 	switch (key) {
-	case Keys::X:
-		camera.addFoV(1.0f); break;
-	case Keys::Z:
-		camera.subFoV(1.0f); break;
 	case Keys::D1:
 		light.x += 1.0f; break;
 	case Keys::D2:	

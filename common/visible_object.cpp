@@ -10,6 +10,11 @@ VisibleObject::VisibleObject(const std::vector<Triangle>& triangles) :
 void VisibleObject::Update() {
 	for (VisibleObject* ch : children)ch->Update();
 }
+void VisibleObject::SetTransform(const glm::mat4& t) {
+	assert(!glm::any(glm::isnan(t[0])) && !glm::any(glm::isnan(t[1])) && !glm::any(glm::isnan(t[2])) && !glm::any(glm::isnan(t[3])));
+	assert(!glm::any(glm::isinf(t[0])) && !glm::any(glm::isinf(t[1])) && !glm::any(glm::isinf(t[2])) && !glm::any(glm::isinf(t[3])));
+	transform = t;
+}
 void VisibleObject::Advance(const double secs) {
 	for (VisibleObject* ch : children)ch->Advance(secs);
 }

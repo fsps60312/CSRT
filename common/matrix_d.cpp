@@ -4,7 +4,7 @@ namespace matrix {
 		return glm::acos(glm::dot(glm::normalize(a), glm::normalize(b)));
 	}
 	glm::dmat4 Inverse(const glm::dmat4 &mat) {
-		return IdentityD() / mat;
+		return glm::inverse(mat);
 	}
 	glm::dmat4 IdentityD() {
 		return glm::dmat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
@@ -14,6 +14,8 @@ namespace matrix {
 		return glm::dvec3(res.x, res.y, res.z);
 	}
 	glm::dmat4 TranslateD(const glm::dvec3& offset) {
+		assert(!glm::any(glm::isnan(offset)));
+		assert(!glm::any(glm::isinf(offset)));
 		return glm::dmat4(
 			1, 0, 0, 0,
 			0, 1, 0, 0,

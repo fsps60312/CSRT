@@ -36,42 +36,6 @@ public:
 	VisibleObject* obj = NULL;
 	BufferSystem();
 	BufferSystem(std::string filename);
-	void Add(){
-		std::string filename = NOW_MODEL + std::string(".obj");
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::vec2> uvs;
-		std::vector<glm::vec3> normals;
-		std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
-		loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
-		std::vector<Triangle>triangles;
-		for (int i = 0; i < (int)vertex_ids.size(); i++)
-			triangles.push_back(Triangle(glm::mat3(
-				vertices[vertex_ids[i].x],
-				vertices[vertex_ids[i].y],
-				vertices[vertex_ids[i].z]
-			)));
-		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
-			const float dx = 3, dz = -3;
-			obj->children[i]->TranslatePrepend(-glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
-		}
-		obj->children.push_back(new VisibleObject(triangles));
-		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
-			const float dx = 3, dz = -3;
-			obj->children[i]->TranslatePrepend(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
-		}
-	}
-	void Remove() {
-		if (obj->children.size()<=0)return;
-		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
-			const float dx = 3, dz = -3;
-			obj->children[i]->TranslatePrepend(-glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
-		}
-		obj->children.pop_back();
-		if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
-			const float dx = 3, dz = -3;
-			obj->children[i]->TranslatePrepend(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
-		}
-	}
 	void Send();
 	int GetTriangleNum();
 };

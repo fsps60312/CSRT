@@ -9,16 +9,16 @@ private:
 	void BackUp();
 	void Restore();
 public:
-	glm::dvec3 position;
-	glm::dvec3 velocity;
-	glm::dvec3 force;
+	glm::dvec3 position = glm::dvec3(0);
+	glm::dvec3 velocity = glm::dvec3(0);
+	glm::dvec3 force = glm::dvec3(0);
 	double theta = 0;
 	double omega = 0;
 	double alpha = 0;
 
-	glm::dvec3 _position;
-	glm::dvec3 _velocity;
-	glm::dvec3 _force;
+	glm::dvec3 _position = glm::dvec3(0);
+	glm::dvec3 _velocity = glm::dvec3(0);
+	glm::dvec3 _force = glm::dvec3(0);
 	double _theta = 0;
 	double _omega = 0;
 	double _alpha = 0;

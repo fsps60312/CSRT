@@ -1,6 +1,7 @@
 #include<common/aabb.hpp>
 AABB::AABB() : mn(glm::vec3(FLT_MAX)), mx(glm::vec3(-FLT_MAX)) {}
 void AABB::AddPoint(const glm::vec3& p) {
+	assert(!glm::any(glm::isnan(p)));
 	mn = glm::min(mn, p);
 	mx = glm::max(mx, p);
 }

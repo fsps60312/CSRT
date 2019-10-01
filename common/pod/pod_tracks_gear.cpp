@@ -5,7 +5,7 @@ namespace pod {
 	}
 	void PodTracks::Track::Gear::RotateYAlongWithPod() {
 		const glm::dmat4& mat_y = pod->GetMatrixY(), & mat_z = pod->GetMatrixZ(), & mat_t = pod->GetMatrixT();
-		const glm::dmat4& mat_trans = matrix::Inverse(pre_matrix_y * mat_z * mat_t) * mat_y * mat_z * mat_t;
+		const glm::dmat4& mat_trans = matrix::Inverse(mat_t * mat_z * pre_matrix_y) * mat_t * mat_z * mat_y;
 		const glm::dvec3& new_position = matrix::Multiply(mat_trans, rb.position);
 		const glm::dvec3& new_velocity = matrix::Multiply(mat_trans, rb.velocity);
 		//RB.position.X = newPosition.X; RB.position.Z = newPosition.Z;
@@ -15,18 +15,32 @@ namespace pod {
 		pre_matrix_y = mat_y;
 	}
 	void PodTracks::Track::Gear::ApplyReactForceWithPod() {
-		const glm::dvec3& react_force = GetReactForce();
-		pod->GetRigidBody()->force += react_force;
-		rb.force -= react_force;
+		const glm::dvec3& f = GetReactForce();
+		///minimize: (px+a*fx)^2+(py+a*fy)^2
+		///2(px+a*fx)*fx+2(py+a*fy)*fy=0
+		///px*fx+a*fx*fx+py*fy+a*fy*fy=0
+		///a=-(px*fx+py*fy)/(fx*fx+fy*fy)
+		//if (glm::length(f) > 0)
+		//{
+		//	const glm::dvec3 p = GetDesiredPosition() - pod->GetRigidBody()->position;
+		//	const double a = -(p.x * f.x + p.y * f.y) / (f.x * f.x + f.y * f.y);
+		//	const glm::dvec3 forceArm = p + f * a;
+		//	const double torque = glm::cross(forceArm, f).z;
+		//	//System.Diagnostics.Trace.WriteLine($"torque: {torque}");
+		//	pod->GetRigidBody()->alpha -= torque;
+		//}
+		pod->GetRigidBody()->force -= f;
+		rb.force += f;
 	}
 	void PodTracks::Track::Gear::Update() {
 		RotateYAlongWithPod();
 		ApplyReactForceWithPod();
+		rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
 	}
 	void PodTracks::Track::Gear::AdvanceRigidBody(const double secs) {
-		if (!rb.Advance(secs,[secs,this](RigidBody* rb) ->bool
-		{
-			//if (secs > 1e-3) return false;
+		if (!rb.Advance(secs,[secs,this](RigidBody* rb) ->bool {
+			//return true;
+			if (secs > 1e-3) return false;
 			const double dif = glm::length(rb->position - rb->_position);
 			if (dif > radius / 5) return false;
 			//if (!Blocks.IsCollidable(rb.position, out int cur_x, out int cur_y))
@@ -115,18 +129,23 @@ namespace pod {
 		};
 	}
 	void PodTracks::Track::Gear::Advance(const double secs) {
+		//const glm::dvec3 v = rb.force / rb.mass;
+		//std::clog << "gear.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
+		auto prep=rb.position;
 		AdvanceRigidBody(secs);
-		transform = matrix::TranslateD(rb.position) * pod->GetMatrixY() * matrix::RotateD(glm::dvec3(0, 0, -1), rb.theta);
+		//rb.position = prep;
+		//rb.velocity = glm::dvec3(0.0);
+		SetTransform(matrix::TranslateD(rb.position) * pod->GetMatrixY() * matrix::RotateD(glm::dvec3(0, 0, -1), rb.theta));
 	}
 	glm::dvec3 PodTracks::Track::Gear::GetReactForce()const {
 		const glm::dvec3 on_pod_velocity = pod->GetRigidBody()->GetVelocityAt(matrix::Multiply(pod->GetMatrixY(), relative_position));
 		const glm::dvec3&
-			elastic_force = suspension_hardness * (GetPosition() - GetDesiredPosition()),
-			damp_force = 0.5 * (rb.velocity - on_pod_velocity);
+			elastic_force = suspension_hardness * (GetDesiredPosition() - GetPosition()),
+			damp_force = 0.5 * (on_pod_velocity - rb.velocity);
 		return elastic_force + damp_force;
 	}
 	glm::dvec3 PodTracks::Track::Gear::GetDesiredPosition()const {
-		return  matrix::Multiply(pod->GetMatrixY() * pod->GetMatrixZ() * pod->GetMatrixT(), relative_position);
+		return  matrix::Multiply(pod->GetMatrixT() * pod->GetMatrixZ() *pod->GetMatrixY(), relative_position);
 	}
 	glm::dvec3 PodTracks::Track::Gear::GetPosition()const {
 		return rb.position;
@@ -153,6 +172,6 @@ namespace pod {
 		rb = RigidBody();
 		rb.mass = mass;
 		rb.position = GetDesiredPosition();
-		transform = matrix::TranslateD(relative_position);
+		SetTransform(matrix::TranslateD(relative_position));
 	}
 }

@@ -12,32 +12,50 @@ namespace pod {
 	RigidBody* PodBody::GetRigidBody() {
 		return &rb;
 	}
-	void PodBody::DesiredRotationZ() {
+	void PodBody::UpdateRotationZ() {
 		const double t = -10 * rb.theta - rb.omega;
-		rb.alpha = std::pow(std::abs(t), 1) * t;
+		rb.alpha += std::pow(std::abs(t), 1) * t;
 		if (environment::IsKeyDown(GLFW_KEY_A))rb.alpha += 5;
 		if (environment::IsKeyDown(GLFW_KEY_D))rb.alpha -= 5;
 		rb.alpha += -1 * std::abs(rb.omega) * rb.omega - 1 * rb.omega;
 	}
-	void PodBody::DesiredRotationY() {
+	void PodBody::UpdateRotationY() {
 		if ((!parent->IsOnGround() || parent->IsPodStopped())) {
 			if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))desired_rotation_y = PI;
 			if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))desired_rotation_y = 0;
 		}
 	}
+	void PodBody::UpdateRigidBody() {
+		rb.position.z = rb.velocity.z = 0;
+		rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
+		//rb.force += new glm::dvec3(-sin(rb.theta) * propeller.LiftForce(), cos(rb.theta) * propeller.LiftForce(), 0);
+	}
 	void PodBody::Update() {
-		DesiredRotationY();
-		DesiredRotationZ();
-		{
-			rb.position.z = rb.velocity.z = 0;
-			rb.force = glm::dvec3();
-			rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
-			//rb.force += new glm::dvec3(-sin(rb.theta) * propeller.LiftForce(), cos(rb.theta) * propeller.LiftForce(), 0);
-		}
+		UpdateRotationY();
+		UpdateRotationZ();
+		UpdateRigidBody();
+	}
+	void PodBody::AdvanceCamera(const double secs) {
+		const double look_offset = 1.3;
+		glm::dvec3 camera_position = camera::GetPosition();
+		glm::dvec3 camera_direction = camera::GetDirection();
+		glm::dvec3 t = rb.position - camera_position;
+		t.z = 0;
+		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5)), secs, 0.2);
+		glm::dvec3 target = rb.position + 0.1 * rb.velocity - camera_position;
+		target /= std::abs(target.z);
+		const double len = std::sqrt(std::pow(target.x, 2) + std::pow(target.y, 2));
+		const double target_len = std::min(len, look_offset);
+		target.x *= target_len / len;
+		target.y *= target_len / len;
+		mylib::SmoothTo(camera_direction, target, secs, 0.2);
+		camera::SetPosition(camera_position);
+		camera::SetDirection(camera_direction);
 	}
 	void PodBody::AdvanceRigidBody(const double secs) {
 		if (!rb.Advance(secs,[secs](RigidBody* rb) -> bool {
-			//if (secs > 1e-3) return false;
+			//return true;
+			if (secs > 1e-3) return false;
 			const double dif = glm::length(rb->position - rb->_position);
 			if (dif > 0.5) return false;
 			//int cur_x, cur_y, x = 0, y = 0;
@@ -109,8 +127,14 @@ namespace pod {
 	}
 	void PodBody::Advance(const double secs) {
 		mylib::SmoothTo(rotation_y, desired_rotation_y, secs, std::max(std::abs(desired_rotation_y - rotation_y) / PI, 0.2) * 0.2);
+		const glm::dvec3 v = rb.force / rb.mass;
+		//std::clog << "body.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
+		auto prep = rb.position;
 		AdvanceRigidBody(secs);
-		transform = GetMatrixT() * GetMatrixY() * GetMatrixZ();
+		//rb.position = prep;
+		//rb.velocity = glm::dvec3(0.0);
+		AdvanceCamera(secs);
+		SetTransform(GetMatrixT() * GetMatrixZ() * GetMatrixY());
 	}
 	const double PodBody::body_radius = 1.5;
 	std::vector<Triangle> PodBody::GetTriangles()const {
