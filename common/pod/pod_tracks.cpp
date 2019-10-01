@@ -9,6 +9,15 @@ namespace pod {
 		children.push_back(left_track);
 		children.push_back(rigt_track);
 	}
+	void PodTracks::Track::Advance(const double secs) {
+		const double chainLength = GetChainLength(gears);
+		track_cycle_position -= secs * track_speed / chainLength;
+		track_cycle_position = std::fmod(std::fmod(track_cycle_position, 1) + 1, 1);
+		for (int i = 0; i < (int)teeth.size(); i++) {
+			teeth[i]->SetPosition(GetToothPosition(gears, fmod((double)i / (int)teeth.size() + track_cycle_position, 1)));
+		}
+		for (auto& ch : children)ch->Advance(secs);
+	}
 	PodTracks::Track::Track(PodInterface* pod, const glm::dvec3& offset) :
 		pod(pod) {
 		const double depth = 1, height = 1, lengthUp = 4, lengthDown = 2.5;
@@ -42,12 +51,12 @@ namespace pod {
 			const auto &t1 = GetChainTouchPoint(a, b);
 			const auto &t2 = GetChainTouchPoint(b, c);
 			double l;
-			l = std::sqrt(std::pow(glm::length(b->desired_position - a->desired_position), 2) + std::pow(b->radius - a->radius, 2));
+			l = std::sqrt(std::pow(glm::length(b->GetPosition() - a->GetPosition()), 2) + std::pow(b->radius - a->radius, 2));
 			if (ans + l <= target) ans += l;
 			else
 			{
 				const double r = (target - ans) / l;
-				return (1 - r) * (a->desired_position + t1 * a->radius) + r * (b->desired_position + t1 * b->radius);
+				return (1 - r) * (a->GetPosition() + t1 * a->radius) + r * (b->GetPosition() + t1 * b->radius);
 			}
 			const double angle = matrix::AngleBetween(t1, t2);
 			l = angle * b->radius;
@@ -56,15 +65,15 @@ namespace pod {
 			{
 				const double r = (target - ans) / l;
 				const glm::dmat4& mat = matrix::RotateD(matrix::Multiply(pod->GetMatrixY(), glm::dvec3(0, 0, 1)), angle * r);
-				return b->desired_position + matrix::Multiply(mat, t1) * b->radius;
+				return b->GetPosition() + matrix::Multiply(mat, t1) * b->radius;
 			}
 		}
 		throw;
 	}
 	glm::dvec3 PodTracks::Track::GetChainTouchPoint(Gear* a, Gear* b)const {
-		const double angle = PI / 2 - std::acos((a->radius - b->radius) / glm::length(a->desired_position - b->desired_position));
+		const double angle = PI / 2 - std::acos((a->radius - b->radius) / glm::length(a->GetPosition() - b->GetPosition()));
 		const glm::dmat4& mat = matrix::RotateD(matrix::Multiply(pod->GetMatrixY(), glm::dvec3(0, 0, 1)), angle);
-		const glm::dvec3& ans = glm::normalize(matrix::Multiply(mat, glm::cross(b->desired_position - a->desired_position, matrix::Multiply(pod->GetMatrixY(), glm::dvec3(0, 0, 1)))));
+		const glm::dvec3& ans = glm::normalize(matrix::Multiply(mat, glm::cross(b->GetPosition() - a->GetPosition(), matrix::Multiply(pod->GetMatrixY(), glm::dvec3(0, 0, 1)))));
 		return ans;
 	}
 	double PodTracks::Track::GetChainLength(const std::vector<Gear*>& chain)const {
@@ -73,7 +82,7 @@ namespace pod {
 			const auto &a = chain[i];
 			const auto &b = chain[(i + 1LL) % chain.size()];
 			const auto &c = chain[(i + 2LL) % chain.size()];
-			ans += std::sqrt(std::pow(glm::length(b->desired_position - a->desired_position), 2) + std::pow(b->radius - a->radius, 2));
+			ans += std::sqrt(std::pow(glm::length(b->GetPosition() - a->GetPosition()), 2) + std::pow(b->radius - a->radius, 2));
 			ans += matrix::AngleBetween(GetChainTouchPoint(a, b), GetChainTouchPoint(b, c)) * b->radius;
 		}
 		return ans;

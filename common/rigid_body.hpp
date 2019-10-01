@@ -29,5 +29,4 @@ public:
 
 	glm::dvec3 GetVelocityAt(const glm::dvec3& relative_position)const;
 	bool Advance(const double secs, std::function<bool(RigidBody*)>accepted = NULL);
-	void Update();
 };

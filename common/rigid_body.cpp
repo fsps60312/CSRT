@@ -1,7 +1,4 @@
 #include<common/rigid_body.hpp>
-void RigidBody::Update() {
-	Restore();
-}
 bool RigidBody::Advance(const double secs, std::function<bool(RigidBody*)>is_accepted) {
 	BackUp();
 	{
@@ -18,14 +15,9 @@ bool RigidBody::Advance(const double secs, std::function<bool(RigidBody*)>is_acc
 		theta = fmod(theta, 2.0 * PI);
 	}
 	if (is_accepted == NULL || is_accepted(this)) {
-		std::swap(_position, position);
-		std::swap(_velocity, velocity);
-		std::swap(_force, force);
-		std::swap(_theta, theta);
-		std::swap(_omega, omega);
-		std::swap(_alpha, alpha);
 		return true;
-	} else {
+	}
+	else {
 		Restore();
 		return false;
 	}

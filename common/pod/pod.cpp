@@ -15,4 +15,13 @@ namespace pod {
 	glm::dmat4 Pod::GetMatrixY()const {
 		return body->GetMatrixY();
 	}
+	glm::dmat4 Pod::GetMatrixZ()const {
+		return body->GetMatrixZ();
+	}
+	glm::dmat4 Pod::GetMatrixT()const {
+		return body->GetMatrixT();
+	}
+	RigidBody* Pod::GetRigidBody() {
+		return body->GetRigidBody();
+	}
 }

@@ -7,11 +7,11 @@ VisibleObject::VisibleObject(const std::vector<Triangle>& triangles) :
 	is_leaf(true),
 	triangles(triangles) {
 }
-void VisibleObject::Advance(const double secs) {
-	for (VisibleObject* ch : children)ch->Advance(secs);
-}
 void VisibleObject::Update() {
 	for (VisibleObject* ch : children)ch->Update();
+}
+void VisibleObject::Advance(const double secs) {
+	for (VisibleObject* ch : children)ch->Advance(secs);
 }
 void VisibleObject::Build(const glm::mat4 &parent_transform)const {
 	const glm::mat4& transform = parent_transform * this->transform;
