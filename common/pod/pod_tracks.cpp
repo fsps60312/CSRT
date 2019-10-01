@@ -8,8 +8,11 @@ namespace pod {
 		const double chainLength = GetChainLength(gears);
 		track_cycle_position -= secs * track_speed / chainLength;
 		track_cycle_position = std::fmod(std::fmod(track_cycle_position, 1) + 1, 1);
+		//std::clog << "hi" << std::endl;
 		for (int i = 0; i < (int)teeth.size(); i++) {
-			teeth[i]->SetPosition(GetToothPosition(gears, fmod((double)i / (int)teeth.size() + track_cycle_position, 1)));
+			const glm::dvec3& position = GetToothPosition(gears, fmod((double)i / (int)teeth.size() + track_cycle_position, 1));
+			//std::clog << "\t" << position.x << "\t" << position.y << "\t" << position.z << std::endl;
+			teeth[i]->SetPosition(position);
 		}
 		for (auto& ch : children)ch->Advance(secs);
 	}
@@ -28,8 +31,9 @@ namespace pod {
 		};
 		for (Gear* gv : gears) children.push_back(gv);
 		for (const int i : {3, 4})ground_gears.push_back(gears[i]);
-		const double chainLength = GetChainLength(gears);
-		const int count = (int)(chainLength / 0.5);
+		const double chain_length = GetChainLength(gears);
+		std::clog << "chain length = " << chain_length << std::endl;
+		const int count = (int)(chain_length / 0.5);
 		for (int i = 0; i < count; i++) {
 			auto t = new Tooth(GetToothPosition(gears, (double)i / count));
 			children.push_back(t);

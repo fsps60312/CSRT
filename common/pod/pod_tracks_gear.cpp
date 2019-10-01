@@ -7,10 +7,10 @@ namespace pod {
 		const glm::dmat4& mat_y = pod->GetMatrixY(), & mat_z = pod->GetMatrixZ(), & mat_t = pod->GetMatrixT();
 		const glm::dmat4& mat_trans = matrix::Inverse(mat_t * mat_z * pre_matrix_y) * mat_t * mat_z * mat_y;
 		const glm::dvec3& new_position = matrix::Multiply(mat_trans, rb.position);
-		const glm::dvec3& new_velocity = matrix::Multiply(mat_trans, rb.velocity);
+		//const glm::dvec3& new_velocity = matrix::Multiply(mat_trans, rb.velocity);
 		//RB.position.X = newPosition.X; RB.position.Z = newPosition.Z;
 		rb.position = new_position;
-		rb.velocity = new_velocity;
+		//rb.velocity = new_velocity;
 		//RB.velocity.X = newVelocity.X; RB.velocity.Y = newVelocity.Y;
 		pre_matrix_y = mat_y;
 	}
@@ -20,17 +20,17 @@ namespace pod {
 		///2(px+a*fx)*fx+2(py+a*fy)*fy=0
 		///px*fx+a*fx*fx+py*fy+a*fy*fy=0
 		///a=-(px*fx+py*fy)/(fx*fx+fy*fy)
-		//if (glm::length(f) > 0)
-		//{
-		//	const glm::dvec3 p = GetDesiredPosition() - pod->GetRigidBody()->position;
-		//	const double a = -(p.x * f.x + p.y * f.y) / (f.x * f.x + f.y * f.y);
-		//	const glm::dvec3 forceArm = p + f * a;
-		//	const double torque = glm::cross(forceArm, f).z;
-		//	//System.Diagnostics.Trace.WriteLine($"torque: {torque}");
-		//	pod->GetRigidBody()->alpha -= torque;
-		//}
-		pod->GetRigidBody()->force -= f;
-		rb.force += f;
+		if (glm::length(f) > 0)
+		{
+			const glm::dvec3 &p = GetDesiredPosition() - pod->GetRigidBody()->position;
+			const double a = -(p.x * f.x + p.y * f.y) / (f.x * f.x + f.y * f.y);
+			const glm::dvec3 &forceArm = p + f * a;
+			const double torque = glm::cross(forceArm, f).z;
+			//System.Diagnostics.Trace.WriteLine($"torque: {torque}");
+			pod->GetRigidBody()->alpha += torque;
+		}
+		pod->GetRigidBody()->force += f;
+		rb.force -= f;
 	}
 	void PodTracks::Track::Gear::Update() {
 		RotateYAlongWithPod();
@@ -140,12 +140,12 @@ namespace pod {
 	glm::dvec3 PodTracks::Track::Gear::GetReactForce()const {
 		const glm::dvec3 on_pod_velocity = pod->GetRigidBody()->GetVelocityAt(matrix::Multiply(pod->GetMatrixY(), relative_position));
 		const glm::dvec3&
-			elastic_force = suspension_hardness * (GetDesiredPosition() - GetPosition()),
-			damp_force = 0.5 * (on_pod_velocity - rb.velocity);
+			elastic_force = suspension_hardness * (GetPosition() - GetDesiredPosition()),
+			damp_force = -0.5 * (on_pod_velocity - rb.velocity);
 		return elastic_force + damp_force;
 	}
 	glm::dvec3 PodTracks::Track::Gear::GetDesiredPosition()const {
-		return  matrix::Multiply(pod->GetMatrixT() * pod->GetMatrixZ() *pod->GetMatrixY(), relative_position);
+		return  matrix::Multiply(pod->GetMatrixT() * pod->GetMatrixZ() * pod->GetMatrixY(), relative_position);
 	}
 	glm::dvec3 PodTracks::Track::Gear::GetPosition()const {
 		return rb.position;

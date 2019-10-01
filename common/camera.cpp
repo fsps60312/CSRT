@@ -88,27 +88,27 @@ namespace camera {
 		up = glm::cross(right, direction);
 
 		// Move forward
-		if (environment::IsKeyDown(GLFW_KEY_W)) {
+		if (environment::IsKeyDown(GLFW_KEY_T)) {
 			position += direction * deltaTime * speed;
 		}
 		// Move backward
-		if (environment::IsKeyDown(GLFW_KEY_S)) {
+		if (environment::IsKeyDown(GLFW_KEY_G)) {
 			position -= direction * deltaTime * speed;
 		}
 		// Strafe right
-		if (environment::IsKeyDown(GLFW_KEY_D)) {
+		if (environment::IsKeyDown(GLFW_KEY_H)) {
 			position += right * deltaTime * speed;
 		}
 		// Strafe left
-		if (environment::IsKeyDown(GLFW_KEY_A)) {
+		if (environment::IsKeyDown(GLFW_KEY_F)) {
 			position -= right * deltaTime * speed;
 		}
 		// Move downward
-		if (environment::IsKeyDown(GLFW_KEY_E)) {
+		if (environment::IsKeyDown(GLFW_KEY_Y)) {
 			position += up * deltaTime * speed;
 		}
 		// Move upward
-		if (environment::IsKeyDown(GLFW_KEY_Q)) {
+		if (environment::IsKeyDown(GLFW_KEY_R)) {
 			position -= up * deltaTime * speed;
 		}
 
