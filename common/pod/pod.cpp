@@ -7,7 +7,8 @@ namespace pod {
 		this->children.push_back(tracks);
 	}
 	bool Pod::IsOnGround()const {
-		return false;
+		return tracks->IsOnGround();
+		//return false;
 	}
 	bool Pod::IsPodStopped()const {
 		return true;

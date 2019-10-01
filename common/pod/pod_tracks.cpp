@@ -1,13 +1,8 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
-	PodTracks::PodTracks(PodInterface* pod, const glm::dvec3& offset){
-		const double gap = 2.5 + 1;
-		left_track = new Track(pod, offset + glm::dvec3(0, 0, -gap / 2));
-		rigt_track = new Track(pod, offset + glm::dvec3(0, 0,  gap / 2));
-		//leftTrack.Transform = leftTrack.OriginTransform = MyLib.Transform(leftTrack).TranslatePrepend(new Vector3D(0, 0, -gap / 2)).Value;
-		//rigtTrack.Transform = rigtTrack.OriginTransform = MyLib.Transform(rigtTrack).TranslatePrepend(new Vector3D(0, 0, gap / 2)).Value;
-		children.push_back(left_track);
-		children.push_back(rigt_track);
+	bool PodTracks::Track::IsOnGround() const{
+		for (Gear* gear : ground_gears)if (!gear->IsOnGround())return false;
+		return true;
 	}
 	void PodTracks::Track::Advance(const double secs) {
 		const double chainLength = GetChainLength(gears);
@@ -86,5 +81,17 @@ namespace pod {
 			ans += matrix::AngleBetween(GetChainTouchPoint(a, b), GetChainTouchPoint(b, c)) * b->radius;
 		}
 		return ans;
+	}
+	bool PodTracks::IsOnGround()const {
+		return left_track->IsOnGround() && rigt_track->IsOnGround();
+	}
+	PodTracks::PodTracks(PodInterface* pod, const glm::dvec3& offset) {
+		const double gap = 2.5 + 1;
+		left_track = new Track(pod, offset + glm::dvec3(0, 0, -gap / 2));
+		rigt_track = new Track(pod, offset + glm::dvec3(0, 0, gap / 2));
+		//leftTrack.Transform = leftTrack.OriginTransform = MyLib.Transform(leftTrack).TranslatePrepend(new Vector3D(0, 0, -gap / 2)).Value;
+		//rigtTrack.Transform = rigtTrack.OriginTransform = MyLib.Transform(rigtTrack).TranslatePrepend(new Vector3D(0, 0, gap / 2)).Value;
+		children.push_back(left_track);
+		children.push_back(rigt_track);
 	}
 }
