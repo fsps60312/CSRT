@@ -42,7 +42,7 @@ namespace pod {
 		glm::dvec3 camera_direction = camera::GetDirection();
 		glm::dvec3 t = rb.position - camera_position;
 		t.z = 0;
-		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5))/10.0, secs, 0.2);
+		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5)), secs, 0.2);
 		glm::dvec3 target = rb.position + 0.1 * rb.velocity - camera_position;
 		assert(target.z != 0);
 		target /= std::abs(target.z);
@@ -135,10 +135,7 @@ namespace pod {
 		mylib::SmoothTo(rotation_y, desired_rotation_y, secs, std::max(std::abs(desired_rotation_y - rotation_y) / PI, 0.2) * 0.2);
 		const glm::dvec3 v = rb.force / rb.mass;
 		//std::clog << "body.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
-		auto prep = rb.position;
 		AdvanceRigidBody(secs);
-		rb.position = prep;
-		rb.velocity = glm::dvec3(0.0);
 		AdvanceCamera(secs);
 		const glm::dmat4& mat_t = GetMatrixT(), & mat_z = GetMatrixZ(), & mat_y = GetMatrixY();
 		SetTransform(mat_t * mat_z * mat_y);

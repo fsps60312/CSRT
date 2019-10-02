@@ -1,6 +1,9 @@
 #include<common/mylib.hpp>
 #include<cmath>
 namespace mylib {
+	glm::dvec3 FromAngular(const double radius, const double theta, const double z) {
+		return glm::dvec3(radius * std::cos(theta), radius * std::sin(theta), z);
+	}
 	void SmoothTo(double& v, const double t, const double secs, const double timeToHalf)
 	{
 		///f = a x      ### f: location-velocity

@@ -10,7 +10,7 @@ VisibleObject::VisibleObject(const std::vector<Triangle>& triangles) :
 void VisibleObject::Update() {
 	for (VisibleObject* ch : children)ch->Update();
 }
-void VisibleObject::SetTransform(const glm::mat4& t) {
+void VisibleObject::SetTransform(const glm::dmat4& t) {
 	assert(!glm::any(glm::isnan(t[0])) && !glm::any(glm::isnan(t[1])) && !glm::any(glm::isnan(t[2])) && !glm::any(glm::isnan(t[3])));
 	assert(!glm::any(glm::isinf(t[0])) && !glm::any(glm::isinf(t[1])) && !glm::any(glm::isinf(t[2])) && !glm::any(glm::isinf(t[3])));
 	transform = t;
@@ -18,8 +18,8 @@ void VisibleObject::SetTransform(const glm::mat4& t) {
 void VisibleObject::Advance(const double secs) {
 	for (VisibleObject* ch : children)ch->Advance(secs);
 }
-void VisibleObject::Build(const glm::mat4 &parent_transform)const {
-	const glm::mat4& transform = parent_transform * this->transform;
+void VisibleObject::Build(const glm::dmat4 &parent_transform)const {
+	const glm::dmat4& transform = parent_transform * this->transform;
 	if (is_leaf) {
 		for (const auto& t : triangles) {
 			BVHNode::glob_triangles.push_back(t.ApplyTransform(transform));
@@ -29,60 +29,16 @@ void VisibleObject::Build(const glm::mat4 &parent_transform)const {
 	}
 }
 
-void VisibleObject::Translate(const glm::vec3& offset) {
-	transform = transform * TranslateMatrix(offset);
+void VisibleObject::Translate(const glm::dvec3& offset) {
+	transform = transform * matrix::TranslateD(offset);
 }
-void VisibleObject::TranslatePrepend(const glm::vec3& offset) {
-	transform = TranslateMatrix(offset) * transform;
+void VisibleObject::TranslatePrepend(const glm::dvec3& offset) {
+	transform = matrix::TranslateD(offset) * transform;
 }
 
-void VisibleObject::Rotate(const glm::vec3& axis, const float theta) {
-	transform = transform * RotateMatrix(axis, theta);
+void VisibleObject::Rotate(const glm::dvec3& axis, const float theta) {
+	transform = transform * matrix::RotateD(axis, theta);
 }
-void VisibleObject::RotatePrepend(const glm::vec3& axis, const float theta) {
-	transform = RotateMatrix(axis, theta) * transform;
-}
-glm::mat4 VisibleObject::IdentityMatrix() {
-	return glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-}
-glm::mat4 VisibleObject::TranslateMatrix(const glm::vec3& offset) {
-	return glm::mat4(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		offset.x, offset.y, offset.z, 1
-	);
-}
-glm::mat4 VisibleObject::RotateMatrix(const glm::vec3& axis, const float theta) {
-	//https://zh.wikipedia.org/zh-tw/旋转矩阵
-	return glm::mat4(
-		std::cos(theta) + (1 - std::cos(theta)) * axis.x * axis.x,
-		(1 - std::cos(theta)) * axis.y * axis.x + std::sin(theta) * axis.z,
-		(1 - std::cos(theta)) * axis.z * axis.x - std::sin(theta) * axis.y,
-		0,
-		(1 - std::cos(theta)) * axis.x * axis.y - std::sin(theta) * axis.z,
-		std::cos(theta) + (1 - std::cos(theta)) * axis.y * axis.y,
-		(1 - std::cos(theta)) * axis.z * axis.y + std::sin(theta) * axis.x,
-		0,
-		(1 - std::cos(theta)) * axis.x * axis.z + std::sin(theta) * axis.y,
-		(1 - std::cos(theta)) * axis.y * axis.z - std::sin(theta) * axis.x,
-		std::cos(theta) + (1 - std::cos(theta)) * axis.z * axis.z,
-		0,
-		0, 0, 0, 1
-	);
-	return glm::mat4(
-		std::cos(theta) + (1 - std::cos(theta)) * axis.x * axis.x,
-		(1 - std::cos(theta)) * axis.x * axis.y - std::sin(theta) * axis.z,
-		(1 - std::cos(theta)) * axis.x * axis.z + std::sin(theta) * axis.y,
-		0,
-		(1 - std::cos(theta)) * axis.y * axis.x + std::sin(theta) * axis.z,
-		std::cos(theta) + (1 - std::cos(theta)) * axis.y * axis.y,
-		(1 - std::cos(theta)) * axis.y * axis.z - std::sin(theta) * axis.x,
-		0,
-		(1 - std::cos(theta)) * axis.z * axis.x - std::sin(theta) * axis.y,
-		(1 - std::cos(theta)) * axis.z * axis.y + std::sin(theta) * axis.x,
-		std::cos(theta) + (1 - std::cos(theta)) * axis.z * axis.z,
-		0,
-		0, 0, 0, 1
-	);
+void VisibleObject::RotatePrepend(const glm::dvec3& axis, const float theta) {
+	transform = matrix::RotateD(axis, theta) * transform;
 }
