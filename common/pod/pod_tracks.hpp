@@ -23,7 +23,7 @@ namespace pod {
 			private:
 				PodInterface* pod;
 				RigidBody rb;
-				glm::dmat4 pre_matrix_y;
+				glm::dmat4 pre_matrix_y = matrix::IdentityD(), pre_matrix_z = matrix::IdentityD();
 				const glm::dvec3 relative_position;
 				double on_ground_countdown = 0;
 				std::vector<Triangle>GetTriangles(const double radius)const;

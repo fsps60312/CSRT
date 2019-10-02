@@ -4,6 +4,7 @@ namespace pod {
 		return matrix::RotateD(glm::dvec3(0, -1, 0), rotation_y);
 	}
 	glm::dmat4 PodBody::GetMatrixZ()const {
+		std::clog << rb.theta << std::endl;
 		return matrix::RotateD(glm::dvec3(0, 0, 1), rb.theta);
 	}
 	glm::dmat4 PodBody::GetMatrixT()const {
@@ -43,11 +44,16 @@ namespace pod {
 		t.z = 0;
 		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5))/10.0, secs, 0.2);
 		glm::dvec3 target = rb.position + 0.1 * rb.velocity - camera_position;
+		assert(target.z != 0);
 		target /= std::abs(target.z);
 		const double len = std::sqrt(std::pow(target.x, 2) + std::pow(target.y, 2));
 		const double target_len = std::min(len, look_offset);
-		target.x *= target_len / len;
-		target.y *= target_len / len;
+		if (target_len == 0) {
+			target.x = target.y = 0;
+		} else {
+			target.x *= target_len / len;
+			target.y *= target_len / len;
+		}
 		mylib::SmoothTo(camera_direction, target, secs, 0.2);
 		camera::SetPosition(camera_position);
 		camera::SetDirection(camera_direction);
@@ -130,11 +136,12 @@ namespace pod {
 		const glm::dvec3 v = rb.force / rb.mass;
 		//std::clog << "body.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
 		auto prep = rb.position;
-		AdvanceRigidBody(secs);
+		//AdvanceRigidBody(secs);
 		rb.position = prep;
 		rb.velocity = glm::dvec3(0.0);
 		AdvanceCamera(secs);
-		SetTransform(GetMatrixT() * GetMatrixZ() * GetMatrixY());
+		const glm::dmat4& mat_t = GetMatrixT(), & mat_z = GetMatrixZ(), & mat_y = GetMatrixY();
+		SetTransform(mat_t * mat_z * mat_y);
 	}
 	const double PodBody::body_radius = 1.5;
 	std::vector<Triangle> PodBody::GetTriangles()const {
@@ -143,5 +150,6 @@ namespace pod {
 	PodBody::PodBody(PodInterface* parent) :VisibleObject(GetTriangles()),
 		parent(parent) {
 		rb.mass = 0.8;
+		rb.theta = 0.2;
 	}
 }

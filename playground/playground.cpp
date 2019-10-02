@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include<chrono>
 #include<iostream>
+#include <float.h>
+unsigned int fp_control_state = _controlfp(_EM_INEXACT | _EM_UNDERFLOW, _MCW_EM);
 
 void ReceiveKeys(Game &game);
 

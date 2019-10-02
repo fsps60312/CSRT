@@ -5,6 +5,7 @@ namespace pod {
 		return true;
 	}
 	void PodTracks::Track::Advance(const double secs) {
+		for (auto& ch : children)ch->Advance(secs); // render first so teeth will be at correct position
 		const double chainLength = GetChainLength(gears);
 		track_cycle_position -= secs * track_speed / chainLength;
 		track_cycle_position = std::fmod(std::fmod(track_cycle_position, 1) + 1, 1);
@@ -14,7 +15,6 @@ namespace pod {
 			//std::clog << "\t" << position.x << "\t" << position.y << "\t" << position.z << std::endl;
 			teeth[i]->SetPosition(position);
 		}
-		for (auto& ch : children)ch->Advance(secs);
 	}
 	PodTracks::Track::Track(PodInterface* pod, const glm::dvec3& offset) :
 		pod(pod) {
@@ -33,7 +33,7 @@ namespace pod {
 		for (const int i : {3, 4})ground_gears.push_back(gears[i]);
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;
-		const int count = (int)(chain_length / 0.5);
+		const int count = (int)(chain_length / 0.1);
 		for (int i = 0; i < count; i++) {
 			auto t = new Tooth(GetToothPosition(gears, (double)i / count));
 			children.push_back(t);

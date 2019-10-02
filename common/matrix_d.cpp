@@ -1,7 +1,7 @@
 #include<common/matrix_d.hpp>
 namespace matrix {
 	double AngleBetween(const glm::dvec3 &a, const glm::dvec3 &b) {
-		return glm::acos(glm::dot(glm::normalize(a), glm::normalize(b)));
+		return glm::acos(glm::clamp(glm::dot(glm::normalize(a), glm::normalize(b)), -1.0, 1.0));
 	}
 	glm::dmat4 Inverse(const glm::dmat4 &mat) {
 		return glm::inverse(mat);
