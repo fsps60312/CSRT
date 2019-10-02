@@ -1,7 +1,7 @@
 #include<common/pod/pod_propeller.hpp>
 namespace pod {
 	const std::map<PodPropeller::BladeSet::Blade::Types, PodPropeller::BladeSet::Blade::Description> PodPropeller::BladeSet::Blade::descriptions = {
-		{Types::BasicTriangle,Description({mylib::FromAngular(0,0),mylib::FromAngular(1,0),mylib::FromAngular(0.9,-7.0 / 180 * PI),mylib::FromAngular(0.2,-40 / 180 * PI)})}
+		{Types::BasicTriangle,Description({mylib::FromAngular(0,0),mylib::FromAngular(1,0),mylib::FromAngular(0.9,-7.0 / 180 * PI),mylib::FromAngular(0.2,-40.0 / 180 * PI)})}
 	};
 	void PodPropeller::BladeSet::Blade::SetFoldAngle(const double theta) {
 		fold_angle = theta;
@@ -21,9 +21,9 @@ namespace pod {
 		}
 		std::vector<Triangle>ret;
 		ret.push_back(Triangle(glm::mat3(vs[3], vs[2], vs[0])));
+		ret.push_back(Triangle(glm::mat3(vs[0], vs[2], vs[3])));
 		ret.push_back(Triangle(glm::mat3(vs[2], vs[1], vs[0])));
 		ret.push_back(Triangle(glm::mat3(vs[0], vs[1], vs[2])));
-		ret.push_back(Triangle(glm::mat3(vs[0], vs[2], vs[3])));
 		return ret;
 	}
 	PodPropeller::BladeSet::Blade::Blade(const Types type, const double radius, const double cycle_angle, const double turn_down_angle, const double reversed) :
