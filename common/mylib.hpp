@@ -1,3 +1,4 @@
+#pragma once
 #include<glm/glm.hpp>
 namespace mylib {
 	void SmoothTo(double& v, const double t, const double secs, const double timeToHalf);

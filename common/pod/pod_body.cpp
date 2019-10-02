@@ -42,7 +42,7 @@ namespace pod {
 		glm::dvec3 camera_direction = camera::GetDirection();
 		glm::dvec3 t = rb.position - camera_position;
 		t.z = 0;
-		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5)), secs, 0.2);
+		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5))/5.0, secs, 0.2);
 		glm::dvec3 target = rb.position + 0.1 * rb.velocity - camera_position;
 		assert(target.z != 0);
 		target /= std::abs(target.z);
@@ -144,9 +144,10 @@ namespace pod {
 	std::vector<Triangle> PodBody::GetTriangles()const {
 		return Triangle::Cube(glm::vec3(body_radius));
 	}
-	PodBody::PodBody(PodInterface* parent) :VisibleObject(GetTriangles()),
+	PodBody::PodBody(PodInterface* parent) :
 		parent(parent) {
 		rb.mass = 0.8;
 		rb.theta = 0.2;
+		children.push_back(new VisibleObject(GetTriangles()));
 	}
 }

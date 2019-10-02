@@ -21,13 +21,14 @@ namespace pod {
 				enum Types { BasicTriangle };
 			private:
 				double fold_angle = 0;
-				std::vector<Triangle>GetTriangles(const Types type, const double radius, const double theta, const double reversed);
+				const double turn_down_angle;
+				const double cycle_angle;
+				glm::dmat4 GetTransform()const;
+				std::vector<Triangle>GetTriangles(const Types type, const double radius, const double reversed);
 			public:
-				const std::map<Types, Description>descriptions = {
-					{Types::BasicTriangle,Description({mylib::FromAngular(0,0),mylib::FromAngular(1,0),mylib::FromAngular(0.9,-7.0 / 180 * PI),mylib::FromAngular(0.2,-40 / 180 * PI)})}
-				};
+				const static std::map<Types, Description>descriptions;
 				void SetFoldAngle(const double theta);
-				Blade(const Types type, const double radius, const double theta, const double reversed);
+				Blade(const Types type, const double radius, const double cycle_angle, const double turn_down_angle, const double reversed);
 			};
 			class Description {
 			public:
@@ -46,9 +47,7 @@ namespace pod {
 			void SetFoldState(const double fold_state);
 			void SetHeight(const double height);
 			enum Types { Basic };
-			const std::map<Types, Description>descriptions = {
-				{Types::Basic,Description(Blade::Types::BasicTriangle,3)}
-			};
+			const static std::map<Types, Description>descriptions;
 			BladeSet(PodPropeller* propeller, const Types type, const double radius, const bool reversed, const double speed_ratio, const double theta_offset);
 		};
 		class BladeSetDescription {
@@ -69,7 +68,6 @@ namespace pod {
 	private:
 		double omega = 0;
 		double friction = 1;
-		double GetAirFriction(const double air_speed);
 		double moment_of_inertia = 1;
 		double max_power = 50;
 		double max_torque = 20;
@@ -78,18 +76,14 @@ namespace pod {
 		double height, max_height;
 		std::vector<BladeSet*>bladesets;
 		PodInterface* pod;
+		const glm::dmat4 basic_transform;
+		double GetAirFriction(const double air_speed);
 		double GetDownwardSpeed();
 	public:
 		enum Types { Basic };
-		const std::map<Types, Description>descriptions = {{
-				Types::Basic,Description({
-						BladeSetDescription(BladeSet::Types::Basic,2.0,false,1),
-						BladeSetDescription(BladeSet::Types::Basic,2.0,true,0.5)
-					}
-				)
-			}
-		};
+		const static std::map<Types, Description>descriptions;
 		double GetLiftForce();
-		PodPropeller(PodInterface* pod, const Types propeller_type);
+		void SetFoldState(const double fold_state);
+		PodPropeller(PodInterface* pod, const Types propeller_type, const glm::dmat4& basic_transform);
 	};
 }
