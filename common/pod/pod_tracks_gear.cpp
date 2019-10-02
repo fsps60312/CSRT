@@ -5,9 +5,11 @@ namespace pod {
 	}
 	void PodTracks::Track::Gear::RotateYAlongWithPod() {
 		const glm::dmat4& mat_y = pod->GetMatrixY(), & mat_z = pod->GetMatrixZ(), & mat_t = pod->GetMatrixT();
-		const glm::dmat4& mat_trans = matrix::Inverse(mat_t * mat_z * pre_matrix_y) * mat_t * mat_z * mat_y;
+		const glm::dmat4& mat_trans = mat_t * mat_z * mat_y * matrix::Inverse(mat_t * mat_z * pre_matrix_y);
+		//const glm::dvec3& r_pos = matrix::Multiply(matrix::Inverse(mat_t * mat_z * pre_matrix_y), rb.position);
+		//std::clog << "\t" << r_pos.x << " / " << relative_position.x << "\t" << r_pos.y << " / " << relative_position.y << "\t" << r_pos.z << " / " << relative_position.z << std::endl;
 		const glm::dvec3& new_position = matrix::Multiply(mat_trans, rb.position);
-		const glm::dvec3& new_velocity = matrix::Multiply(mat_trans, rb.velocity);
+		//const glm::dvec3& new_velocity = matrix::Multiply(mat_trans, rb.velocity);
 		//RB.position.X = newPosition.X; RB.position.Z = newPosition.Z;
 		rb.position = new_position;
 		//rb.velocity = new_velocity;
@@ -21,7 +23,7 @@ namespace pod {
 		///2(px+a*fx)*fx+2(py+a*fy)*fy=0
 		///px*fx+a*fx*fx+py*fy+a*fy*fy=0
 		///a=-(px*fx+py*fy)/(fx*fx+fy*fy)
-		if (glm::length(f) > 0)
+		if ((f.x * f.x + f.y * f.y) > 1e-9)
 		{
 			const glm::dvec3 &p = GetDesiredPosition() - pod->GetRigidBody()->position;
 			const double a = -(p.x * f.x + p.y * f.y) / (f.x * f.x + f.y * f.y);
@@ -132,8 +134,8 @@ namespace pod {
 		RotateYAlongWithPod();
 		//const glm::dvec3 v = rb.force / rb.mass;
 		//std::clog << "gear.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
-		auto prep=rb.position;
-		//AdvanceRigidBody(secs);
+		//auto prep=rb.position;
+		AdvanceRigidBody(secs);
 		//rb.position = prep;
 		//rb.velocity = glm::dvec3(0.0);
 		SetTransform(matrix::TranslateD(rb.position) * pod->GetMatrixY() * matrix::RotateD(glm::dvec3(0, 0, -1), rb.theta));

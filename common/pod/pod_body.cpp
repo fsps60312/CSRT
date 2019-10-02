@@ -4,7 +4,7 @@ namespace pod {
 		return matrix::RotateD(glm::dvec3(0, -1, 0), rotation_y);
 	}
 	glm::dmat4 PodBody::GetMatrixZ()const {
-		std::clog << rb.theta << std::endl;
+		//std::clog << rb.theta << std::endl;
 		return matrix::RotateD(glm::dvec3(0, 0, 1), rb.theta);
 	}
 	glm::dmat4 PodBody::GetMatrixT()const {
@@ -136,7 +136,7 @@ namespace pod {
 		const glm::dvec3 v = rb.force / rb.mass;
 		//std::clog << "body.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
 		auto prep = rb.position;
-		//AdvanceRigidBody(secs);
+		AdvanceRigidBody(secs);
 		rb.position = prep;
 		rb.velocity = glm::dvec3(0.0);
 		AdvanceCamera(secs);
