@@ -6,6 +6,7 @@
 #include<common/environment.hpp>
 #include<common/mylib.hpp>
 #include<common/camera.hpp>
+#include<common/pod/pod_propeller.hpp>
 #include<iostream>
 #include<vector>
 #include<cmath>
@@ -22,7 +23,8 @@ namespace pod {
 		void AdvanceCamera(const double secs);
 		void AdvanceRigidBody(const double secs);
 		RigidBody rb;
-		PodInterface* parent;
+		PodInterface* pod;
+		PodPropeller* propeller;
 	public:
 		glm::dmat4 GetMatrixY()const;
 		glm::dmat4 GetMatrixZ()const;

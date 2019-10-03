@@ -2,13 +2,11 @@
 #include<common/pod/pod_interface.hpp>
 #include<common/pod/pod_body.hpp>
 #include<common/pod/pod_tracks.hpp>
-#include<common/pod/pod_propeller.hpp>
 namespace pod {
 	class Pod :public PodInterface {
 	private:
 		PodBody* body;
 		PodTracks* tracks;
-		PodPropeller* propeller;
 	public:
 		Pod();
 		bool IsOnGround()const override;

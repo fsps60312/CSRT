@@ -21,7 +21,7 @@ namespace pod {
 		rb.alpha += -1 * std::abs(rb.omega) * rb.omega - 1 * rb.omega;
 	}
 	void PodBody::UpdateRotationY() {
-		if ((!parent->IsOnGround() || parent->IsPodStopped())) {
+		if ((!pod->IsOnGround() || pod->IsPodStopped())) {
 			if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))desired_rotation_y = PI;
 			if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))desired_rotation_y = 0;
 		}
@@ -29,7 +29,7 @@ namespace pod {
 	void PodBody::UpdateRigidBody() {
 		rb.position.z = rb.velocity.z = 0;
 		rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
-		//rb.force += new glm::dvec3(-sin(rb.theta) * propeller.LiftForce(), cos(rb.theta) * propeller.LiftForce(), 0);
+		rb.force += glm::dvec3(-std::sin(rb.theta) * propeller->GetLiftForce(), std::cos(rb.theta) * propeller->GetLiftForce(), 0);
 	}
 	void PodBody::Update() {
 		UpdateRotationY();
@@ -144,10 +144,12 @@ namespace pod {
 	std::vector<Triangle> PodBody::GetTriangles()const {
 		return Triangle::Cube(glm::vec3(body_radius));
 	}
-	PodBody::PodBody(PodInterface* parent) :
-		parent(parent) {
+	PodBody::PodBody(PodInterface* pod) :
+		pod(pod),
+		propeller(new PodPropeller(pod, PodPropeller::Types::Basic, matrix::TranslateD(glm::dvec3(0, 1.5, 0))* matrix::RotateD(glm::dvec3(1, 0, 0), -PI / 2))){
 		rb.mass = 0.8;
 		rb.theta = 0.2;
 		children.push_back(new VisibleObject(GetTriangles()));
+		children.push_back(propeller);
 	}
 }
