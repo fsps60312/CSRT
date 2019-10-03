@@ -13,9 +13,13 @@ namespace pod {
 			children.push_back(blade);
 		}
 	}
+	void PodPropeller::BladeSet::Advance(const double secs) {
+		theta += (reversed ? -1 : 1) * secs * speed_ratio * 5 * propeller->GetOmega();
+		theta = std::fmod(theta, 2.0 * PI);
+		SetTransform(matrix::TranslateD(glm::dvec3(0, 0, height)) * matrix::RotateD(glm::dvec3(0, 0, 1), theta));
+	}
 	void PodPropeller::BladeSet::SetHeight(const double height) {
 		this->height = height;
-		this->SetTransform(matrix::TranslateD(glm::dvec3(0, 0, height)));
 	}
 	void PodPropeller::BladeSet::SetFoldState(const double fold_state) {
 		for (Blade* v : blades)v->SetFoldAngle(PI / 2 * fold_state);

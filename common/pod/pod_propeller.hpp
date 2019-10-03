@@ -3,6 +3,7 @@
 #include<common/triangle.hpp>
 #include<common/pod/pod_interface.hpp>
 #include<common/mylib.hpp>
+#include<common/environment.hpp>
 #include<cmath>
 #include<map>
 #include<vector>
@@ -39,6 +40,7 @@ namespace pod {
 		private:
 			std::vector<Blade*>blades;
 			PodPropeller* propeller;
+			double theta = 0;
 		public:
 			bool reversed = false;
 			double speed_ratio = 1;
@@ -48,6 +50,7 @@ namespace pod {
 			void SetHeight(const double height);
 			enum Types { Basic };
 			const static std::map<Types, Description>descriptions;
+			void Advance(const double secs)override;
 			BladeSet(PodPropeller* propeller, const Types type, const double radius, const bool reversed, const double speed_ratio, const double theta_offset);
 		};
 		class BladeSetDescription {
@@ -74,6 +77,7 @@ namespace pod {
 		double folding_time = 0.5;
 		double fold_state = 0;
 		double height, max_height;
+		bool want_to_fold = false;
 		std::vector<BladeSet*>bladesets;
 		PodInterface* pod;
 		const glm::dmat4 basic_transform;
@@ -82,8 +86,10 @@ namespace pod {
 	public:
 		enum Types { Basic };
 		const static std::map<Types, Description>descriptions;
+		double GetOmega();
 		double GetLiftForce();
 		void SetFoldState(const double fold_state);
+		void Advance(const double secs)override;
 		PodPropeller(PodInterface* pod, const Types propeller_type, const glm::dmat4& basic_transform);
 	};
 }

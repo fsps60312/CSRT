@@ -9,6 +9,7 @@ namespace pod {
 		}
 	};
 	void PodPropeller::SetFoldState(const double fold_state) {
+		this->fold_state = fold_state;
 		if (fold_state < 0.7)
 		{
 			const double f = fold_state / 0.7;
@@ -22,6 +23,7 @@ namespace pod {
 			SetTransform(basic_transform * matrix::TranslateD(glm::dvec3(0, 0, -height + h * max_height)));
 		}
 	}
+	double PodPropeller::GetOmega() { return omega; }
 	double PodPropeller::GetLiftForce() {
 		return (omega - GetDownwardSpeed() * 0.05) * (1.0 - fold_state) * 5;
 	}
@@ -31,6 +33,35 @@ namespace pod {
 	}
 	double PodPropeller::GetAirFriction(const double air_speed){
 		return 0.5 * std::pow(air_speed, 2) + 0.01 * std::abs(air_speed);
+	}
+	void PodPropeller::Advance(const double secs) {
+		double torque = 0, friction_torque = 0;
+		//keyboard control
+		if (environment::IsKeyDown(GLFW_KEY_S)) {
+			friction_torque += (omega > 0 ? -1 : 1) * std::min(max_torque, omega != 0 ? max_power / std::abs(omega) : FLT_MAX);
+		}
+		else if (environment::IsKeyDown(GLFW_KEY_W)) {
+			torque += std::min(max_torque, omega > 0 ? max_power / omega : FLT_MAX);
+		}
+		if (environment::IsKeyDown(GLFW_KEY_W)) want_to_fold = false;
+		else if (environment::IsKeyDown(GLFW_KEY_S) && std::abs(omega) <= PI / 10) want_to_fold = true;
+		else if (!environment::IsKeyDown(GLFW_KEY_W) && !environment::IsKeyDown(GLFW_KEY_S)) want_to_fold = pod->IsOnGround();
+
+		torque -= GetLiftForce() / 5 * 2;//風導致轉動
+		//friction
+		friction_torque += (omega > 0 ? -1 : 1) * (friction + GetAirFriction(omega));
+		if ((torque > 0) != (torque + friction_torque > 0))
+		{
+			if (omega > 0) friction_torque = std::max(friction_torque, -torque - omega / secs);
+			else friction_torque = std::min(friction_torque, -torque - omega / secs);
+		}
+		torque += friction_torque;
+		// # omega
+		omega += secs * torque;
+
+		//folding
+		SetFoldState(glm::clamp(fold_state + (want_to_fold ? 1 : -1) * secs / folding_time, 0.0, 1.0));
+		for (BladeSet* bladeset : bladesets)bladeset->Advance(secs);
 	}
 	PodPropeller::PodPropeller(PodInterface* pod, const Types propeller_type, const glm::dmat4& basic_transform) :pod(pod), basic_transform(basic_transform) {
 		for (const auto& bladeset_description : descriptions.at(propeller_type).bladesets) {

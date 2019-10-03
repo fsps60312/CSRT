@@ -14,11 +14,13 @@ namespace pod {
 		return &rb;
 	}
 	void PodBody::UpdateRotationZ() {
-		const double t = -10 * rb.theta - rb.omega;
-		rb.alpha += std::pow(std::abs(t), 1) * t;
-		if (environment::IsKeyDown(GLFW_KEY_A))rb.alpha += 5;
-		if (environment::IsKeyDown(GLFW_KEY_D))rb.alpha -= 5;
-		rb.alpha += -1 * std::abs(rb.omega) * rb.omega - 1 * rb.omega;
+		if (!pod->IsOnGround()) {
+			const double t = -10 * rb.theta - rb.omega;
+			rb.alpha += std::pow(std::abs(t), 1) * t;
+			if (environment::IsKeyDown(GLFW_KEY_A))rb.alpha += 5;
+			if (environment::IsKeyDown(GLFW_KEY_D))rb.alpha -= 5;
+			rb.alpha += -1 * std::abs(rb.omega) * rb.omega - 1 * rb.omega;
+		}
 	}
 	void PodBody::UpdateRotationY() {
 		if ((!pod->IsOnGround() || pod->IsPodStopped())) {
@@ -132,6 +134,7 @@ namespace pod {
 		}
 	}
 	void PodBody::Advance(const double secs) {
+		propeller->Advance(secs);
 		mylib::SmoothTo(rotation_y, desired_rotation_y, secs, std::max(std::abs(desired_rotation_y - rotation_y) / PI, 0.2) * 0.2);
 		const glm::dvec3 v = rb.force / rb.mass;
 		//std::clog << "body.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
@@ -148,7 +151,7 @@ namespace pod {
 		pod(pod),
 		propeller(new PodPropeller(pod, PodPropeller::Types::Basic, matrix::TranslateD(glm::dvec3(0, 1.5, 0))* matrix::RotateD(glm::dvec3(1, 0, 0), -PI / 2))){
 		rb.mass = 0.8;
-		rb.theta = 0.2;
+		//rb.theta = 0.2;
 		children.push_back(new VisibleObject(GetTriangles()));
 		children.push_back(propeller);
 	}
