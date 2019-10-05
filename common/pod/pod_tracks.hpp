@@ -52,7 +52,7 @@ namespace pod {
 			std::vector<Tooth*>teeth;
 			double track_speed = 1;
 			double track_cycle_position = 0;
-			glm::dvec3 GetChainTouchPoint(Gear* a, Gear* b)const;
+			glm::dvec3 GetGearToSubchainVector(Gear* a, Gear* b)const;
 			double GetChainLength(const std::vector<Gear*>& chain)const;
 			glm::vec3 GetToothPosition(const std::vector<Gear*>& chain, const double ratio);
 		public:
