@@ -7,8 +7,8 @@ VisibleObject::VisibleObject(const std::vector<Triangle>& triangles) :
 	is_leaf(true),
 	triangles(triangles) {
 }
-void VisibleObject::Update() {
-	for (VisibleObject* ch : children)ch->Update();
+void VisibleObject::Update(const double secs) {
+	for (VisibleObject* ch : children)ch->Update(secs);
 }
 void VisibleObject::SetTransform(const glm::dmat4& t) {
 	assert(!glm::any(glm::isnan(t[0])) && !glm::any(glm::isnan(t[1])) && !glm::any(glm::isnan(t[2])) && !glm::any(glm::isnan(t[3])));

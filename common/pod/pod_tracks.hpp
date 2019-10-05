@@ -4,6 +4,7 @@
 #include<common/matrix_d.hpp>
 #include<common/control.hpp>
 #include<common/rigid_body.hpp>
+#include<common/block/blocks.hpp>
 #include<cmath>
 namespace pod {
 	class PodTracks :public VisibleObject {
@@ -30,6 +31,9 @@ namespace pod {
 				glm::dvec3 GetReactForce()const;
 				void RotateYAlongWithPod();
 				void ApplyReactForceWithPod();
+				void ApplyReactForceWithBlocks(const double secs);
+				bool IsRigidBodyMoveTooMuch(const double secs)const;
+				void MoveGearBackToTouchSurface(const glm::dvec3& dir);
 				void AdvanceRigidBody(const double secs);
 			public:
 				const double radius;
@@ -38,7 +42,7 @@ namespace pod {
 				Gear(const glm::dvec3& relative_position, const double radius, const double suspension_hardness, const double mass, PodInterface* pod);
 				bool IsOnGround()const;
 				void Advance(const double secs)override;
-				void Update()override;
+				void Update(const double secs)override;
 				glm::dvec3 GetPosition()const;
 				glm::dvec3 GetDesiredPosition()const;
 			};

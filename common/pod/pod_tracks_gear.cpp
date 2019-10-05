@@ -35,100 +35,57 @@ namespace pod {
 		pod->GetRigidBody()->force += f;
 		rb.force -= f;
 	}
-	void PodTracks::Track::Gear::Update() {
+	void PodTracks::Track::Gear::MoveGearBackToTouchSurface(const glm::dvec3& offset) {
+		double l = 0, r = 1;
+		while (r - l > 1e-9) {
+			double mid = (l + r) / 2;
+			if (block::IsCollidable(rb.position + offset * mid))r = mid;
+			else l = mid;
+		}
+		rb.position += offset * (-1 + r);
+	}
+	void PodTracks::Track::Gear::ApplyReactForceWithBlocks(const double secs) {
+		if (block::IsCollidable(rb.position))return; // inside a block, no respond
+		//bool rollback = false;
+		const double rollback_speed = 0.1;
+		const double bounce = 0.1;
+		bool is_collided = false;
+		for (const glm::dvec3& offset : { glm::dvec3(-radius,0,0),glm::dvec3(radius,0,0),glm::dvec3(0,-radius,0),glm::dvec3(0,radius,0) }) {
+			const glm::dvec3& dir = glm::normalize(offset);
+			if (block::IsCollidable(rb.position + offset)) {
+				MoveGearBackToTouchSurface(offset);
+				if (glm::dot(rb.velocity, dir) > 0) {
+					if (std::abs(-1 - dir.y) < 1e-9)on_ground_countdown = 0.1; // downward collision
+					if (!is_collided) {
+						rb.force = glm::dvec3(0.0);
+						is_collided = true;
+					}
+					const double f = (bounce + 1) * glm::dot(rb.velocity, dir) * rb.mass / secs;
+					rb.force -= dir * f;
+				}
+			}
+		}
+	}
+	void PodTracks::Track::Gear::Update(const double secs) {
 		ApplyReactForceWithPod();
 		rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
 	}
+	bool PodTracks::Track::Gear::IsRigidBodyMoveTooMuch(const double secs) const {
+		if (secs > 1e-3) return true;
+		const double dif = glm::length(rb.position - rb._position);
+		if (dif > radius / 5) return true;
+		return false;
+	}
 	void PodTracks::Track::Gear::AdvanceRigidBody(const double secs) {
-		if (!rb.Advance(secs,[secs,this](RigidBody* rb) ->bool {
-			//return true;
-			if (secs > 1e-3) return false;
-			const double dif = glm::length(rb->position - rb->_position);
-			if (dif > radius / 5) return false;
-			//if (!Blocks.IsCollidable(rb.position, out int cur_x, out int cur_y))
-			//{
-			//	//bool rollback = false;
-			//	const double rollbackSpeed = 0.1;
-			//	const double bounce = 0.1;
-			//	{
-			//		int x = 0, y = 0;
-			//		Point3D cp;
-			//		cp = rb.position + new Vector3D(-Radius, 0, 0);
-			//		if (Blocks.IsCollidable(cp, out x, out y))
-			//		{
-			//			if (x == cur_x - 1 && !Blocks.IsCollidable(cur_x, y) && rb.velocity.X < 0)//collide left, +x force. t=(cp.x*-Sin(theta)+cp.y*-Cos(theta)), (v.x+f/m) + (omega+f*t/I)*t = -b*(v.x + omega*t), f*(1/m+t^2/I)=(-b-1)*(v.x+omega*t)
-			//			{
-			//				var f = (-bounce - 1) * (rb.velocity.X) / (1.0 / rb.mass);
-			//				rb.velocity.X += f / rb.mass;
-			//				//rollback = true;
-			//				rb.position.X += secs * rollbackSpeed;
-			//			}
-			//		}
-			//		cp = rb.position + new Vector3D(Radius, 0, 0);
-			//		if (Blocks.IsCollidable(cp, out x, out y))
-			//		{
-			//			if (x == cur_x + 1 && !Blocks.IsCollidable(cur_x, y) && rb.velocity.X > 0)//collide right, -x force. t=(cp.x*-Sin(theta)+cp.y*-Cos(theta)), (v.x-f/m) + (omega-f*t/I)*t = -b*(v.x + omega*t), f*(-1/m-t^2/I)=(-b-1)*(v.x+omega*t)
-			//			{
-			//				var f = (-bounce - 1) * (rb.velocity.X) / (-1.0 / rb.mass);
-			//				rb.velocity.X -= f / rb.mass;
-			//				//rollback = true;
-			//				rb.position.X -= secs * rollbackSpeed;
-			//			}
-			//		}
-			//		cp = rb.position + new Vector3D(0, -Radius, 0);
-			//		if (Blocks.IsCollidable(cp, out x, out y))
-			//		{
-			//			if (y == cur_y - 1 && !Blocks.IsCollidable(x, cur_y) && rb.velocity.Y < 0)//collide down, +y force. t=(cp.y*-Sin(theta)+cp.x*Cos(theta)), (v.y+f/m) + (omega+f*t/I)*t = -b*(v.y + omega*t), f*(1/m+t^2/I)=(-b-1)*(v.y+omega*t)
-			//			{
-			//				var f = (-bounce - 1) * (rb.velocity.Y) / (1.0 / rb.mass);
-			//				rb.velocity.Y += f / rb.mass;
-			//				//rollback = true;
-			//				rb.position.Y += secs * rollbackSpeed;
-			//				onGround = 0.1;
-			//			}
-			//		}
-			//		cp = rb.position + new Vector3D(0, Radius, 0);
-			//		if (Blocks.IsCollidable(cp, out x, out y))
-			//		{
-			//			if (y == cur_y + 1 && !Blocks.IsCollidable(x, cur_y) && rb.velocity.Y > 0)//collide up, -y force. t=(cp.y*-Sin(theta)+cp.x*Cos(theta)), (v.y-f/m) + (omega-f*t/I)*t = -b*(v.y + omega*t), f*(-1/m-t^2/I)=(-b-1)*(v.y+omega*t)
-			//			{
-			//				var f = (-bounce - 1) * (rb.velocity.Y) / (-1.0 / rb.mass);
-			//				rb.velocity.Y -= f / rb.mass;
-			//				//rollback = true;
-			//				rb.position.Y -= secs * rollbackSpeed;
-			//			}
-			//		}
-			//	}
-			//	//if(false)
-			//	{
-			//		Blocks.IsCollidable(rb.position + new Vector3D(Blocks.Width / 2, Blocks.Height / 2, 0), out int cross_x, out int cross_y);
-			//		var vectorToCross = new Vector3D((Blocks.Anchor.X + Blocks.Width * cross_x) - rb.position.X, (Blocks.Anchor.Y + Blocks.Height * cross_y) - rb.position.Y, 0);
-			//		if (0 < vectorToCross.Length && vectorToCross.Length < Radius && Vector3D.DotProduct(rb.velocity, vectorToCross) > 0)
-			//		{
-			//			int x = vectorToCross.X < 0 ? cross_x - 1 : cross_x;
-			//			int y = vectorToCross.Y < 0 ? cross_y - 1 : cross_y;
-			//			if (Blocks.IsCollidable(x, y))
-			//			{
-			//				///(v+a*c)。c=-b*(v。c)
-			//				///(vx+a*cx)*cx+(vy+a*cy)*cy=-b*(vx*cx+vy*cy)
-			//				///a(cx*cx+cy*cy)+vx*cx+vy*cy=-b*(vx*cx+vy*cy)
-			//				///a=(-b*(vx*cx+vy*cy)-(vx*cx+vy*cy))/(cx*cx+cy*cy)
-			//				double a = ((-bounce - 1) * Vector3D.DotProduct(rb.velocity, vectorToCross)) / Vector3D.DotProduct(vectorToCross, vectorToCross);
-			//				rb.velocity += a * vectorToCross;
-			//				//rollback = true;
-			//				rb.position += -vectorToCross / vectorToCross.Length * secs * rollbackSpeed;
-			//			}
-			//		}
-			//	}
-			//	//if (rollback) rb.position = rb._position;
-			//	//System.Diagnostics.Trace.WriteLine($"position: {rb.position}, \tvelocity: {rb.velocity}, \ttheta: {rb.theta}, \tomega: {rb.omega}");
-			//}
-			return true;
-		}))
+		rb.Advance(secs);
+		if (IsRigidBodyMoveTooMuch(secs))
 		{
+			rb.Restore();
 			AdvanceRigidBody(0.5 * secs);
 			AdvanceRigidBody(0.5 * secs);
-		};
+		} else {
+			ApplyReactForceWithBlocks(secs);
+		}
 	}
 	void PodTracks::Track::Gear::Advance(const double secs) {
 		RotateYAlongWithPod();
@@ -136,6 +93,7 @@ namespace pod {
 		//std::clog << "gear.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
 		//auto prep=rb.position;
 		AdvanceRigidBody(secs);
+		on_ground_countdown -= secs;
 		//rb.position = prep;
 		//rb.velocity = glm::dvec3(0.0);
 		SetTransform(matrix::TranslateD(rb.position) * pod->GetMatrixY() * matrix::RotateD(glm::dvec3(0, 0, -1), rb.theta));

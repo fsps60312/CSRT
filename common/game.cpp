@@ -29,8 +29,9 @@ void Game::Render(){
 	world.SendToShader();
 }
 void Game::Advance(std::chrono::nanoseconds timespan) {
-	model.obj->Update();
-	model.obj->Advance(timespan.count() / 1000000000.0);
+	const double secs = timespan.count() / 1000000000.0;
+	model.obj->Update(secs);
+	model.obj->Advance(secs);
 	//model.obj->Advance(0.01);
 }
 void Game::ReceiveKey(Keys key) {

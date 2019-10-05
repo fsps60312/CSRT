@@ -1,6 +1,15 @@
 #include<common/block/blocks.hpp>
 namespace block {
-	bool Blocks::IsCollidable(const int x, const int y) {
+	Blocks Blocks::instance(glm::dvec3(0, 0, -constants::block_depth / 2));
+	bool IsCollidable(const glm::dvec3& position) {
+		return Blocks::instance.IsCollidable(glm::dvec2(position.x, position.y));
+	}
+	bool Blocks::IsCollidable(const glm::dvec2& position)const {
+		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
+		const int y = (int)std::floor((position.y - anchor.y) / constants::block_height);
+		return IsCollidable(x, y);
+	}
+	bool Blocks::IsCollidable(const int x, const int y) const{
 		return y <= -5 || y >= 15 || x <= -15 || x >= 15 || (x >= -1 && x <= 1 && y == 2);
 	}
 	void Blocks::RecycleBlock(Block* b) {
@@ -33,7 +42,7 @@ namespace block {
 	Block* Blocks::NewBlock(const int xi, const int yi) {
 		if (!IsCollidable(xi, yi))return NULL;
 		const glm::dvec3& position = anchor + glm::dvec3(constants::block_width * xi, constants::block_height * yi, 0.0);
-		const glm::dvec3& size = glm::dvec3(constants::block_width, constants::block_height, constants::block_depth);
+		const glm::dvec3& size = glm::dvec3(constants::block_width - 0.2, constants::block_height - 0.2, constants::block_depth);
 		Block* blk = new Block(position, size, Block::Type::General);
 		children.push_back(blk);
 		return blk;
@@ -69,7 +78,7 @@ namespace block {
 		y_max = 20;
 		//TODO
 	}
-	void Blocks::Update() {
+	void Blocks::Update(const double secs) {
 		double x_min, x_max, y_min, y_max;
 		RegionOnXYPlane(x_min, x_max, y_min, y_max);
 		const int
@@ -86,7 +95,6 @@ namespace block {
 		while (!blocks.empty() && blocks.front().second.back().first < y_mx)AppendYMax();
 		while (!blocks.empty() && blocks.front().first > x_mn)AppendXMin();
 		while (!blocks.empty() && blocks.back().first < x_mx)AppendXMax();
-
 	}
 	Blocks::Blocks(const glm::dvec3& anchor) :anchor(anchor) {
 	}

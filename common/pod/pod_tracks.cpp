@@ -21,16 +21,16 @@ namespace pod {
 		const double depth = 1, height = 1, lengthUp = 4, lengthDown = 2.5;
 		gears = {
 			//                  relative position,                                                      radius, suspension hardness,  mass
-			new Gear(offset + glm::dvec3(-lengthUp / 2, -height / 2 + 0.4, 0),                           0.4,                 7.0,  0.02, pod),
+			new Gear(offset + glm::dvec3(                - lengthUp / 2,          -height / 2 + 0.4, 0), 0.4,                 7.0,  0.02, pod),
 			new Gear(offset + glm::dvec3((lengthDown * 1 - lengthUp * 3) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                10.0, 0.025, pod),
 			new Gear(offset + glm::dvec3((lengthDown * 2 - lengthUp * 2) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                10.0,  0.03, pod),
 			new Gear(offset + glm::dvec3((lengthDown * 3 - lengthUp * 1) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                20.0,  0.03, pod),
-			new Gear(offset + glm::dvec3(lengthDown / 2, -height / 2 + 0.5, 0),                          0.5,                15.0, 0.045, pod),
-			new Gear(offset + glm::dvec3(lengthUp / 2, height / 2, 0),                                   0.2,                10.0,  0.01, pod),
-			new Gear(offset + glm::dvec3(-lengthUp / 10, height / 2, 0),                                 0.3,                10.0,  0.01, pod),
+			new Gear(offset + glm::dvec3( lengthDown / 2,                         -height / 2 + 0.5, 0), 0.5,                15.0, 0.045, pod),
+			new Gear(offset + glm::dvec3(                  lengthUp / 2,           height / 2 + 0.0, 0), 0.2,                10.0,  0.01, pod),
+			new Gear(offset + glm::dvec3(                - lengthUp / 10,          height / 2 + 0.0, 0), 0.3,                10.0,  0.01, pod),
 		};
 		for (Gear* gv : gears) children.push_back(gv);
-		for (const int i : {3, 4})ground_gears.push_back(gears[i]);
+		for (const int i : {0, 1, 2, 3, 4})ground_gears.push_back(gears[i]);
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;
 		const int count = (int)(chain_length / 0.1);
@@ -52,16 +52,14 @@ namespace pod {
 			double l;
 			l = std::sqrt(std::pow(glm::length(b->GetPosition() - a->GetPosition()), 2) + std::pow(b->radius - a->radius, 2));
 			if (ans + l <= target) ans += l;
-			else
-			{
+			else {
 				const double r = (target - ans) / l;
 				return (1 - r) * (a->GetPosition() + t1 * a->radius) + r * (b->GetPosition() + t1 * b->radius);
 			}
 			const double angle = matrix::AngleBetween(t1, t2);
 			l = angle * b->radius;
 			if (ans + l <= target) ans += l;
-			else
-			{
+			else {
 				const double r = (target - ans) / l;
 				const glm::dmat4& mat = matrix::RotateD(matrix::Multiply(pod->GetMatrixY(), glm::dvec3(0, 0, 1)), angle * r);
 				return b->GetPosition() + matrix::Multiply(mat, t1) * b->radius;

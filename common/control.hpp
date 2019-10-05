@@ -11,5 +11,5 @@ namespace constants {
 	const double gravity = 9.8;
 	const double block_width = 5.0;
 	const double block_height = 4.0;
-	const double block_depth = 1.0;
+	const double block_depth = 5.0;
 }

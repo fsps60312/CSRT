@@ -42,7 +42,7 @@ int main(void)
 				lastDebugTime = std::chrono::steady_clock::now();
 			}
 		}
-		game.Advance(std::chrono::steady_clock::now() - lastTime);
+		game.Advance(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - lastTime));
 		lastTime = std::chrono::steady_clock::now();
 		ReceiveKeys(game);
 		game.Render();

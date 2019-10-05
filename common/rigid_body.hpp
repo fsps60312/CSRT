@@ -7,7 +7,6 @@
 class RigidBody {
 private:
 	void BackUp();
-	void Restore();
 public:
 	glm::dvec3 position = glm::dvec3(0);
 	glm::dvec3 velocity = glm::dvec3(0);
@@ -28,5 +27,6 @@ public:
 
 
 	glm::dvec3 GetVelocityAt(const glm::dvec3& relative_position)const;
-	bool Advance(const double secs, std::function<bool(RigidBody*)>accepted = NULL);
+	void Advance(const double secs);
+	void Restore();
 };

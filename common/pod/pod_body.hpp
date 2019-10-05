@@ -14,24 +14,25 @@ namespace pod {
 	class PodBody :public VisibleObject {
 	private:
 		const static double body_radius;
-		std::vector<Triangle>GetTriangles()const;
 		double rotation_y = 0;
 		double desired_rotation_y = 0;
+		RigidBody rb;
+		PodInterface* pod;
+		PodPropeller* propeller;
+		std::vector<Triangle>GetTriangles()const;
 		void UpdateRotationZ();
 		void UpdateRotationY();
 		void UpdateRigidBody();
 		void AdvanceCamera(const double secs);
 		void AdvanceRigidBody(const double secs);
-		RigidBody rb;
-		PodInterface* pod;
-		PodPropeller* propeller;
+		bool IsRigidBodyMoveTooMuch(const double secs)const;
 	public:
 		glm::dmat4 GetMatrixY()const;
 		glm::dmat4 GetMatrixZ()const;
 		glm::dmat4 GetMatrixT()const;
 		RigidBody* GetRigidBody();
 		PodBody(PodInterface *parent);
-		void Update()override;
+		void Update(const double secs)override;
 		void Advance(const double secs)override;
 	};
 }

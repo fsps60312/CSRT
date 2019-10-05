@@ -17,7 +17,7 @@ public:
 	std::vector<VisibleObject*>children;
 	VisibleObject();
 	VisibleObject(const std::vector<Triangle>& triangles);
-	virtual void Update();
+	virtual void Update(const double secs);
 	virtual void Advance(const double secs);
 	void Build(const glm::dmat4& transform)const;
 	void Translate(const glm::dvec3& offset);

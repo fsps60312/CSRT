@@ -23,9 +23,8 @@ BufferSystem::BufferSystem(std::string filename)
 			)));
 		obj = new VisibleObject();
 		auto pod = new pod::Pod();
-		auto blocks = new block::Blocks(glm::dvec3(0, 0, 0));
 		obj->children.push_back(pod);
-		obj->children.push_back(blocks);
+		obj->children.push_back(&block::Blocks::instance);
 		/*if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->Translate(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));

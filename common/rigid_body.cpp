@@ -1,5 +1,5 @@
 #include<common/rigid_body.hpp>
-bool RigidBody::Advance(const double secs, std::function<bool(RigidBody*)>is_accepted) {
+void RigidBody::Advance(const double secs) {
 	BackUp();
 	{
 		const auto preV = velocity;
@@ -14,15 +14,8 @@ bool RigidBody::Advance(const double secs, std::function<bool(RigidBody*)>is_acc
 		theta += (preV + omega) / 2.0 * secs;
 		theta = fmod(theta, 2.0 * PI);
 	}
-	if (is_accepted == NULL || is_accepted(this)) {
-		force = glm::dvec3(0.0);
-		alpha = 0;
-		return true;
-	}
-	else {
-		Restore();
-		return false;
-	}
+	force = glm::dvec3(0.0);
+	alpha = 0;
 }
 
 glm::dvec3 RigidBody::GetVelocityAt(const glm::dvec3& relative_position)const {
