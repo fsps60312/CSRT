@@ -7,6 +7,9 @@ VisibleObject::VisibleObject(const std::vector<Triangle>& triangles) :
 	is_leaf(true),
 	triangles(triangles) {
 }
+void VisibleObject::PrepareForRound() {
+	for (VisibleObject* ch : children)ch->PrepareForRound();
+}
 void VisibleObject::Update(const double secs) {
 	for (VisibleObject* ch : children)ch->Update(secs);
 }

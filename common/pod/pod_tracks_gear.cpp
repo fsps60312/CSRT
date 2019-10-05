@@ -3,19 +3,8 @@ namespace pod {
 	bool PodTracks::Track::Gear::IsOnGround() const{
 		return on_ground_countdown > 0;
 	}
-	void PodTracks::Track::Gear::RotateYAlongWithPod() {
-		const glm::dmat4& mat_y = pod->GetMatrixY(), & mat_z = pod->GetMatrixZ(), & mat_t = pod->GetMatrixT();
-		const glm::dmat4& mat_trans = mat_t * mat_z * mat_y * matrix::Inverse(mat_t * mat_z * pre_matrix_y);
-		//const glm::dvec3& r_pos = matrix::Multiply(matrix::Inverse(mat_t * mat_z * pre_matrix_y), rb.position);
-		//std::clog << "\t" << r_pos.x << " / " << relative_position.x << "\t" << r_pos.y << " / " << relative_position.y << "\t" << r_pos.z << " / " << relative_position.z << std::endl;
-		const glm::dvec3& new_position = matrix::Multiply(mat_trans, rb.position);
-		//const glm::dvec3& new_velocity = matrix::Multiply(mat_trans, rb.velocity);
-		//RB.position.X = newPosition.X; RB.position.Z = newPosition.Z;
-		rb.position = new_position;
-		//rb.velocity = new_velocity;
-		//RB.velocity.X = newVelocity.X; RB.velocity.Y = newVelocity.Y;
-		pre_matrix_y = mat_y;
-		pre_matrix_z = mat_z;
+	void PodTracks::Track::Gear::PrepareForRound() {
+		rb.Reset();
 	}
 	void PodTracks::Track::Gear::ApplyReactForceWithPod() {
 		const glm::dvec3& f = GetReactForce();
@@ -35,6 +24,30 @@ namespace pod {
 		pod->GetRigidBody()->force += f;
 		rb.force -= f;
 	}
+	void PodTracks::Track::Gear::Update(const double secs) {
+		ApplyReactForceWithPod();
+		rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
+	}
+	void PodTracks::Track::Gear::RotateYAlongWithPod() {
+		const glm::dmat4& mat_y = pod->GetMatrixY(), & mat_z = pod->GetMatrixZ(), & mat_t = pod->GetMatrixT();
+		const glm::dmat4& mat_trans = mat_t * mat_z * mat_y * matrix::Inverse(mat_t * mat_z * pre_matrix_y);
+		//const glm::dvec3& r_pos = matrix::Multiply(matrix::Inverse(mat_t * mat_z * pre_matrix_y), rb.position);
+		//std::clog << "\t" << r_pos.x << " / " << relative_position.x << "\t" << r_pos.y << " / " << relative_position.y << "\t" << r_pos.z << " / " << relative_position.z << std::endl;
+		const glm::dvec3& new_position = matrix::Multiply(mat_trans, rb.position);
+		//const glm::dvec3& new_velocity = matrix::Multiply(mat_trans, rb.velocity);
+		//RB.position.X = newPosition.X; RB.position.Z = newPosition.Z;
+		rb.position = new_position;
+		//rb.velocity = new_velocity;
+		//RB.velocity.X = newVelocity.X; RB.velocity.Y = newVelocity.Y;
+		pre_matrix_y = mat_y;
+		pre_matrix_z = mat_z;
+	}
+	bool PodTracks::Track::Gear::IsRigidBodyMoveTooMuch(const double secs) const {
+		if (secs > 1e-3) return true;
+		const double dif = glm::length(rb.position - rb._position);
+		if (dif > radius / 5) return true;
+		return false;
+	}
 	void PodTracks::Track::Gear::MoveGearBackToTouchSurface(const glm::dvec3& offset) {
 		double l = 0, r = 1;
 		while (r - l > 1e-9) {
@@ -44,47 +57,37 @@ namespace pod {
 		}
 		rb.position += offset * (-1 + r);
 	}
-	void PodTracks::Track::Gear::ApplyReactForceWithBlocks(const double secs) {
+	void PodTracks::Track::Gear::InverseVelocityIfCollideWithBlocks() {
+		glm::dvec3 ret = glm::dvec3(0);
 		if (block::IsCollidable(rb.position))return; // inside a block, no respond
 		//bool rollback = false;
 		const double rollback_speed = 0.1;
 		const double bounce = 0.1;
-		bool is_collided = false;
 		for (const glm::dvec3& offset : { glm::dvec3(-radius,0,0),glm::dvec3(radius,0,0),glm::dvec3(0,-radius,0),glm::dvec3(0,radius,0) }) {
 			const glm::dvec3& dir = glm::normalize(offset);
 			if (block::IsCollidable(rb.position + offset)) {
 				MoveGearBackToTouchSurface(offset);
-				if (glm::dot(rb.velocity, dir) > 0) {
+				const double sub_velocity_length = glm::dot(rb.velocity, dir);
+				if (sub_velocity_length > 0) {
 					if (std::abs(-1 - dir.y) < 1e-9)on_ground_countdown = 0.1; // downward collision
-					if (!is_collided) {
-						rb.force = glm::dvec3(0.0);
-						is_collided = true;
-					}
-					const double f = (bounce + 1) * glm::dot(rb.velocity, dir) * rb.mass / secs;
-					rb.force -= dir * f;
+					rb.velocity -= (1.0 + bounce) * dir * sub_velocity_length;
 				}
 			}
 		}
-	}
-	void PodTracks::Track::Gear::Update(const double secs) {
-		ApplyReactForceWithPod();
-		rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
-	}
-	bool PodTracks::Track::Gear::IsRigidBodyMoveTooMuch(const double secs) const {
-		if (secs > 1e-3) return true;
-		const double dif = glm::length(rb.position - rb._position);
-		if (dif > radius / 5) return true;
-		return false;
 	}
 	void PodTracks::Track::Gear::AdvanceRigidBody(const double secs) {
 		rb.Advance(secs);
 		if (IsRigidBodyMoveTooMuch(secs))
 		{
 			rb.Restore();
-			AdvanceRigidBody(0.5 * secs);
-			AdvanceRigidBody(0.5 * secs);
+			AdvanceRigidBody(secs / 2);
+			AdvanceRigidBody(secs / 2);
 		} else {
-			ApplyReactForceWithBlocks(secs);
+			on_ground_countdown -= secs;
+			InverseVelocityIfCollideWithBlocks();
+			//rb.Restore();
+			//const glm::dvec3& react_force = GetReactForceWithBlocks(secs);
+			//rb.Advance(secs);
 		}
 	}
 	void PodTracks::Track::Gear::Advance(const double secs) {
@@ -93,7 +96,6 @@ namespace pod {
 		//std::clog << "gear.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
 		//auto prep=rb.position;
 		AdvanceRigidBody(secs);
-		on_ground_countdown -= secs;
 		//rb.position = prep;
 		//rb.velocity = glm::dvec3(0.0);
 		SetTransform(matrix::TranslateD(rb.position) * pod->GetMatrixY() * matrix::RotateD(glm::dvec3(0, 0, -1), rb.theta));

@@ -32,18 +32,18 @@ int main(void)
 		// --------------------
 		// Measure Speed
 		// --------------------
+		auto currentTime = std::chrono::steady_clock::now();
 		{
-			auto currentTime = std::chrono::steady_clock::now();
 			nbFrames++;
 			if (std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastDebugTime).count() / 1000000000.0 >= 1.0) {
 				// printf and reset
 				printf("%f ms/frame\n", std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastDebugTime).count() / 1000000.0 / double(nbFrames));
 				nbFrames = 0;
-				lastDebugTime = std::chrono::steady_clock::now();
+				lastDebugTime = currentTime;
 			}
 		}
-		game.Advance(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - lastTime));
-		lastTime = std::chrono::steady_clock::now();
+		game.Advance(std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastTime));
+		lastTime = currentTime;
 		ReceiveKeys(game);
 		game.Render();
 		environment::DispatchShaders();

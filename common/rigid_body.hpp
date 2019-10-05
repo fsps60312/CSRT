@@ -29,4 +29,5 @@ public:
 	glm::dvec3 GetVelocityAt(const glm::dvec3& relative_position)const;
 	void Advance(const double secs);
 	void Restore();
+	void Reset();
 };

@@ -13,6 +13,9 @@ namespace pod {
 	RigidBody* PodBody::GetRigidBody() {
 		return &rb;
 	}
+	void PodBody::PrepareForRound() {
+		rb.Reset();
+	}
 	void PodBody::UpdateRotationZ() {
 		if (!pod->IsOnGround()) {
 			const double t = -10 * rb.theta - rb.omega;
@@ -44,7 +47,7 @@ namespace pod {
 		glm::dvec3 camera_direction = camera::GetDirection();
 		glm::dvec3 t = rb.position - camera_position;
 		t.z = 0;
-		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5))/5.0, secs, 0.2);
+		mylib::SmoothTo(camera_position, rb.position + glm::dvec3(0, 0, 30 / std::pow(0.4 + glm::length(t) * 0.1, 0.5))/2.0, secs, 0.2);
 		glm::dvec3 target = rb.position + 0.1 * rb.velocity - camera_position;
 		assert(target.z != 0);
 		target /= std::abs(target.z);
@@ -131,8 +134,8 @@ namespace pod {
 		rb.Advance(secs);
 		if (IsRigidBodyMoveTooMuch(secs)) {
 			rb.Restore();
-			AdvanceRigidBody(0.5 * secs);
-			AdvanceRigidBody(0.5 * secs);
+			AdvanceRigidBody(secs / 2);
+			AdvanceRigidBody(secs / 2);
 		} else {
 			return;
 		}

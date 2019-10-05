@@ -29,6 +29,7 @@ void Game::Render(){
 	world.SendToShader();
 }
 void Game::Advance(std::chrono::nanoseconds timespan) {
+	model.obj->PrepareForRound();
 	const double secs = timespan.count() / 1000000000.0;
 	model.obj->Update(secs);
 	model.obj->Advance(secs);

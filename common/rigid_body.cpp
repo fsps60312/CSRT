@@ -1,4 +1,8 @@
 #include<common/rigid_body.hpp>
+void RigidBody::Reset() {
+	force = glm::dvec3(0);
+	alpha = 0;
+}
 void RigidBody::Advance(const double secs) {
 	BackUp();
 	{
@@ -14,8 +18,6 @@ void RigidBody::Advance(const double secs) {
 		theta += (preV + omega) / 2.0 * secs;
 		theta = fmod(theta, 2.0 * PI);
 	}
-	force = glm::dvec3(0.0);
-	alpha = 0;
 }
 
 glm::dvec3 RigidBody::GetVelocityAt(const glm::dvec3& relative_position)const {
