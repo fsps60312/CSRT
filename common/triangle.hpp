@@ -3,11 +3,11 @@
 #include<vector>
 class Triangle {
 private:
-	glm::mat3 vertices;
+	glm::dmat3 vertices;
 public:
 	int material = 1;
-	Triangle(const glm::mat3 vertices);
-	glm::mat3 GetVertices()const;
-	Triangle ApplyTransform(const glm::mat4& transform)const;
-	static std::vector<Triangle>Cube(const glm::vec3 &xyz);
+	Triangle(const glm::dmat3 vertices);
+	glm::dmat3 GetVertices()const;
+	Triangle ApplyTransform(const glm::dmat4& transform)const;
+	static std::vector<Triangle>Cube(const glm::dvec3 &xyz);
 };

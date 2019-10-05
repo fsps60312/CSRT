@@ -5,6 +5,7 @@
 #include<common/matrix_d.hpp>
 
 #include<vector>
+#include<set>
 class VisibleObject {
 private:
 	const bool is_leaf;

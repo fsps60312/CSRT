@@ -2,6 +2,7 @@
 
 #include <common/buffer_system.hpp>
 #include<common/pod/pod.hpp>
+#include<common/block/blocks.hpp>
 
 BufferSystem::BufferSystem(){}
 
@@ -22,7 +23,9 @@ BufferSystem::BufferSystem(std::string filename)
 			)));
 		obj = new VisibleObject();
 		auto pod = new pod::Pod();
-		obj->children.push_back((VisibleObject*)pod);
+		auto blocks = new block::Blocks(glm::dvec3(0, 0, 0));
+		obj->children.push_back(pod);
+		obj->children.push_back(blocks);
 		/*if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->Translate(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
