@@ -10,4 +10,5 @@ public:
 	virtual glm::dmat4 GetMatrixZ()const abstract;
 	virtual glm::dmat4 GetMatrixT()const abstract;
 	virtual RigidBody* GetRigidBody() abstract;
+	virtual double GetCorrectiveAlpha()const abstract;
 };

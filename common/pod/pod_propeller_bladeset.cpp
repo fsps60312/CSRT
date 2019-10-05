@@ -14,7 +14,7 @@ namespace pod {
 		}
 	}
 	void PodPropeller::BladeSet::Advance(const double secs) {
-		theta += (reversed ? -1 : 1) * secs * speed_ratio * 5 * propeller->GetOmega();
+		theta += (reversed ? -1 : 1) * secs * speed_ratio * 5 * propeller->GetOmegaForBladeSets();
 		theta = std::fmod(theta, 2.0 * PI);
 		SetTransform(matrix::TranslateD(glm::dvec3(0, 0, height)) * matrix::RotateD(glm::dvec3(0, 0, 1), theta));
 	}

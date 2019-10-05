@@ -23,7 +23,7 @@ namespace pod {
 			SetTransform(basic_transform * matrix::TranslateD(glm::dvec3(0, 0, -height + h * max_height)));
 		}
 	}
-	double PodPropeller::GetOmega() { return omega; }
+	double PodPropeller::GetOmegaForBladeSets() { return omega + std::abs(pod->GetCorrectiveAlpha()) / 3; }
 	double PodPropeller::GetLiftForce() {
 		return (omega - GetDownwardSpeed() * 0.05) * (1.0 - fold_state) * 5;
 	}

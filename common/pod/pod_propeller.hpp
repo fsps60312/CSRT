@@ -86,7 +86,7 @@ namespace pod {
 	public:
 		enum Types { Basic };
 		const static std::map<Types, Description>descriptions;
-		double GetOmega();
+		double GetOmegaForBladeSets();
 		double GetLiftForce();
 		void SetFoldState(const double fold_state);
 		void Advance(const double secs)override;

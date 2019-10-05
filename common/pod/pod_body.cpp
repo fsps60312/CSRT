@@ -16,13 +16,15 @@ namespace pod {
 	void PodBody::PrepareForRound() {
 		rb.Reset();
 	}
+	double PodBody::GetCorrectiveAlpha()const {
+		const double t = -10 * rb.theta - rb.omega;
+		return std::pow(std::abs(t), 1) * t - 1 * std::abs(rb.omega) * rb.omega - 1 * rb.omega;
+	}
 	void PodBody::UpdateRotationZ() {
 		if (!pod->IsOnGround()) {
-			const double t = -10 * rb.theta - rb.omega;
-			rb.alpha += std::pow(std::abs(t), 1) * t;
+			rb.alpha += GetCorrectiveAlpha();
 			if (environment::IsKeyDown(GLFW_KEY_A))rb.alpha += 5;
 			if (environment::IsKeyDown(GLFW_KEY_D))rb.alpha -= 5;
-			rb.alpha += -1 * std::abs(rb.omega) * rb.omega - 1 * rb.omega;
 		}
 	}
 	void PodBody::UpdateRotationY() {

@@ -31,6 +31,7 @@ namespace pod {
 		glm::dmat4 GetMatrixZ()const;
 		glm::dmat4 GetMatrixT()const;
 		RigidBody* GetRigidBody();
+		double GetCorrectiveAlpha()const;
 		PodBody(PodInterface *parent);
 		void PrepareForRound()override;
 		void Update(const double secs)override;

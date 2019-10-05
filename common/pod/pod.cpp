@@ -25,4 +25,7 @@ namespace pod {
 	RigidBody* Pod::GetRigidBody() {
 		return body->GetRigidBody();
 	}
+	double Pod::GetCorrectiveAlpha()const {
+		return body->GetCorrectiveAlpha();
+	}
 }
