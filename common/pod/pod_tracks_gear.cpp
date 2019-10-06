@@ -65,7 +65,8 @@ namespace pod {
 		if (block::IsCollidable(rb.position))return; // inside a block, no respond
 		//bool rollback = false;
 		const double rollback_speed = 0.1;
-		const double bounce = 0.1;
+		const double bounce_coe = 0.1;
+		const double friction_coe = 0.5;
 		for (const glm::dvec3& offset : { glm::dvec3(-radius,0,0),glm::dvec3(radius,0,0),glm::dvec3(0,-radius,0),glm::dvec3(0,radius,0) }) {
 			const glm::dvec3& dir = glm::normalize(offset);
 			if (block::IsCollidable(rb.position + offset)) {
@@ -73,7 +74,13 @@ namespace pod {
 				const double sub_velocity_length = glm::dot(rb.velocity, dir);
 				if (sub_velocity_length > 0) {
 					if (std::abs(-1 - dir.y) < 1e-9)on_ground_countdown = 0.1; // downward collision
-					rb.velocity -= (1.0 + bounce) * dir * sub_velocity_length;
+					const double dv = (1.0 + bounce_coe) * sub_velocity_length;
+					rb.velocity -= dir * dv;
+					const glm::dvec3& hori_speed_dir = glm::cross(dir, glm::dvec3(0, 0, 1));
+					const glm::dvec3& hori_speed_vec = glm::dot(hori_speed_dir, rb.velocity) * hori_speed_dir;
+					const glm::dvec3& friction_dv = -glm::normalize(hori_speed_vec) * dv * friction_coe;
+					if (glm::length(friction_dv) > glm::length(hori_speed_vec))rb.velocity -= hori_speed_vec;
+					else rb.velocity += friction_dv;
 				}
 			}
 		}
