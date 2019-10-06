@@ -12,7 +12,7 @@ layout(std430,  binding = 1) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
 layout(std430,  binding = 2) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
 layout(std430,  binding = 3) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
 
-const float PI    = 3.14159265f;
+const float PI    = acos(-1);
 // https://stackoverflow.com/questions/16069959/glsl-how-to-ensure-largest-possible-float-value-without-overflow
 const float FLT_MAX=3.402823466e+38f;
 
@@ -246,9 +246,9 @@ void main()
 	ivec2 dims   = imageSize(img_output);
 	vec3  dx     = normalize(cross(view, up));
     vec3  dy     = normalize(cross(view, dx));
-	vec3  center = eye + view * (dims.x / 2) / tan((fov / 2) / 360 * 2 * PI);
-	float x =  float(pixel_coords.x * 2 - dims.x) / 2.0f;
-	float y = -float(pixel_coords.y * 2 - dims.y) / 2.0f;
+	vec3  center = eye + view * (dims.x / 2.0) / tan(fov / 2.0);
+	float x =   pixel_coords.x - dims.x/2.0;
+	float y = -(pixel_coords.y - dims.y/2.0);
 	
 	// Generate Ray
 	vec3 pos = eye;

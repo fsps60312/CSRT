@@ -2,6 +2,7 @@
 #include<common/visible_object.hpp>
 #include<common/block/block.hpp>
 #include<common/control.hpp>
+#include<common/camera.hpp>
 #include<deque>
 namespace block {
 	bool IsCollidable(const glm::dvec3& position);

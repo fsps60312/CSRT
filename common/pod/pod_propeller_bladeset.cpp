@@ -10,7 +10,7 @@ namespace pod {
 		for (int i = 0; i < description.count; i++) {
 			Blade* blade = new Blade(description.blade_type, radius, theta_offset + (2.0 * PI) * i / description.count, 20.0 / 180.0 * PI, reversed);
 			blades.push_back(blade);
-			children.push_back(blade);
+			children.insert(blade);
 		}
 	}
 	void PodPropeller::BladeSet::Advance(const double secs) {

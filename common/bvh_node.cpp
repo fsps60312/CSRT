@@ -89,7 +89,8 @@ int BVHNode::CalMid(const int id) {
 	// sort along longest axis
 	glm::vec3 c(0); c[glob_bvh_aabbs[id].LongestAxis()] = 1;
 	const int l = glob_tri_ranges[id].x, r = glob_tri_ranges[id].y;
-	std::sort(glob_triangles.begin() + l, glob_triangles.begin() + r + 1, [&c, &dot_max](const Triangle& t1, const Triangle& t2)->bool {
+	//std::sort(glob_triangles.begin() + l, glob_triangles.begin() + r + 1, [&c, &dot_max](const Triangle& t1, const Triangle& t2)->bool {
+	std::nth_element(glob_triangles.begin() + l, glob_triangles.begin() + (l + r) / 2, glob_triangles.begin() + r + 1, [&c, &dot_max](const Triangle& t1, const Triangle& t2)->bool {
 		return dot_max(t1.GetVertices(), c) < dot_max(t2.GetVertices(), c);
 	});
 	// left aabbs

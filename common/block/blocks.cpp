@@ -14,7 +14,8 @@ namespace block {
 	}
 	void Blocks::RecycleBlock(Block* b) {
 		if (b == NULL)return;
-		children.erase(find(children.begin(), children.end(), b));
+		const size_t erased = children.erase(b);
+		assert(erased == 1);
 		delete b;
 	}
 	void Blocks::RemoveXMin() {
@@ -44,7 +45,7 @@ namespace block {
 		const glm::dvec3& position = anchor + glm::dvec3(constants::block_width * xi, constants::block_height * yi, 0.0);
 		const glm::dvec3& size = glm::dvec3(constants::block_width - 0.2, constants::block_height - 0.2, constants::block_depth);
 		Block* blk = new Block(position, size, Block::Type::General);
-		children.push_back(blk);
+		children.insert(blk);
 		return blk;
 	}
 	void Blocks::AppendYMin() {
@@ -72,11 +73,23 @@ namespace block {
 		blocks.push_back(make_pair(xi, new_list));
 	}
 	void Blocks::RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max)const {
-		x_min = -20;
-		x_max = 20;
-		y_min = -20;
-		y_max = 20;
-		//TODO
+		const glm::dvec3& camera_dir = camera::GetDirection();
+		const glm::dvec3& up = camera::GetUp();
+		const glm::dvec3& dx = glm::normalize(glm::cross(camera_dir, up));
+		const glm::dvec3& dy = glm::normalize(glm::cross(camera_dir, dx));
+		const double fov = camera::GetFoV();
+		const glm::dvec3& pos = camera::GetPosition();
+		const glm::dvec3& center = pos + camera_dir / std::tan(fov / 2);
+		x_min = y_min = DBL_MAX;
+		x_max = y_max = -DBL_MAX;
+		for (const glm::dvec3& target : { center - dx - dy,center - dx + dy,center + dx - dy,center + dx + dy }) {
+			const glm::dvec3& dir = target - pos;
+			const glm::dvec3& hit_point = pos - dir * (pos.z / dir.z);
+			x_min = std::min(x_min, hit_point.x);
+			y_min = std::min(y_min, hit_point.y);
+			x_max = std::max(x_max, hit_point.x);
+			y_max = std::max(y_max, hit_point.y);
+		}
 	}
 	void Blocks::Update(const double secs) {
 		double x_min, x_max, y_min, y_max;

@@ -33,13 +33,13 @@ namespace environment {
 			// make sure writing to image has finished before read
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
-			compute_shader.Use(WIDTH / WORK_GROUP_SIZE_X, HEIGHT / WORK_GROUP_SIZE_Y, 1);
+			compute_shader.Use(SCREEN_WIDTH / WORK_GROUP_SIZE_X, SCREEN_HEIGHT / WORK_GROUP_SIZE_Y, 1);
 
 			glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
 
 			compute_shader.Disable();
 
-			DrawSubWindow(0, 0, WIDTH, HEIGHT, GetTextureShader());
+			DrawSubWindow(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GetTextureShader());
 		}
 
 
@@ -110,7 +110,7 @@ namespace environment {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); gl_check_error();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
 		glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
 	}
 	void GLShowInfo() {
@@ -147,7 +147,7 @@ namespace environment {
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); glfw_check_error();
 
 		// Open a window and create its OpenGL context
-		window = glfwCreateWindow(WIDTH, HEIGHT, "Compute_Shader_Ray_Tracing", NULL, NULL); glfw_check_error();
+		window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Compute_Shader_Ray_Tracing", NULL, NULL); glfw_check_error();
 		if (window == NULL) {
 			fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
 			glfwTerminate(); glfw_check_error();

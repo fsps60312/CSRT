@@ -75,7 +75,7 @@ namespace pod {
 			);
 			bladeset->SetHeight(bladeset_description.height);
 			bladesets.push_back(bladeset);
-			children.push_back(bladeset);
+			children.insert(bladeset);
 		}
 		height = max_height = 0;
 		for (const auto& v : descriptions.at(propeller_type).bladesets) height = std::max(height, v.height);
@@ -84,7 +84,7 @@ namespace pod {
 		const double z_min = height - max_height, z_max = height;
 		VisibleObject* pole = new VisibleObject(Triangle::Cube(glm::dvec3(pole_radius, pole_radius, 0.5 * (z_max - z_min))));
 		pole->Translate(glm::dvec3(0, 0, 0.5 * (z_max - z_min) + z_min));
-		children.push_back(pole);
+		children.insert(pole);
 		SetFoldState(0);
 	}
 	PodPropeller::BladeSetDescription::BladeSetDescription(const BladeSet::Types type, const double radius, const bool reversed, const double height, const double speed_ratio, const double theta_offset) :

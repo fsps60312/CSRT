@@ -29,14 +29,14 @@ namespace pod {
 			new Gear(offset + glm::dvec3(                  lengthUp / 2,           height / 2 + 0.0, 0), 0.2,                10.0,  0.01, pod),
 			new Gear(offset + glm::dvec3(                - lengthUp / 10,          height / 2 + 0.0, 0), 0.3,                10.0,  0.01, pod),
 		};
-		for (Gear* gv : gears) children.push_back(gv);
+		for (Gear* gv : gears) children.insert(gv);
 		for (const int i : {0, 1, 2, 3, 4})ground_gears.push_back(gears[i]);
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;
 		const int count = (int)(chain_length / 0.1);
 		for (int i = 0; i < count; i++) {
 			auto t = new Tooth(GetToothPosition(gears, (double)i / count));
-			children.push_back(t);
+			children.insert(t);
 			teeth.push_back(t);
 		}
 	}
@@ -102,7 +102,7 @@ namespace pod {
 		rigt_track = new Track(pod, offset + glm::dvec3(0, 0, gap / 2));
 		//leftTrack.Transform = leftTrack.OriginTransform = MyLib.Transform(leftTrack).TranslatePrepend(new Vector3D(0, 0, -gap / 2)).Value;
 		//rigtTrack.Transform = rigtTrack.OriginTransform = MyLib.Transform(rigtTrack).TranslatePrepend(new Vector3D(0, 0, gap / 2)).Value;
-		children.push_back(left_track);
-		children.push_back(rigt_track);
+		children.insert(left_track);
+		children.insert(rigt_track);
 	}
 }

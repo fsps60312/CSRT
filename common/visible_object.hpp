@@ -14,7 +14,7 @@ private:
 protected:
 	void SetTransform(const glm::dmat4& t);
 public:
-	std::vector<VisibleObject*>children;
+	std::set<VisibleObject*>children;
 	VisibleObject();
 	VisibleObject(const std::vector<Triangle>& triangles);
 	virtual void PrepareForRound();

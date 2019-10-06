@@ -2,19 +2,18 @@
 
 namespace camera {
 	// Initial Field of View
-	double initialFoV = 90.0f;
+	double initialFoV = 60.0 / 180.0 * PI;
 
 	double speed = 5.0f; // 3 units / second
 	double mouseSpeed = 0.005f;
 	// Initial position : on +Z
 	glm::dvec3 position = glm::dvec3(0.0, 0.0, 2.0);
 	// Initial horizontal angle : toward -Z
-	double horizontal_angle = 3.14f; // +Z to +X (Math : +X to +Y)
+	double horizontal_angle = PI; // +Z to +X (Math : +X to +Y)
 	// Initial vertical angle : none
-	double vertical_angle = 0.0f; // +X to + Y (Math : +Z to +Y)
-	glm::dvec3 direction;
-	glm::dvec3 right;
-	glm::dvec3 up;
+	double vertical_angle = 0; // +X to + Y (Math : +Z to +Y)
+	glm::dvec3 direction = glm::dvec3(0, 0, -1);
+	glm::dvec3 up = glm::dvec3(0, 1, 0);
 	void SetPosition(const glm::dvec3& camera_position) {
 		position = camera_position;
 	}
@@ -30,22 +29,16 @@ namespace camera {
 	glm::dvec3 GetUp() {
 		return up;
 	}
-	int GetWidth() {
-		return WIDTH;
-	}
-	int GetHeight() {
-		return HEIGHT;
-	}
 	double GetFoV() {
 		return initialFoV;
 	}
 	void AddFoV(double num) {
 		double tempFoV = initialFoV + num;
-		initialFoV = tempFoV > 90.0 ? 90.0 : tempFoV;
+		//initialFoV = tempFoV > 90.0 ? 90.0 : tempFoV;
 	}
 	void SubFoV(double num) {
 		double tempFoV = initialFoV - num;
-		initialFoV = tempFoV < 30.0 ? 30.0 : tempFoV;
+		//initialFoV = tempFoV < 30.0 ? 30.0 : tempFoV;
 	}
 
 
@@ -62,11 +55,11 @@ namespace camera {
 		const glm::dvec2 mouse_pos = environment::GetCursorPos();
 		if (MOVE_VIEW) {
 			// Reset mouse position for next frame
-			environment::SetCursorPos(glm::dvec2(WIDTH / 2, HEIGHT / 2));
+			environment::SetCursorPos(glm::dvec2(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0));
 
 			// Compute new orientation
-			horizontal_angle += mouseSpeed * double(WIDTH / 2 - mouse_pos.x);
-			vertical_angle += mouseSpeed * double(HEIGHT / 2 - mouse_pos.y);
+			horizontal_angle += mouseSpeed * double(SCREEN_WIDTH / 2.0 - mouse_pos.x);
+			vertical_angle += mouseSpeed * double(SCREEN_HEIGHT / 2.0 - mouse_pos.y);
 			vertical_angle = glm::clamp(vertical_angle, -PI / 2.0, PI / 2.0);
 		}
 
@@ -78,10 +71,10 @@ namespace camera {
 		);
 
 		// Right vector
-		right = glm::dvec3(
-			sin(horizontal_angle - 3.14 / 2.0),
+		const glm::dvec3& right = glm::dvec3(
+			sin(horizontal_angle - PI / 2.0),
 			0,
-			cos(horizontal_angle - 3.14 / 2.0)
+			cos(horizontal_angle - PI / 2.0)
 		);
 
 		// Up vector

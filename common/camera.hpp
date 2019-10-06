@@ -3,8 +3,6 @@
 #include<common/environment.hpp>
 
 namespace camera {
-	int GetWidth();
-	int GetHeight();
 
 	void ComputeMatricesFromInputs();
 
