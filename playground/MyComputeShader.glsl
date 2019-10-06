@@ -108,8 +108,7 @@ float AABBIntersect(in Ray r, in int aabb_id){
 	const vec3 v2=(aabb[1]-r.pos)/r.dir;
 	const vec3 mn=min(v1,v2),mx=max(v1,v2);
 	const float mn_v=max(max(mn.x,mn.y),mn.z),mx_v=min(min(mx.x,mx.y),min(mx.z,r.t));
-	if(mn_v>mx_v)return FLT_MAX;
-	return mn_v;
+	return mn_v>mx_v?FLT_MAX:mn_v;
 }
 
 void BVHIntersect(inout Ray r){

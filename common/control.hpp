@@ -1,8 +1,8 @@
 #pragma once
 #include<cmath>
 #define NOW_MODEL "suzanne" //"suzanne" , "teapot" , "monster"
-#define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 1024
+#define SCREEN_WIDTH (1920/2)
+#define SCREEN_HEIGHT (1080/2)
 #define WORK_GROUP_SIZE_X 8
 #define WORK_GROUP_SIZE_Y 8
 #define MOVE_VIEW false

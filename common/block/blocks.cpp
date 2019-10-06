@@ -76,7 +76,7 @@ namespace block {
 		const glm::dvec3& camera_dir = camera::GetDirection();
 		const glm::dvec3& up = camera::GetUp();
 		const glm::dvec3& dx = glm::normalize(glm::cross(camera_dir, up));
-		const glm::dvec3& dy = glm::normalize(glm::cross(camera_dir, dx));
+		const glm::dvec3& dy = glm::normalize(glm::cross(camera_dir, dx)) / double(SCREEN_WIDTH) * double(SCREEN_HEIGHT);
 		const double fov = camera::GetFoV();
 		const glm::dvec3& pos = camera::GetPosition();
 		const glm::dvec3& center = pos + camera_dir / std::tan(fov / 2);

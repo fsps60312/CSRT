@@ -6,6 +6,8 @@
 #include<iostream>
 #include<cmath>
 #include<algorithm>
+#include<mutex>
+#include<thread>
 class BVHNode {
 public:
 #pragma region buffer
@@ -18,9 +20,10 @@ private:
 	const int id;
 	BVHNode* l = NULL, * r = NULL, * p = NULL;
 	static int GetId(BVHNode* o);
+	static std::mutex new_node_lock;
 	void NewNode();
-	int CalMid(const int id);
-	void Build(const int l, const int r);
+	int CalMid(const int id, std::vector<int>& tri_ids);
+	void Build(const int l, const int r, std::vector<int>& tri_ids);
 public:
 	BVHNode(BVHNode* parent);
 	static void ClearVectors();

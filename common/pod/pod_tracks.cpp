@@ -1,10 +1,12 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
 	void PodTracks::Track::UpdateTrackSpeed(const double secs) {
-		if (!pod->IsOnGround())return;
-		double track_cycle_acceleration = track_cycle_speed > 0 ? -10 : 10;
-		if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))track_cycle_acceleration += 50;
-		if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))track_cycle_acceleration += 50;
+		const double deacceleration = environment::IsKeyDown(GLFW_KEY_A) && environment::IsKeyDown(GLFW_KEY_D) ? 100 : 20;
+		double track_cycle_acceleration = track_cycle_speed > 0 ? -deacceleration : deacceleration;
+		if (pod->IsOnGround()) {
+			if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))track_cycle_acceleration += 70;
+			if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))track_cycle_acceleration += 70;
+		}
 		track_cycle_speed += track_cycle_acceleration * secs;
 	}
 	void PodTracks::Track::AddTrackSpeed(const double dv) {
