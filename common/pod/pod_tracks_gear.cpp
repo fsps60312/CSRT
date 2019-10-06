@@ -77,7 +77,9 @@ namespace pod {
 					const double dv = (1.0 + bounce_coe) * sub_velocity_length;
 					rb.velocity -= dir * dv;
 					const glm::dvec3& hori_speed_dir = glm::cross(dir, glm::dvec3(0, 0, 1));
-					const glm::dvec3& hori_speed_vec = glm::dot(hori_speed_dir, rb.velocity) * hori_speed_dir;
+					glm::dvec3& speed_include_rotate = rb.velocity + matrix::Multiply(pod->GetMatrixY(), glm::normalize(glm::cross(dir, glm::dvec3(0, 0, 1)))) * track->GetTrackSpeed();
+					speed_include_rotate.z = 0;
+					const glm::dvec3& hori_speed_vec = glm::dot(hori_speed_dir, speed_include_rotate) * hori_speed_dir;
 					const glm::dvec3& friction_dv = -glm::normalize(hori_speed_vec) * dv * friction_coe;
 					if (glm::length(friction_dv) > glm::length(hori_speed_vec))rb.velocity -= hori_speed_vec;
 					else rb.velocity += friction_dv;
