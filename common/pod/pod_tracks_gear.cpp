@@ -1,5 +1,8 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	void PodTracks::Track::Gear::Rotate(const double len) {
+		rb.theta += len / radius;
+	}
 	bool PodTracks::Track::Gear::IsOnGround() const{
 		return on_ground_countdown > 0;
 	}
@@ -91,6 +94,7 @@ namespace pod {
 		}
 	}
 	void PodTracks::Track::Gear::Advance(const double secs) {
+		Rotate(secs * track->GetTrackSpeed());
 		RotateYAlongWithPod();
 		//const glm::dvec3 v = rb.force / rb.mass;
 		//std::clog << "gear.rb: " << v.x << "," << v.y << "," << v.z << std::endl;
@@ -118,18 +122,19 @@ namespace pod {
 		std::vector<glm::dvec3> positions;
 		for (int i = 0; i < n; i++) positions.push_back(glm::dvec3(radius * std::cos(2 * PI * i / n), radius * std::sin(2 * PI * i / n), 0));
 		std::vector<Triangle>ret;
-		for (int i = 2; i < n; i++) {
+		for (int i = 2; i < n; i++)if(i!=5) {
 			ret.push_back(Triangle(glm::mat3(positions[0], positions[i - 1LL], positions[i])));
 			ret.push_back(Triangle(glm::mat3(positions[i], positions[i - 1LL], positions[0])));
 		}
 		return ret;
 	}
-	PodTracks::Track::Gear::Gear(const glm::dvec3& relative_position, const double radius, const double suspension_hardness, const double mass, PodInterface* pod) :
+	PodTracks::Track::Gear::Gear(const glm::dvec3& relative_position, const double radius, const double suspension_hardness, const double mass, PodInterface* pod, Track* track) :
 		relative_position(relative_position),
 		radius(radius),
 		suspension_hardness(suspension_hardness),
 		mass(mass),
 		pod(pod),
+		track(track),
 		pre_matrix_y(pod->GetMatrixY()),
 		VisibleObject(GetTriangles(radius)) {
 		rb = RigidBody();

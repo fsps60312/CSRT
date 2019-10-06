@@ -23,6 +23,7 @@ namespace pod {
 			class Gear :public VisibleObject {
 			private:
 				PodInterface* pod;
+				Track* track;
 				RigidBody rb;
 				glm::dmat4 pre_matrix_y = matrix::IdentityD(), pre_matrix_z = matrix::IdentityD();
 				const glm::dvec3 relative_position;
@@ -35,11 +36,12 @@ namespace pod {
 				bool IsRigidBodyMoveTooMuch(const double secs)const;
 				void MoveGearBackToTouchSurface(const glm::dvec3& dir);
 				void AdvanceRigidBody(const double secs);
+				void Rotate(const double len);
 			public:
 				const double radius;
 				const double suspension_hardness;
 				const double mass;
-				Gear(const glm::dvec3& relative_position, const double radius, const double suspension_hardness, const double mass, PodInterface* pod);
+				Gear(const glm::dvec3& relative_position, const double radius, const double suspension_hardness, const double mass, PodInterface* pod, Track* track);
 				bool IsOnGround()const;
 				void PrepareForRound()override;
 				void Update(const double secs)override;
@@ -59,6 +61,7 @@ namespace pod {
 		public:
 			Track(PodInterface* pod, const glm::dvec3& offset);
 			bool IsOnGround()const;
+			double GetTrackSpeed()const;
 			void Advance(const double secs)override;
 		};
 	private:

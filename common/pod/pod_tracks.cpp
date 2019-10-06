@@ -1,5 +1,8 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	double PodTracks::Track::GetTrackSpeed()const {
+		return track_speed;
+	}
 	bool PodTracks::Track::IsOnGround() const{
 		for (Gear* gear : ground_gears)if (!gear->IsOnGround())return false;
 		return true;
@@ -21,19 +24,19 @@ namespace pod {
 		const double depth = 1, height = 1, lengthUp = 4, lengthDown = 2.5;
 		gears = {
 			//                  relative position,                                                      radius, suspension hardness,  mass
-			new Gear(offset + glm::dvec3(                - lengthUp / 2,          -height / 2 + 0.4, 0), 0.4,                 7.0,  0.02, pod),
-			new Gear(offset + glm::dvec3((lengthDown * 1 - lengthUp * 3) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                10.0, 0.025, pod),
-			new Gear(offset + glm::dvec3((lengthDown * 2 - lengthUp * 2) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                10.0,  0.03, pod),
-			new Gear(offset + glm::dvec3((lengthDown * 3 - lengthUp * 1) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                20.0,  0.03, pod),
-			new Gear(offset + glm::dvec3( lengthDown / 2,                         -height / 2 + 0.5, 0), 0.5,                15.0, 0.045, pod),
-			new Gear(offset + glm::dvec3(                  lengthUp / 2,           height / 2 + 0.0, 0), 0.2,                10.0,  0.01, pod),
-			new Gear(offset + glm::dvec3(                - lengthUp / 10,          height / 2 + 0.0, 0), 0.3,                10.0,  0.01, pod),
+			new Gear(offset + glm::dvec3(                - lengthUp / 2,          -height / 2 + 0.4, 0), 0.4,                 7.0,  0.02, pod, this),
+			new Gear(offset + glm::dvec3((lengthDown * 1 - lengthUp * 3) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                10.0, 0.025, pod, this),
+			new Gear(offset + glm::dvec3((lengthDown * 2 - lengthUp * 2) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                10.0,  0.03, pod, this),
+			new Gear(offset + glm::dvec3((lengthDown * 3 - lengthUp * 1) / 4 / 2, -height / 2 + 0.2, 0), 0.2,                20.0,  0.03, pod, this),
+			new Gear(offset + glm::dvec3( lengthDown / 2,                         -height / 2 + 0.5, 0), 0.5,                15.0, 0.045, pod, this),
+			new Gear(offset + glm::dvec3(                  lengthUp / 2,           height / 2 + 0.0, 0), 0.2,                10.0,  0.01, pod, this),
+			new Gear(offset + glm::dvec3(                - lengthUp / 10,          height / 2 + 0.0, 0), 0.3,                10.0,  0.01, pod, this),
 		};
 		for (Gear* gv : gears) children.insert(gv);
 		for (const int i : {0, 1, 2, 3, 4})ground_gears.push_back(gears[i]);
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;
-		const int count = (int)(chain_length / 0.1);
+		const int count = (int)(chain_length / 0.3);
 		for (int i = 0; i < count; i++) {
 			auto t = new Tooth(GetToothPosition(gears, (double)i / count));
 			children.insert(t);
