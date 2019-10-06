@@ -1,19 +1,27 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	void PodTracks::Track::UpdateTrackSpeed(const double secs) {
+		if (!pod->IsOnGround())return;
+		double track_cycle_acceleration = track_cycle_speed > 0 ? -10 : 10;
+		if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))track_cycle_acceleration += 50;
+		if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))track_cycle_acceleration += 50;
+		track_cycle_speed += track_cycle_acceleration * secs;
+	}
 	void PodTracks::Track::AddTrackSpeed(const double dv) {
-		track_speed += dv;
+		track_cycle_speed += dv;
 	}
 	double PodTracks::Track::GetTrackSpeed()const {
-		return track_speed;
+		return track_cycle_speed;
 	}
 	bool PodTracks::Track::IsOnGround() const{
 		for (Gear* gear : ground_gears)if (!gear->IsOnGround())return false;
 		return true;
 	}
 	void PodTracks::Track::Advance(const double secs) {
+		UpdateTrackSpeed(secs);
 		for (auto& ch : children)ch->Advance(secs); // render first so teeth will be at correct position
 		const double chainLength = GetChainLength(gears);
-		track_cycle_position -= secs * track_speed / chainLength;
+		track_cycle_position -= secs * track_cycle_speed / chainLength;
 		track_cycle_position = std::fmod(std::fmod(track_cycle_position, 1) + 1, 1);
 		//std::clog << "hi" << std::endl;
 		for (int i = 0; i < (int)teeth.size(); i++) {

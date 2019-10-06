@@ -66,7 +66,7 @@ namespace pod {
 		//bool rollback = false;
 		const double rollback_speed = 0.1;
 		const double bounce_coe = 0.1;
-		const double friction_coe = 0.2;
+		const double friction_coe = 0.5;
 		for (const glm::dvec3& offset : { glm::dvec3(-radius,0,0),glm::dvec3(radius,0,0),glm::dvec3(0,-radius,0),glm::dvec3(0,radius,0) }) {
 			const glm::dvec3& dir = glm::normalize(offset);
 			if (block::IsCollidable(rb.position + offset)) {

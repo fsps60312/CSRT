@@ -53,8 +53,9 @@ namespace pod {
 			PodInterface* pod;
 			std::vector<Gear*> gears, ground_gears;
 			std::vector<Tooth*>teeth;
-			double track_speed = 1;
+			double track_cycle_speed = 1;
 			double track_cycle_position = 0;
+			void UpdateTrackSpeed(const double secs);
 			glm::dvec3 GetGearToSubchainVector(Gear* a, Gear* b)const;
 			double GetChainLength(const std::vector<Gear*>& chain)const;
 			glm::vec3 GetToothPosition(const std::vector<Gear*>& chain, const double ratio);
