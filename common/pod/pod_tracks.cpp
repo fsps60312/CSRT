@@ -1,5 +1,8 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	void PodTracks::Track::AddTrackSpeed(const double dv) {
+		track_speed += dv;
+	}
 	double PodTracks::Track::GetTrackSpeed()const {
 		return track_speed;
 	}

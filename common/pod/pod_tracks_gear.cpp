@@ -66,7 +66,7 @@ namespace pod {
 		//bool rollback = false;
 		const double rollback_speed = 0.1;
 		const double bounce_coe = 0.1;
-		const double friction_coe = 0.5;
+		const double friction_coe = 0.2;
 		for (const glm::dvec3& offset : { glm::dvec3(-radius,0,0),glm::dvec3(radius,0,0),glm::dvec3(0,-radius,0),glm::dvec3(0,radius,0) }) {
 			const glm::dvec3& dir = glm::normalize(offset);
 			if (block::IsCollidable(rb.position + offset)) {
@@ -77,12 +77,14 @@ namespace pod {
 					const double dv = (1.0 + bounce_coe) * sub_velocity_length;
 					rb.velocity -= dir * dv;
 					const glm::dvec3& hori_speed_dir = glm::cross(dir, glm::dvec3(0, 0, 1));
-					glm::dvec3& speed_include_rotate = rb.velocity + matrix::Multiply(pod->GetMatrixY(), glm::normalize(glm::cross(dir, glm::dvec3(0, 0, 1)))) * track->GetTrackSpeed();
-					speed_include_rotate.z = 0;
+					const glm::dvec3& touch_point_desired_rotate_dir = glm::normalize(glm::cross(dir, glm::dvec3(0, 0, 1)));
+					const glm::dvec3& speed_include_rotate = rb.velocity + matrix::Multiply(pod->GetMatrixY(), touch_point_desired_rotate_dir) * track->GetTrackSpeed();
 					const glm::dvec3& hori_speed_vec = glm::dot(hori_speed_dir, speed_include_rotate) * hori_speed_dir;
-					const glm::dvec3& friction_dv = -glm::normalize(hori_speed_vec) * dv * friction_coe;
-					if (glm::length(friction_dv) > glm::length(hori_speed_vec))rb.velocity -= hori_speed_vec;
-					else rb.velocity += friction_dv;
+					glm::dvec3 friction_dv = -glm::normalize(hori_speed_vec) * dv * friction_coe;
+					if (glm::length(friction_dv) > glm::length(hori_speed_vec))friction_dv = -hori_speed_vec;
+					rb.velocity += friction_dv;
+					const double back_to_track_dv = glm::dot(matrix::Multiply(matrix::Inverse(pod->GetMatrixY()), friction_dv), touch_point_desired_rotate_dir);
+					track->AddTrackSpeed(back_to_track_dv);
 				}
 			}
 		}

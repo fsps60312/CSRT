@@ -62,6 +62,7 @@ namespace pod {
 			Track(PodInterface* pod, const glm::dvec3& offset);
 			bool IsOnGround()const;
 			double GetTrackSpeed()const;
+			void AddTrackSpeed(const double dv);
 			void Advance(const double secs)override;
 		};
 	private:
