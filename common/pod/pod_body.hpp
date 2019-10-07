@@ -7,6 +7,7 @@
 #include<common/mylib.hpp>
 #include<common/camera.hpp>
 #include<common/pod/pod_propeller.hpp>
+#include<common/pod/pod_drill.hpp>
 #include<iostream>
 #include<vector>
 #include<cmath>
@@ -19,6 +20,7 @@ namespace pod {
 		RigidBody rb;
 		PodInterface* pod;
 		PodPropeller* propeller;
+		PodDrill* drill;
 		std::vector<Triangle>GetTriangles()const;
 		void UpdateRotationZ();
 		void UpdateRotationY();

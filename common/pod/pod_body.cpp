@@ -42,6 +42,7 @@ namespace pod {
 		UpdateRotationY();
 		UpdateRotationZ();
 		UpdateRigidBody();
+		for (auto& ch : children)ch->Update(secs);
 	}
 	void PodBody::AdvanceCamera(const double secs) {
 		const double look_offset = 1.3;
@@ -158,10 +159,12 @@ namespace pod {
 	}
 	PodBody::PodBody(PodInterface* pod) :
 		pod(pod),
-		propeller(new PodPropeller(pod, PodPropeller::Types::Basic, matrix::TranslateD(glm::dvec3(0, 1.5, 0))* matrix::RotateD(glm::dvec3(1, 0, 0), -PI / 2))){
+		propeller(new PodPropeller(pod, PodPropeller::Types::Basic, matrix::TranslateD(glm::dvec3(0, 1.5, 0))* matrix::RotateD(glm::dvec3(1, 0, 0), -PI / 2))),
+		drill(new PodDrill(pod, 1.5, 50, matrix::TranslateD(glm::dvec3(1.5, 0, 0))* matrix::RotateD(glm::dvec3(0, 1, 0), 90.0 / 180 * PI))) {
 		rb.mass = 0.8;
 		//rb.theta = 0.2;
 		children.insert(new VisibleObject(GetTriangles()));
 		children.insert(propeller);
+		children.insert(drill);
 	}
 }

@@ -12,8 +12,8 @@ private:
 	std::vector<Triangle>triangles;
 	glm::dmat4 transform = matrix::IdentityD();
 protected:
-	void SetTransform(const glm::dmat4& t);
 public:
+	void SetTransform(const glm::dmat4& t);
 	std::set<VisibleObject*>children;
 	VisibleObject();
 	VisibleObject(const std::vector<Triangle>& triangles);
