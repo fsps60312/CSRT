@@ -2,6 +2,7 @@
 #include<glm/glm.hpp>
 #include<common/visible_object.hpp>
 #include<common/rigid_body.hpp>
+#include<common/block/block.hpp>
 class PodInterface:public VisibleObject {
 public:
 	virtual bool IsOnGround()const abstract;
@@ -11,4 +12,5 @@ public:
 	virtual glm::dmat4 GetMatrixT()const abstract;
 	virtual RigidBody* GetRigidBody() abstract;
 	virtual double GetCorrectiveAlpha()const abstract;
+	virtual block::Block* GetCollideFront()const abstract;
 };

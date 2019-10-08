@@ -1,13 +1,22 @@
 #include<common/block/blocks.hpp>
 namespace block {
 	Blocks Blocks::instance(glm::dvec3(0, 0, -constants::block_depth / 2));
-	bool IsCollidable(const glm::dvec3& position) {
-		return Blocks::instance.IsCollidable(glm::dvec2(position.x, position.y));
+	bool IsCollidable(const glm::dvec3& position, Block*& collided) {
+		return Blocks::instance.IsCollidable(glm::dvec2(position.x, position.y), collided);
 	}
-	bool Blocks::IsCollidable(const glm::dvec2& position)const {
+	bool Blocks::IsCollidable(const glm::dvec2& position, Block*& collided)const {
 		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
 		const int y = (int)std::floor((position.y - anchor.y) / constants::block_height);
+		collided = GetBlock(x, y);
 		return IsCollidable(x, y);
+	}
+	Block* Blocks::GetBlock(const int x, const int y)const {
+		const int x_offset = x - blocks.front().first;
+		if (x_offset < 0 || (int)blocks.size() <= x_offset)return NULL;
+		const auto &blks = blocks[x_offset].second;
+		const int y_offset = y - blks.front().first;
+		if (y_offset < 0 || (int)blks.size() <= y_offset)return NULL;
+		return blks[y_offset].second;
 	}
 	bool Blocks::IsCollidable(const int x, const int y) const{
 		return y <= -5 || y >= 15 || x <= -15 || x >= 15 || (x >= -1 && x <= 1 && y == 2);

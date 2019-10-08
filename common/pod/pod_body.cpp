@@ -56,6 +56,15 @@ namespace pod {
 					if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))dig_intension = DigIntention::Right;
 					if (environment::IsKeyDown(GLFW_KEY_S) && !environment::IsKeyDown(GLFW_KEY_W))dig_intension = DigIntention::Down;
 				}
+			} else if (dig_intension == DigIntention::Left) {
+				if (!environment::IsKeyDown(GLFW_KEY_A))dig_intension = DigIntention::None;
+			} else if (dig_intension == DigIntention::Right) {
+				if (!environment::IsKeyDown(GLFW_KEY_D))dig_intension = DigIntention::None;
+			}
+			if (dig_intension == DigIntention::Left || dig_intension == DigIntention::Right) {
+				if (pod->GetCollideFront() != NULL) {
+					std::clog << "dig dig dig!\n";
+				}
 			}
 		}
 	}

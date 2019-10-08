@@ -15,6 +15,7 @@ namespace pod {
 		glm::dmat4 GetMatrixT()const override;
 		RigidBody* GetRigidBody() override;
 		double GetCorrectiveAlpha()const override;
+		block::Block* GetCollideFront()const override;
 		Pod();
 	};
 }

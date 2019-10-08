@@ -1,5 +1,12 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	block::Block* PodTracks::CollideFront()const {
+		block::Block* l = left_track->CollideFront(), * r = rigt_track->CollideFront();
+		return l == r ? r : NULL;
+	}
+	block::Block* PodTracks::Track::CollideFront()const {
+		return front_gear->GetCollided();
+	}
 	glm::dvec3 PodTracks::GetTotalReactForce()const {
 		return left_track->GetTotalReactForce() + rigt_track->GetTotalReactForce();
 	}
@@ -55,6 +62,7 @@ namespace pod {
 		};
 		for (Gear* gv : gears) children.insert(gv);
 		for (const int i : {0, 1, 2, 3, 4})ground_gears.push_back(gears[i]);
+		front_gear = gears[5];
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;
 		const int count = (int)(chain_length / 0.3);

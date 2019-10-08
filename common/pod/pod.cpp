@@ -32,4 +32,7 @@ namespace pod {
 	double Pod::GetCorrectiveAlpha()const {
 		return body->GetCorrectiveAlpha();
 	}
+	block::Block* Pod::GetCollideFront()const {
+		return tracks->CollideFront();
+	}
 }

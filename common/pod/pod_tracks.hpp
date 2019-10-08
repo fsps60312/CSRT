@@ -36,10 +36,12 @@ namespace pod {
 				void MoveGearBackToTouchSurface(const glm::dvec3& dir);
 				void AdvanceRigidBody(const double secs);
 				void Rotate(const double len);
+				block::Block* collided;
 			public:
 				const double radius;
 				const double suspension_hardness;
 				const double mass;
+				block::Block* GetCollided()const;
 				bool IsOnGround()const;
 				glm::dvec3 GetPosition()const;
 				glm::dvec3 GetDesiredPosition()const;
@@ -52,6 +54,7 @@ namespace pod {
 		private:
 			PodInterface* pod;
 			std::vector<Gear*> gears, ground_gears;
+			Gear* front_gear;
 			std::vector<Tooth*>teeth;
 			double track_cycle_speed = 1;
 			double track_cycle_position = 0;
@@ -65,6 +68,7 @@ namespace pod {
 			double GetTrackSpeed()const;
 			void AddTrackSpeed(const double dv);
 			void Advance(const double secs)override;
+			block::Block* CollideFront()const;
 			Track(PodInterface* pod, const glm::dvec3& offset);
 		};
 	private:
@@ -72,6 +76,7 @@ namespace pod {
 	public:
 		bool IsOnGround()const;
 		glm::dvec3 GetTotalReactForce()const;
+		block::Block* CollideFront()const;
 		PodTracks(PodInterface* pod, const glm::dvec3& offset);
 	};
 }

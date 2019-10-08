@@ -5,7 +5,7 @@
 #include<common/camera.hpp>
 #include<deque>
 namespace block {
-	bool IsCollidable(const glm::dvec3& position);
+	bool IsCollidable(const glm::dvec3& position, Block*& collided);
 	class Blocks :public VisibleObject {
 	private:
 		const glm::dvec3 anchor;
@@ -21,10 +21,11 @@ namespace block {
 		void AppendYMin();
 		void AppendYMax();
 		void RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max)const;
+		Block* GetBlock(const int x, const int y)const;
 	public:
 		static Blocks instance;
 		bool IsCollidable(const int x, const int y)const;
-		bool IsCollidable(const glm::dvec2& position)const;
+		bool IsCollidable(const glm::dvec2& position, Block*& collided)const;
 		Blocks(const glm::dvec3 &anchor);
 		void Update(const double secs)override;
 	};
