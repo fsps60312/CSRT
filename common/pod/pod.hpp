@@ -8,13 +8,13 @@ namespace pod {
 		PodBody* body;
 		PodTracks* tracks;
 	public:
-		Pod();
 		bool IsOnGround()const override;
-		bool IsPodStopped()const override;
+		bool IsPodStableOnGround()const override;
 		glm::dmat4 GetMatrixY()const override;
 		glm::dmat4 GetMatrixZ()const override;
 		glm::dmat4 GetMatrixT()const override;
 		RigidBody* GetRigidBody() override;
 		double GetCorrectiveAlpha()const override;
+		Pod();
 	};
 }

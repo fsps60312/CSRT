@@ -20,13 +20,15 @@ namespace pod {
 		};
 	private:
 		PodInterface* pod;
-		double fold_state = 0;
+		double fold_state = 0, fold_target = 0;
 		const double radius, cone_angle;
 		glm::dmat4 basic_transform;
 		std::vector<Blade*>blades;
 		void SetFoldState(const double fold_state);
 	public:
-		PodDrill(PodInterface* pod, const double radius, const int blade_count, const glm::dmat4& basic_transform);
+		void SetFoldTarget(const double fold_target);
+		double GetFoldState()const;
 		void Update(const double secs)override;
+		PodDrill(PodInterface* pod, const double radius, const int blade_count, const glm::dmat4& basic_transform);
 	};
 }

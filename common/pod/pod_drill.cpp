@@ -1,26 +1,31 @@
 #include<common/pod/pod_drill.hpp>
 namespace pod {
 	void PodDrill::Update(const double secs) {
-		const double fold_period = 0.5;
-		if (pod->IsOnGround()) {
-			const double nxt_fold_state = std::max(0.0, fold_state - secs / fold_period);
-			SetFoldState(nxt_fold_state);
+		const double fold_speed = 2.0;
+		if (fold_target > fold_state) {
+			SetFoldState(std::min(fold_target, fold_state + fold_speed * secs));
 		} else {
-			const double nxt_fold_state = std::min(1.0, fold_state + secs / fold_period);
-			SetFoldState(nxt_fold_state);
+			SetFoldState(std::max(fold_target, fold_state - fold_speed * secs));
 		}
+	}
+	void PodDrill::SetFoldTarget(const double fold_target) {
+		this->fold_target = fold_target;
+	}
+	double PodDrill::GetFoldState()const {
+		return fold_state;
 	}
 	void PodDrill::SetFoldState(const double fold_state) {
 		this->fold_state = fold_state;
 		const double ratio = 0.3;
-		if (fold_state < ratio) {
-			double f = fold_state / ratio;
+		const glm::dmat4& dir_transform = fold_state > 0 ? matrix::IdentityD() : matrix::RotateD(glm::dvec3(0, 0, 1), -90.0 / 180 * PI);
+		if ((1 - fabs(fold_state)) < ratio) {
+			double f = (1 - fabs(fold_state)) / ratio;
 			for (Blade* blade : blades) blade->SetFoldState(f);
-			SetTransform(basic_transform);
+			SetTransform(dir_transform * basic_transform);
 		} else {
-			double f = (fold_state - ratio) / (1 - ratio);
+			double f = ((1 - fabs(fold_state)) - ratio) / (1 - ratio);
 			for (Blade* blade : blades) blade->SetFoldState(1);
-			SetTransform(basic_transform * matrix::TranslateD(glm::dvec3(0, 0, -f * radius / std::cos(cone_angle))));
+			SetTransform(dir_transform * basic_transform * matrix::TranslateD(glm::dvec3(0, 0, -f * radius / std::cos(cone_angle))));
 		}
 	}
 	PodDrill::PodDrill(PodInterface* pod, const double radius, const int blade_count, const glm::dmat4& basic_transform) :

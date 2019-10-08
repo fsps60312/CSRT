@@ -28,17 +28,40 @@ namespace pod {
 		}
 	}
 	void PodBody::UpdateRotationY() {
-		if ((!pod->IsOnGround() || pod->IsPodStopped())) {
+		if (!pod->IsOnGround() || true) {
 			if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))desired_rotation_y = PI;
 			if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))desired_rotation_y = 0;
 		}
 	}
+	glm::dvec3 PodBody::GetForce()const {
+		glm::dvec3 ret(0);
+		ret += glm::dvec3(0, -rb.mass * constants::gravity, 0);
+		ret += glm::dvec3(-std::sin(rb.theta) * propeller->GetLiftForce(), std::cos(rb.theta) * propeller->GetLiftForce(), 0);
+		return ret;
+	}
 	void PodBody::UpdateRigidBody() {
 		rb.position.z = rb.velocity.z = 0;
-		rb.force += glm::dvec3(0, -rb.mass * constants::gravity, 0);
-		rb.force += glm::dvec3(-std::sin(rb.theta) * propeller->GetLiftForce(), std::cos(rb.theta) * propeller->GetLiftForce(), 0);
+		rb.force += GetForce();
+	}
+	void PodBody::UpdateDigIntention() {
+		if (dig_intension == DigIntention::Down) {
+			drill->SetFoldTarget(-1);
+			if (!environment::IsKeyDown(GLFW_KEY_S))dig_intension = DigIntention::None;
+		} else {
+			if (pod->IsOnGround()) drill->SetFoldTarget(1);
+			else drill->SetFoldTarget(0);
+			if (dig_intension == DigIntention::None) {
+				if (pod->IsPodStableOnGround()) {
+					if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))dig_intension = DigIntention::Left;
+					if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))dig_intension = DigIntention::Right;
+					if (environment::IsKeyDown(GLFW_KEY_S) && !environment::IsKeyDown(GLFW_KEY_W))dig_intension = DigIntention::Down;
+				}
+			}
+		}
 	}
 	void PodBody::Update(const double secs) {
+		//if (pod->IsPodStableOnGround())std::clog << "stable!" << std::endl;
+		UpdateDigIntention();
 		UpdateRotationY();
 		UpdateRotationZ();
 		UpdateRigidBody();
@@ -71,66 +94,6 @@ namespace pod {
 		if (secs > 1e-3) return true;
 		const double dif = glm::length(rb.position - rb._position);
 		if (dif > body_radius / 5) return true;
-		//int cur_x, cur_y, x = 0, y = 0;
-		//Blocks.IsCollidable(rb.position, out cur_x, out cur_y);
-		//if (secs < 1e-4)//accurate enough
-		//{
-		//	for (int cpi = -1; ;)
-		//	{
-		//		cpi = this.CollidePoints.FindIndex(cpi + 1, p = > Blocks.IsCollidable(rb.position + new Vector3D(Math.Cos(rb.theta) * p.X - Math.Sin(rb.theta) * p.Y, Math.Cos(rb.theta) * p.Y + Math.Sin(rb.theta) * p.X, p.Z), out x, out y));
-		//		if (cpi == -1)
-		//		{
-		//			//{
-		//			//    if (!tracks.UpdateRigidBody(secs, Math.Cos(RotationY), RB.velocity - RB._velocity, RB.theta, out Vector3D reactionForce, out double reactionTorque)) return false;
-		//			//    //RB.force += reactionForce;
-		//			//    //RB.alpha += reactionTorque;
-		//			//}
-		//			return true;
-		//		}
-		//		var cp = this.CollidePoints[cpi];
-		//		const double bounce = 0.5;
-		//		double t;
-		//		t = cp.X * -Math.Sin(rb.theta) + cp.Y * -Math.Cos(rb.theta);
-		//		if (x == cur_x - 1 && !Blocks.IsCollidable(cur_x, y) && rb.velocity.X + t * rb.omega < 0)//collide left, +x force. t=(cp.x*-Sin(theta)+cp.y*-Cos(theta)), (v.x+f/m) + (omega+f*t/I)*t = -b*(v.x + omega*t), f*(1/m+t^2/I)=(-b-1)*(v.x+omega*t)
-		//		{
-		//			var f = (-bounce - 1) * (rb.velocity.X + rb.omega * t) / (1.0 / rb.mass + t * t / rb.momentOfInertia);
-		//			//f += -rb.force.X * secs;
-		//			rb.velocity.X += f / rb.mass;
-		//			rb.omega += f * t / rb.momentOfInertia;
-		//		}
-		//		t = cp.X * -Math.Sin(rb.theta) + cp.Y * -Math.Cos(rb.theta);
-		//		if (x == cur_x + 1 && !Blocks.IsCollidable(cur_x, y) && rb.velocity.X + t * rb.omega > 0)//collide right, -x force. t=(cp.x*-Sin(theta)+cp.y*-Cos(theta)), (v.x-f/m) + (omega-f*t/I)*t = -b*(v.x + omega*t), f*(-1/m-t^2/I)=(-b-1)*(v.x+omega*t)
-		//		{
-		//			var f = (-bounce - 1) * (rb.velocity.X + rb.omega * t) / (-1.0 / rb.mass - t * t / rb.momentOfInertia);
-		//			//f += rb.force.X * secs;
-		//			rb.velocity.X -= f / rb.mass;
-		//			rb.omega -= f * t / rb.momentOfInertia;
-		//		}
-		//		t = cp.Y * -Math.Sin(rb.theta) + cp.X * Math.Cos(rb.theta);
-		//		if (y == cur_y - 1 && !Blocks.IsCollidable(x, cur_y) && rb.velocity.Y + t * rb.omega < 0)//collide down, +y force. t=(cp.y*-Sin(theta)+cp.x*Cos(theta)), (v.y+f/m) + (omega+f*t/I)*t = -b*(v.y + omega*t), f*(1/m+t^2/I)=(-b-1)*(v.y+omega*t)
-		//		{
-		//			var f = (-bounce - 1) * (rb.velocity.Y + rb.omega * t) / (1.0 / rb.mass + t * t / rb.momentOfInertia);
-		//			//f -= rb.force.Y * secs;
-		//			rb.velocity.Y += f / rb.mass;
-		//			rb.omega += f * t / rb.momentOfInertia;
-		//		}
-		//		t = cp.Y * -Math.Sin(rb.theta) + cp.X * Math.Cos(rb.theta);
-		//		if (y == cur_y + 1 && !Blocks.IsCollidable(x, cur_y) && rb.velocity.Y + t * rb.omega > 0)//collide up, -y force. t=(cp.y*-Sin(theta)+cp.x*Cos(theta)), (v.y-f/m) + (omega-f*t/I)*t = -b*(v.y + omega*t), f*(-1/m-t^2/I)=(-b-1)*(v.y+omega*t)
-		//		{
-		//			var f = (-bounce - 1) * (rb.velocity.Y + rb.omega * t) / (-1.0 / rb.mass - t * t / rb.momentOfInertia);
-		//			//f += rb.force.Y * secs;
-		//			rb.velocity.Y -= f / rb.mass;
-		//			rb.omega -= f * t / rb.momentOfInertia;
-		//		}
-		//		//System.Diagnostics.Trace.WriteLine($"position: {rb.position}, \tvelocity: {rb.velocity}, \ttheta: {rb.theta}, \tomega: {rb.omega}");
-		//	}
-		//}
-		//if (this.CollidePoints.Any(p = > Blocks.IsCollidable((new Point3D() + p) * MatrixTZ, out x, out y))) return false;
-		//{
-		//    if (!tracks.UpdateRigidBody(secs, Math.Cos(RotationY), RB.velocity - RB._velocity, RB.theta, out Vector3D reactionForce, out double reactionTorque)) return false;
-		//    //RB.force += reactionForce;
-		//    //RB.alpha += reactionTorque;
-		//}
 		return false;
 	}
 	void PodBody::AdvanceRigidBody(const double secs) {

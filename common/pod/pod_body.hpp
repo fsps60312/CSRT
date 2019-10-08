@@ -8,12 +8,16 @@
 #include<common/camera.hpp>
 #include<common/pod/pod_propeller.hpp>
 #include<common/pod/pod_drill.hpp>
+#include<common/block/block.hpp>
 #include<iostream>
 #include<vector>
 #include<cmath>
 namespace pod {
 	class PodBody :public VisibleObject {
 	private:
+		enum DigIntention { None, Left, Right, Down };
+		DigIntention dig_intension = DigIntention::None;
+		block::Block** in_digging_block = NULL;
 		const static double body_radius;
 		double rotation_y = 0;
 		double desired_rotation_y = 0;
@@ -22,6 +26,7 @@ namespace pod {
 		PodPropeller* propeller;
 		PodDrill* drill;
 		std::vector<Triangle>GetTriangles()const;
+		void UpdateDigIntention();
 		void UpdateRotationZ();
 		void UpdateRotationY();
 		void UpdateRigidBody();
@@ -33,6 +38,7 @@ namespace pod {
 		glm::dmat4 GetMatrixZ()const;
 		glm::dmat4 GetMatrixT()const;
 		RigidBody* GetRigidBody();
+		glm::dvec3 GetForce()const;
 		double GetCorrectiveAlpha()const;
 		PodBody(PodInterface *parent);
 		void PrepareForRound()override;

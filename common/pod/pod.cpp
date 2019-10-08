@@ -10,7 +10,11 @@ namespace pod {
 		return tracks->IsOnGround();
 		//return false;
 	}
-	bool Pod::IsPodStopped()const {
+	bool Pod::IsPodStableOnGround()const {
+		if (!IsOnGround())return false;
+		const glm::dvec3 total_force = body->GetForce() + tracks->GetTotalReactForce();
+		if (glm::length(total_force) > 1)return false;
+		if (glm::length(body->GetRigidBody()->velocity) > 1)return false;
 		return true;
 	}
 	glm::dmat4 Pod::GetMatrixY()const {

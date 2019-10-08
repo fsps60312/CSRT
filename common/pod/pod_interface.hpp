@@ -5,7 +5,7 @@
 class PodInterface:public VisibleObject {
 public:
 	virtual bool IsOnGround()const abstract;
-	virtual bool IsPodStopped()const abstract;
+	virtual bool IsPodStableOnGround()const abstract;
 	virtual glm::dmat4 GetMatrixY()const abstract;
 	virtual glm::dmat4 GetMatrixZ()const abstract;
 	virtual glm::dmat4 GetMatrixT()const abstract;

@@ -1,5 +1,13 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	glm::dvec3 PodTracks::GetTotalReactForce()const {
+		return left_track->GetTotalReactForce() + rigt_track->GetTotalReactForce();
+	}
+	glm::dvec3 PodTracks::Track::GetTotalReactForce()const {
+		glm::dvec3 ret(0);
+		for (Gear* gear : gears)ret += gear->GetReactForce();
+		return ret;
+	}
 	void PodTracks::Track::UpdateTrackSpeed(const double secs) {
 		const double deacceleration = environment::IsKeyDown(GLFW_KEY_A) && environment::IsKeyDown(GLFW_KEY_D) ? 100 : 20;
 		double track_cycle_acceleration = track_cycle_speed > 0 ? -deacceleration : deacceleration;

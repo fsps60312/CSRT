@@ -29,7 +29,6 @@ namespace pod {
 				const glm::dvec3 relative_position;
 				double on_ground_countdown = 0;
 				std::vector<Triangle>GetTriangles(const double radius)const;
-				glm::dvec3 GetReactForce()const;
 				void RotateYAlongWithPod();
 				void ApplyReactForceWithPod();
 				void InverseVelocityIfCollideWithBlocks();
@@ -41,13 +40,14 @@ namespace pod {
 				const double radius;
 				const double suspension_hardness;
 				const double mass;
-				Gear(const glm::dvec3& relative_position, const double radius, const double suspension_hardness, const double mass, PodInterface* pod, Track* track);
 				bool IsOnGround()const;
+				glm::dvec3 GetPosition()const;
+				glm::dvec3 GetDesiredPosition()const;
+				glm::dvec3 GetReactForce()const;
 				void PrepareForRound()override;
 				void Update(const double secs)override;
 				void Advance(const double secs)override;
-				glm::dvec3 GetPosition()const;
-				glm::dvec3 GetDesiredPosition()const;
+				Gear(const glm::dvec3& relative_position, const double radius, const double suspension_hardness, const double mass, PodInterface* pod, Track* track);
 			};
 		private:
 			PodInterface* pod;
@@ -60,16 +60,18 @@ namespace pod {
 			double GetChainLength(const std::vector<Gear*>& chain)const;
 			glm::vec3 GetToothPosition(const std::vector<Gear*>& chain, const double ratio);
 		public:
-			Track(PodInterface* pod, const glm::dvec3& offset);
+			glm::dvec3 GetTotalReactForce()const;
 			bool IsOnGround()const;
 			double GetTrackSpeed()const;
 			void AddTrackSpeed(const double dv);
 			void Advance(const double secs)override;
+			Track(PodInterface* pod, const glm::dvec3& offset);
 		};
 	private:
 		Track* left_track, * rigt_track;
 	public:
 		bool IsOnGround()const;
+		glm::dvec3 GetTotalReactForce()const;
 		PodTracks(PodInterface* pod, const glm::dvec3& offset);
 	};
 }

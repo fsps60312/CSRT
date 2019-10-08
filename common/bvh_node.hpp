@@ -23,7 +23,7 @@ private:
 	static std::mutex new_node_lock;
 	void NewNode();
 	int CalMid(const int id, std::vector<int>& tri_ids);
-	void Build(const int l, const int r, std::vector<int>& tri_ids);
+	void Build(const int l, const int r,const int depth, std::vector<int>& tri_ids);
 public:
 	BVHNode(BVHNode* parent);
 	static void ClearVectors();

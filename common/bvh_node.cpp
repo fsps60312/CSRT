@@ -59,14 +59,14 @@ BVHNode::BVHNode(BVHNode* parent) :id((int)glob_bvh_nodes.size()), p(parent) {
 	NewNode();
 }
 
-void BVHNode::Build(const int l, const int r, std::vector<int>& tri_ids) {
+void BVHNode::Build(const int l, const int r,const int depth, std::vector<int>& tri_ids) {
 	assert(0 <= l && l <= r && r < (int)glob_triangles.size());
 	// range
 	glob_tri_ranges[id] = glm::ivec2(l, r);
 	// cal aabb
 	auto& aabb = glob_bvh_aabbs[id] = AABB();
 	for (int i = l; i <= r; i++)aabb.AddTriangle(glob_triangles[tri_ids[i]]);
-	if (r - l + 1 <= 2) {
+	if (r - l + 1 <= 2 || depth >= 31) {
 		return;
 	}
 	// split
@@ -77,17 +77,17 @@ void BVHNode::Build(const int l, const int r, std::vector<int>& tri_ids) {
 	BVHNode* lch = new BVHNode(this), * rch = new BVHNode(this);
 	new_node_lock.unlock();
 	if (r - l + 1 > 10000) {
-		std::thread l_thread = std::thread([lch, l, mid, &tri_ids]() {
-			lch->Build(l, mid, tri_ids);
+		std::thread l_thread = std::thread([lch, l, mid, depth, &tri_ids]() {
+			lch->Build(l, mid, depth + 1, tri_ids);
 		});
-		std::thread r_thread = std::thread([rch, mid, r, &tri_ids]() {
-			rch->Build(mid + 1, r, tri_ids);
+		std::thread r_thread = std::thread([rch, mid, r, depth, &tri_ids]() {
+			rch->Build(mid + 1, r, depth + 1, tri_ids);
 		});
 		l_thread.join();
 		r_thread.join();
 	} else {
-		lch->Build(l, mid, tri_ids);
-		rch->Build(mid + 1, r, tri_ids);
+		lch->Build(l, mid, depth + 1, tri_ids);
+		rch->Build(mid + 1, r, depth + 1, tri_ids);
 	}
 	SetL(lch);
 	SetR(rch);
@@ -134,7 +134,7 @@ BVHNode* BVHNode::Build() {
 	BVHNode* o = new BVHNode(NULL);
 	std::vector<int>tri_ids(glob_triangles.size());
 	for (int i = 0; i < (int)glob_triangles.size(); i++)tri_ids[i] = i;
-	o->Build(0, (int)(glob_triangles.size() - 1), tri_ids);
+	o->Build(0, (int)(glob_triangles.size() - 1), 0, tri_ids);
 	std::vector<Triangle>new_glob_triangles;
 	for (int i = 0; i < (int)glob_triangles.size(); i++)new_glob_triangles.push_back(glob_triangles[tri_ids[i]]);
 	glob_triangles.swap(new_glob_triangles);
