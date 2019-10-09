@@ -25,7 +25,7 @@ namespace block {
 		if (b == NULL)return;
 		const size_t erased = children.erase(b);
 		assert(erased == 1);
-		delete b;
+		VisibleObject::Delete(b);
 	}
 	void Blocks::RemoveXMin() {
 		for (const std::pair<int, Block*>& b : blocks.front().second)RecycleBlock(b.second);

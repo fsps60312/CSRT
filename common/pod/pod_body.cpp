@@ -43,28 +43,32 @@ namespace pod {
 		rb.position.z = rb.velocity.z = 0;
 		rb.force += GetForce();
 	}
-	void PodBody::UpdateDigIntention() {
-		if (dig_intension == DigIntention::Down) {
+	PodBody::DigIntention PodBody::GetDigIntention()const {
+		if (!pod->IsPodStableOnGround())return DigIntention::None;
+		if (dig_intention == DigIntention::Down && !environment::IsKeyDown(GLFW_KEY_S))return DigIntention::None;
+		if (dig_intention == DigIntention::Left && !environment::IsKeyDown(GLFW_KEY_A))return DigIntention::None;
+		if (dig_intention == DigIntention::Right && !environment::IsKeyDown(GLFW_KEY_D))return DigIntention::None;
+		if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D)) {
+			drill->SetFoldTarget(1);
+			return drill->GetFoldState() == 1 ? DigIntention::Left : DigIntention::None;
+		}
+		if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A)) {
+			drill->SetFoldTarget(1);
+			return drill->GetFoldState() == 1 ? DigIntention::Right : DigIntention::None;
+		}
+		if (environment::IsKeyDown(GLFW_KEY_S) && !environment::IsKeyDown(GLFW_KEY_W)) {
 			drill->SetFoldTarget(-1);
-			if (!environment::IsKeyDown(GLFW_KEY_S))dig_intension = DigIntention::None;
-		} else {
-			if (pod->IsOnGround()) drill->SetFoldTarget(1);
-			else drill->SetFoldTarget(0);
-			if (dig_intension == DigIntention::None) {
-				if (pod->IsPodStableOnGround()) {
-					if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))dig_intension = DigIntention::Left;
-					if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))dig_intension = DigIntention::Right;
-					if (environment::IsKeyDown(GLFW_KEY_S) && !environment::IsKeyDown(GLFW_KEY_W))dig_intension = DigIntention::Down;
-				}
-			} else if (dig_intension == DigIntention::Left) {
-				if (!environment::IsKeyDown(GLFW_KEY_A))dig_intension = DigIntention::None;
-			} else if (dig_intension == DigIntention::Right) {
-				if (!environment::IsKeyDown(GLFW_KEY_D))dig_intension = DigIntention::None;
-			}
-			if (dig_intension == DigIntention::Left || dig_intension == DigIntention::Right) {
-				if (pod->GetCollideFront() != NULL) {
-					std::clog << "dig dig dig!\n";
-				}
+			return drill->GetFoldState() == -1 ? DigIntention::Down : DigIntention::None;
+		}
+		return DigIntention::None;
+	}
+	void PodBody::UpdateDigIntention() {
+		dig_intention = GetDigIntention();
+		if (dig_intention == DigIntention::Left || dig_intention == DigIntention::Right) {
+			block::Block* b = pod->GetCollideFront();
+			if (b != NULL) {
+				b->SetDigState(dig_intention == DigIntention::Left ? block::Block::DigDirection::Left : block::Block::DigDirection::Right, 0.5);
+				std::clog << "dig dig dig!\n";
 			}
 		}
 	}

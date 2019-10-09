@@ -20,6 +20,7 @@ public:
 	virtual void PrepareForRound();
 	virtual void Update(const double secs);
 	virtual void Advance(const double secs);
+	static void Delete(const VisibleObject* o);
 	void Build(const glm::dmat4& transform)const;
 	void Translate(const glm::dvec3& offset);
 	void TranslatePrepend(const glm::dvec3& offset);

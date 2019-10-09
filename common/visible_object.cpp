@@ -7,6 +7,11 @@ VisibleObject::VisibleObject(const std::vector<Triangle>& triangles) :
 	is_leaf(true),
 	triangles(triangles) {
 }
+void VisibleObject::Delete(const VisibleObject* o) {
+	if (o == NULL)return;
+	for (const VisibleObject* ch : o->children)Delete(ch);
+	delete o;
+}
 void VisibleObject::PrepareForRound() {
 	for (VisibleObject* ch : children)ch->PrepareForRound();
 }
