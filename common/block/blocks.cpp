@@ -10,6 +10,11 @@ namespace block {
 		collided = GetBlock(x, y);
 		return IsCollidable(x, y);
 	}
+	Block* Blocks::GetBlock(const glm::dvec2& position)const {
+		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
+		const int y = (int)std::floor((position.y - anchor.y) / constants::block_height);
+		return GetBlock(x, y);
+	}
 	Block* Blocks::GetBlock(const int x, const int y)const {
 		const int x_offset = x - blocks.front().first;
 		if (x_offset < 0 || (int)blocks.size() <= x_offset)return NULL;

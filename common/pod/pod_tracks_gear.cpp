@@ -18,8 +18,7 @@ namespace pod {
 		///2(px+a*fx)*fx+2(py+a*fy)*fy=0
 		///px*fx+a*fx*fx+py*fy+a*fy*fy=0
 		///a=-(px*fx+py*fy)/(fx*fx+fy*fy)
-		if ((f.x * f.x + f.y * f.y) > 1e-9)
-		{
+		if ((f.x * f.x + f.y * f.y) > 1e-9) {
 			const glm::dvec3 &p = GetDesiredPosition() - pod->GetRigidBody()->position;
 			const double a = -(p.x * f.x + p.y * f.y) / (f.x * f.x + f.y * f.y);
 			const glm::dvec3 &forceArm = p + f * a;
@@ -97,8 +96,7 @@ namespace pod {
 	}
 	void PodTracks::Track::Gear::AdvanceRigidBody(const double secs) {
 		rb.Advance(secs);
-		if (IsRigidBodyMoveTooMuch(secs))
-		{
+		if (IsRigidBodyMoveTooMuch(secs)) {
 			rb.Restore();
 			AdvanceRigidBody(secs / 2);
 			AdvanceRigidBody(secs / 2);

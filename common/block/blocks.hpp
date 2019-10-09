@@ -22,6 +22,7 @@ namespace block {
 		void AppendYMax();
 		void RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max)const;
 		Block* GetBlock(const int x, const int y)const;
+		Block* GetBlock(const glm::dvec2& position)const;
 	public:
 		static Blocks instance;
 		bool IsCollidable(const int x, const int y)const;

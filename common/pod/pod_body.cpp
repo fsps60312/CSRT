@@ -68,7 +68,13 @@ namespace pod {
 			block::Block* b = pod->GetCollideFront();
 			if (b != NULL) {
 				b->SetDigState(dig_intention == DigIntention::Left ? block::Block::DigDirection::Left : block::Block::DigDirection::Right, 0.5);
-				std::clog << "dig dig dig!\n";
+				//std::clog << "dig dig dig!\n";
+			}
+		}
+		if (dig_intention == DigIntention::Down) {
+			block::Block* b = pod->GetCollideDown();
+			if (b != NULL) {
+				b->SetDigState(block::Block::DigDirection::Down, 0.5);
 			}
 		}
 	}

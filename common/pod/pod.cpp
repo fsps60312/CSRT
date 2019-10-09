@@ -35,4 +35,9 @@ namespace pod {
 	block::Block* Pod::GetCollideFront()const {
 		return tracks->CollideFront();
 	}
+	block::Block* Pod::GetCollideDown()const {
+		block::Block* ret;
+		block::IsCollidable(body->GetRigidBody()->position + glm::dvec3(0, -constants::block_height, 0), ret);
+		return ret;
+	}
 }

@@ -16,6 +16,7 @@ namespace pod {
 		RigidBody* GetRigidBody() override;
 		double GetCorrectiveAlpha()const override;
 		block::Block* GetCollideFront()const override;
+		block::Block* GetCollideDown()const override;
 		Pod();
 	};
 }

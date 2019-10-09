@@ -12,7 +12,6 @@ namespace block {
 		switch (dig_direction) {
 		case DigDirection::Down: {
 			auto kid = new VisibleObject(GetTriangles(glm::dvec3(size.x, size.y * (1 - dig_progress), size.z), type));
-			kid->Translate(glm::dvec3(0, size.y * dig_progress, 0));
 			children.insert(kid);
 			break;
 		}

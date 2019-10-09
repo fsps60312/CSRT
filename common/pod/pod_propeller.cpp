@@ -10,14 +10,11 @@ namespace pod {
 	};
 	void PodPropeller::SetFoldState(const double fold_state) {
 		this->fold_state = fold_state;
-		if (fold_state < 0.7)
-		{
+		if (fold_state < 0.7) {
 			const double f = fold_state / 0.7;
 			for (auto v : bladesets) v->SetFoldState(f);
 			SetTransform(basic_transform*matrix::TranslateD(glm::dvec3(0, 0, std::sin(f * PI / 2) * (max_height - height))));
-		}
-		else
-		{
+		} else {
 			const double h = (1 - fold_state) / 0.3;
 			for (auto v : bladesets) v->SetFoldState(1);
 			SetTransform(basic_transform * matrix::TranslateD(glm::dvec3(0, 0, -height + h * max_height)));
@@ -50,8 +47,7 @@ namespace pod {
 		torque -= GetLiftForce() / 5 * 2;//風導致轉動
 		//friction
 		friction_torque += (omega > 0 ? -1 : 1) * (friction + GetAirFriction(omega));
-		if ((torque > 0) != (torque + friction_torque > 0))
-		{
+		if ((torque > 0) != (torque + friction_torque > 0)) {
 			if (omega > 0) friction_torque = std::max(friction_torque, -torque - omega / secs);
 			else friction_torque = std::min(friction_torque, -torque - omega / secs);
 		}
