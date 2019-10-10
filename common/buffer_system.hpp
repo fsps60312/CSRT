@@ -15,6 +15,7 @@
 #include<common/objloader.hpp>
 #include<common/visible_object.hpp>
 #include<common/control.hpp>
+#include<common/effects/fume.hpp>
 
 
 

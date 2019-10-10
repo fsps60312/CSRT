@@ -169,8 +169,6 @@ void Intersect(inout Ray r){
 
 vec3 PhongLighting(Ray ray){
 	Material mtl  = buf_material[buf_triangle[ray.obj].material_id];
-//	float r   = materials[id+0], g  = materials[id+1], b  = materials[id+2], ia = 1.0f,
-//		  ka  = materials[id+3], kd = materials[id+4], ks = materials[id+5], ks_exp = materials[id+6];
 	const vec3 ambient_color  = mtl.ambient;
 	const vec3 diffuse_color  = mtl.diffuse;
 	const vec3 specular_color = mtl.specular;
@@ -184,59 +182,38 @@ vec3 PhongLighting(Ray ray){
 		float t, i;
 		vec3  pos, dir, n;
 	};*/
-	Ray ray_light = Ray(-1, ray.obj, FLT_MAX, 0.0f, ray.pos+1e-5*light_dir, light_dir, vec3(0.0f));
+	Ray ray_light = Ray(-1, ray.obj, FLT_MAX, 0.0f, ray.pos+1e-5f*light_dir, light_dir, vec3(0.0f));
 	Intersect(ray_light);
 
-//	vec3  diffuse_color  = vec3(r,g,b);
-//	vec3  specular_color = vec3(0.3f);
-//	vec3  ambient_color  = diffuse_color * 0.5f;
 	float diffuse_factor  = clamp(dot(ray.n, light_dir), 0.0f, 1.0f);
 	float specular_factor = pow(clamp(dot(ray.n, h), 0.0f, 1.0f), ks_exp);
 
 	vec3  rgb = vec3(0.0f);
 	if(ray_light.t<distance(light,ray.pos)){
-		rgb = ambient_color;
+		return ambient_color;
 	}else{
 		float dist = length(light - ray.pos), light_power = 100.0f;
-		rgb =
+		return
 			ambient_color  +
 			diffuse_color  * light_power * diffuse_factor  / (dist * dist) +
 			specular_color * light_power * specular_factor / (dist * dist);
 	}
-	
-	return rgb * ray.i;
 }
 
-vec3 RayTracing(Ray ray_trace)
+vec3 RayTracing(in Ray r)
 {
 	vec3 rgb = vec3(0.0f);
 	
-	while(ray_trace.i > 0.1f)
+	while(r.i > 0.1f)
 	{
 		// Intersect
-		Intersect(ray_trace);
+		Intersect(r);
 		
-		if(ray_trace.obj == -1)break;
-		
-		rgb += PhongLighting(ray_trace);
-		break;
-		
-		float reflect_factor = 0.5, refract_factor = 0.5;
-		if(reflect_factor > 0.0f && (refract_factor <= 0.0f || (random_float() < 0.5f))){ // must reflect, or give 0.5 possibility if inward-hit
-			ray_trace.dir     = -reflect(ray_trace.dir,ray_trace.n);
-			ray_trace.i *= reflect_factor;
-		}
-		else if(refract_factor > 0.0f){
-			float nr=1.5;
-			if(dot(ray_trace.dir, ray_trace.n)>0.0f)nr=1.0/nr;
-			vec3 new_dir = refract(ray_trace.dir,ray_trace.n,nr);
-			if(new_dir==vec3(0.0f))break;
-			ray_trace.dir=new_dir;
-			ray_trace.i *= refract_factor;
-		}
-		else{
-			break;
-		}
+		if(r.obj == -1)break;
+		const float alpha = buf_material[buf_triangle[r.obj].material_id].alpha;
+		rgb += PhongLighting(r) * r.i * alpha;
+		r.i *= (1.0f - alpha);
+		r.pos += 1e-5f * r.dir;
 	}
 	
 	return rgb;

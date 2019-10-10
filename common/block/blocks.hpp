@@ -28,7 +28,7 @@ namespace block {
 		Block* GetBlock(const glm::dvec2& position)const;
 		bool Destroy(const int x, const int y);
 	public:
-		static Blocks instance;
+		static Blocks* instance;
 		bool IsCollidable(const int x, const int y)const;
 		bool IsCollidable(const glm::dvec2& position, Block*& collided)const;
 		bool Destroy(const Block* block);

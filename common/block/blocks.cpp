@@ -1,10 +1,10 @@
 #include<common/block/blocks.hpp>
 namespace block {
-	Blocks Blocks::instance(glm::dvec3(0, 0, -constants::block_depth / 2));
+	Blocks* Blocks::instance = new Blocks(glm::dvec3(0, 0, -constants::block_depth / 2));
 	bool IsCollidable(const glm::dvec3& position, Block*& collided) {
-		return Blocks::instance.IsCollidable(glm::dvec2(position.x, position.y), collided);
+		return Blocks::instance->IsCollidable(glm::dvec2(position.x, position.y), collided);
 	}
-	bool Destroy(const Block* block) { return Blocks::instance.Destroy(block); }
+	bool Destroy(const Block* block) { return Blocks::instance->Destroy(block); }
 	bool Blocks::Destroy(const int x, const int y) {
 		const int x_offset = x - blocks.front().first;
 		if (x_offset < 0 || (int)blocks.size() <= x_offset)return false;

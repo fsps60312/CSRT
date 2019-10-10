@@ -13,6 +13,16 @@ namespace matrix {
 		const glm::dvec4 res = matrix * glm::dvec4(v, 1.0f);
 		return glm::dvec3(res.x, res.y, res.z);
 	}
+	glm::dmat4 ScaleD(const glm::dvec3& scale) {
+		assert(!glm::any(glm::isnan(scale)));
+		assert(!glm::any(glm::isinf(scale)));
+		return glm::dmat4(
+			scale.x, 0, 0, 0,
+			0, scale.y, 0, 0,
+			0, 0, scale.z, 0,
+			0, 0, 0, 1
+		);
+	}
 	glm::dmat4 TranslateD(const glm::dvec3& offset) {
 		assert(!glm::any(glm::isnan(offset)));
 		assert(!glm::any(glm::isinf(offset)));

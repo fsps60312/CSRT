@@ -22,9 +22,7 @@ void Game::Render(){
 	glUniform3f(compute_shader.GetVariable("light"), light.x, light.y, light.z);
 	glUniform1f(compute_shader.GetVariable("fov"), camera::GetFoV());
 	glUniform1i(compute_shader.GetVariable("tri_num"), model.GetTriangleNum());
-	static std::default_random_engine rand(7122);
-	//std::clog << rand() << std::endl;
-	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), rand());
+	glUniform1ui(compute_shader.GetVariable("initial_random_seed"),mylib::Rand::NextUint());
 	model.Send();
 	world.SendToShader();
 }

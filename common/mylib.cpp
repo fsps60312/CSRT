@@ -1,6 +1,14 @@
 #include<common/mylib.hpp>
 #include<cmath>
 namespace mylib {
+	std::mt19937 Rand::rand = std::mt19937();
+	std::uniform_real_distribution<double> Rand::unif(0.0, 1.0);
+	uint32_t Rand::NextUint() {
+		return rand();
+	}
+	double Rand::NextDouble() {
+		return unif(rand);
+	}
 	glm::dvec3 FromAngular(const double radius, const double theta, const double z) {
 		return glm::dvec3(radius * std::cos(theta), radius * std::sin(theta), z);
 	}

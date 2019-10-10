@@ -24,7 +24,8 @@ BufferSystem::BufferSystem(std::string filename)
 		obj = new VisibleObject();
 		auto pod = new pod::Pod();
 		obj->children.insert(pod);
-		obj->children.insert(&block::Blocks::instance);
+		obj->children.insert(block::Blocks::instance);
+		obj->children.insert(effects::Fume::fumes_parent);
 		/*if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->Translate(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));
@@ -65,6 +66,9 @@ void BufferSystem::Send()
 		obj->Update();*/
 		const std::vector<Triangle>& triangles = BVHNode::glob_triangles;
 		const std::vector<Material>& materials = Material::glob_materials;
+		//for (auto& t : triangles)if (t.material_id != 0)std::clog << "not 0!" << std::endl;
+		//if (materials.size() >= 2) std::clog << "material[1]: " << materials[1].alpha << std::endl;
+		//std::clog << "materials.size() = " << materials.size() << std::endl;
 		const std::vector<glm::ivec3>&nodes = BVHNode::glob_bvh_nodes;
 		const auto &aabbs_raw = BVHNode::glob_bvh_aabbs;
 		std::vector<glm::mat2x3>aabbs;
@@ -127,12 +131,12 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>&triangles
 			ret.push_back(glm::floatBitsToUint(vertices[i].x));
 			ret.push_back(glm::floatBitsToUint(vertices[i].y));
 			ret.push_back(glm::floatBitsToUint(vertices[i].z));
-			ret.push_back(0);
+			ret.push_back(triangle.material_id);
 		}
 		ret.push_back(triangle.material_id);
-		ret.push_back(0);
-		ret.push_back(0);
-		ret.push_back(0);
+		ret.push_back(triangle.material_id);
+		ret.push_back(triangle.material_id);
+		ret.push_back(triangle.material_id);
 	}
 	return ret;
 }

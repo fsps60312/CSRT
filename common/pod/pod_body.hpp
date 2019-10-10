@@ -9,6 +9,7 @@
 #include<common/pod/pod_propeller.hpp>
 #include<common/pod/pod_drill.hpp>
 #include<common/block/block.hpp>
+#include<common/effects/fume.hpp>
 #include<iostream>
 #include<vector>
 #include<cmath>
@@ -30,6 +31,7 @@ namespace pod {
 		void UpdateRotationZ();
 		void UpdateRotationY();
 		void UpdateRigidBody();
+		void UpdateFume(const double secs);
 		void AdvanceCamera(const double secs);
 		void AdvanceRigidBody(const double secs);
 		bool IsRigidBodyMoveTooMuch(const double secs)const;

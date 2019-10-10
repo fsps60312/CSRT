@@ -4,10 +4,9 @@
 #include<common/buffer_system.hpp>
 #include<common/control.hpp>
 #include<common/camera.hpp>
-
+#include<common/mylib.hpp>
 #include<iostream>
 #include<chrono>
-#include<random>
 
 class Game {
 private:
