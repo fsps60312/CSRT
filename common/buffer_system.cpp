@@ -64,7 +64,7 @@ void BufferSystem::Send()
 		obj->children[2]->Rotate(glm::vec3(0, 0, 1), -glm::acos(-1) / 100);
 		obj->Update();*/
 		const std::vector<Triangle>& triangles = BVHNode::glob_triangles;
-		const std::vector<Material>& materials = Triangle::glob_materials;
+		const std::vector<Material>& materials = Material::glob_materials;
 		const std::vector<glm::ivec3>&nodes = BVHNode::glob_bvh_nodes;
 		const auto &aabbs_raw = BVHNode::glob_bvh_aabbs;
 		std::vector<glm::mat2x3>aabbs;
@@ -129,7 +129,7 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>&triangles
 			ret.push_back(glm::floatBitsToUint(vertices[i].z));
 			ret.push_back(0);
 		}
-		ret.push_back(triangle.material);
+		ret.push_back(triangle.material_id);
 		ret.push_back(0);
 		ret.push_back(0);
 		ret.push_back(0);

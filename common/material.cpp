@@ -1,4 +1,5 @@
 #include<common/material.hpp>
+std::vector<Material>Material::glob_materials(1);
 Material::Material() :
 	ambient(glm::vec3(0.125, 0.435, 0.25)),
 	diffuse(glm::vec3(0.25, 0.87, 0.5)),

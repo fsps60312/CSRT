@@ -4,7 +4,7 @@ layout(rgba16f, binding = 0) uniform image2D img_output;
 
 struct Triangle{
 	mat3 verticez;
-	int material;
+	int material_id;
 };
 struct Material{
 	vec3 ambient;
@@ -168,13 +168,13 @@ void Intersect(inout Ray r){
 }
 
 vec3 PhongLighting(Ray ray){
-	int   id  = buf_triangle[ray.obj].material;
+	Material mtl  = buf_material[buf_triangle[ray.obj].material_id];
 //	float r   = materials[id+0], g  = materials[id+1], b  = materials[id+2], ia = 1.0f,
 //		  ka  = materials[id+3], kd = materials[id+4], ks = materials[id+5], ks_exp = materials[id+6];
-	const vec3 ambient_color=buf_material[id].ambient;
-	const vec3 diffuse_color=buf_material[id].diffuse;
-	const vec3 specular_color=buf_material[id].specular;
-	const float ks_exp=buf_material[id].specular_exp;
+	const vec3 ambient_color  = mtl.ambient;
+	const vec3 diffuse_color  = mtl.diffuse;
+	const vec3 specular_color = mtl.specular;
+	const float ks_exp        = mtl.specular_exp;
 
 	vec3  light_dir   = normalize(light - ray.pos);
 	vec3  h   = normalize(-ray.dir + light_dir);

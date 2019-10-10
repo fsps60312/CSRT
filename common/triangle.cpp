@@ -1,6 +1,5 @@
 #include<common/triangle.hpp>
-std::vector<Material>Triangle::glob_materials(1);
-Triangle::Triangle(const glm::dmat3 vertices) :vertices(vertices),material(0) {}
+Triangle::Triangle(const glm::dmat3 vertices) :vertices(vertices),material_id(0) {}
 glm::dmat3 Triangle::GetVertices()const { return vertices; }
 Triangle Triangle::ApplyTransform(const glm::dmat4& transform)const {
 	glm::dmat3 ret;
