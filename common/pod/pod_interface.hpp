@@ -14,4 +14,5 @@ public:
 	virtual double GetCorrectiveAlpha()const abstract;
 	virtual block::Block* GetCollideFront()const abstract;
 	virtual block::Block* GetCollideDown()const abstract;
+	virtual void ApplyTranslate(const glm::dvec3& offset)abstract;
 };

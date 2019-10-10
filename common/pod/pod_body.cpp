@@ -13,6 +13,9 @@ namespace pod {
 	RigidBody* PodBody::GetRigidBody() {
 		return &rb;
 	}
+	void PodBody::ApplyTranslate(const glm::dvec3& offset) {
+		rb.position += offset;
+	}
 	void PodBody::PrepareForRound() {
 		rb.Reset();
 	}
@@ -80,7 +83,24 @@ namespace pod {
 				}
 			}
 		} else {
-			block_digging->SetDigState(block_digging->GetDigDirection(), std::min(1.0, block_digging->GetDigProgress() + secs));
+			const double dig_progress = block_digging->GetDigProgress();
+			const double next_dig_progress = std::min(1.0, dig_progress + secs);
+			const auto dig_direction = block_digging->GetDigDirection();
+			block_digging->SetDigState(dig_direction, next_dig_progress);
+			switch (dig_direction) {
+			case block::Block::DigDirection::Down: {
+				pod->ApplyTranslate(glm::dvec3(0, -constants::block_height * (next_dig_progress - dig_progress), 0));
+				break;
+			}
+			case block::Block::DigDirection::Left: {
+				pod->ApplyTranslate(glm::dvec3(-constants::block_width * (next_dig_progress - dig_progress), 0, 0));
+				break;
+			}
+			case block::Block::DigDirection::Right: {
+				pod->ApplyTranslate(glm::dvec3(constants::block_width * (next_dig_progress - dig_progress), 0, 0));
+				break;
+			}
+			}
 			if (block_digging->GetDigProgress() == 1) {
 				block::Destroy(block_digging);
 				block_digging = NULL;

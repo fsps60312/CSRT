@@ -46,6 +46,7 @@ namespace pod {
 				glm::dvec3 GetPosition()const;
 				glm::dvec3 GetDesiredPosition()const;
 				glm::dvec3 GetReactForce()const;
+				void ApplyTranslate(const glm::dvec3& offset);
 				void PrepareForRound()override;
 				void Update(const double secs)override;
 				void Advance(const double secs)override;
@@ -69,6 +70,7 @@ namespace pod {
 			void AddTrackSpeed(const double dv);
 			void Advance(const double secs)override;
 			block::Block* CollideFront()const;
+			void ApplyTranslate(const glm::dvec3& offset);
 			Track(PodInterface* pod, const glm::dvec3& offset);
 		};
 	private:
@@ -77,6 +79,7 @@ namespace pod {
 		bool IsOnGround()const;
 		glm::dvec3 GetTotalReactForce()const;
 		block::Block* CollideFront()const;
+		void ApplyTranslate(const glm::dvec3& offset);
 		PodTracks(PodInterface* pod, const glm::dvec3& offset);
 	};
 }

@@ -1,5 +1,12 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	void PodTracks::Track::ApplyTranslate(const glm::dvec3& offset) {
+		for (Gear* gear : gears)gear->ApplyTranslate(offset);
+	}
+	void PodTracks::ApplyTranslate(const glm::dvec3& offset) {
+		left_track->ApplyTranslate(offset);
+		rigt_track->ApplyTranslate(offset);
+	}
 	block::Block* PodTracks::CollideFront()const {
 		block::Block* l = left_track->CollideFront(), * r = rigt_track->CollideFront();
 		return l == r ? r : NULL;

@@ -1,5 +1,8 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
+	void PodTracks::Track::Gear::ApplyTranslate(const glm::dvec3& offset) {
+		rb.position += offset;
+	}
 	block::Block* PodTracks::Track::Gear::GetCollided()const {
 		return collided;
 	}

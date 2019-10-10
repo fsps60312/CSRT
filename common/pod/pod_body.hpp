@@ -40,6 +40,7 @@ namespace pod {
 		RigidBody* GetRigidBody();
 		glm::dvec3 GetForce()const;
 		double GetCorrectiveAlpha()const;
+		void ApplyTranslate(const glm::dvec3& offset);
 		PodBody(PodInterface *parent);
 		void PrepareForRound()override;
 		void Update(const double secs)override;

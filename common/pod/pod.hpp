@@ -17,6 +17,7 @@ namespace pod {
 		double GetCorrectiveAlpha()const override;
 		block::Block* GetCollideFront()const override;
 		block::Block* GetCollideDown()const override;
+		void ApplyTranslate(const glm::dvec3& offset)override;
 		Pod();
 	};
 }
