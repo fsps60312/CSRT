@@ -8,7 +8,10 @@ namespace block {
 		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
 		const int y = (int)std::floor((position.y - anchor.y) / constants::block_height);
 		collided = GetBlock(x, y);
-		return IsCollidable(x, y);
+		if (collided == NULL)return false;
+		const double dx = position.x - (x * constants::block_width + anchor.x);
+		const double dy = position.y - (y * constants::block_height + anchor.y);
+		return collided->IsCollidable(dx, dy);
 	}
 	Block* Blocks::GetBlock(const glm::dvec2& position)const {
 		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
