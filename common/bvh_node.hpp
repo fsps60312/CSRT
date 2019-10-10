@@ -2,6 +2,7 @@
 #include<glm/glm.hpp>
 #include<common/aabb.hpp>
 #include<common/triangle.hpp>
+#include<common/material.hpp>
 #include<vector>
 #include<iostream>
 #include<cmath>

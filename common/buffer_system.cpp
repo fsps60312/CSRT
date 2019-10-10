@@ -34,6 +34,7 @@ BufferSystem::BufferSystem(std::string filename)
 		// Identify a vertex Buffer Object
 		//glGenBuffers(1, &materialBuffer);
 		glGenBuffers(1, &trianglesBuffer);
+		glGenBuffers(1, &materialsBuffer);
 		glGenBuffers(1, &bvhNodeBuffer);
 		glGenBuffers(1, &bvhAabbBuffer);
 		glGenBuffers(1, &bvhRangeBuffer);
@@ -62,20 +63,29 @@ void BufferSystem::Send()
 		obj->children[1]->Rotate(glm::vec3(1, 0, 0), -glm::acos(-1) / 100);
 		obj->children[2]->Rotate(glm::vec3(0, 0, 1), -glm::acos(-1) / 100);
 		obj->Update();*/
-		std::vector<Triangle>triangles = BVHNode::glob_triangles;
-		const std::vector<glm::ivec3>nodes = BVHNode::glob_bvh_nodes;
-		const auto aabbs_raw = BVHNode::glob_bvh_aabbs;
+		const std::vector<Triangle>& triangles = BVHNode::glob_triangles;
+		const std::vector<Material>& materials = Triangle::glob_materials;
+		const std::vector<glm::ivec3>&nodes = BVHNode::glob_bvh_nodes;
+		const auto &aabbs_raw = BVHNode::glob_bvh_aabbs;
 		std::vector<glm::mat2x3>aabbs;
 		for (const auto& aabb : aabbs_raw)aabbs.push_back(glm::mat2x3(aabb.GetMn(), aabb.GetMx()));
-		const std::vector<glm::ivec2> ranges = BVHNode::glob_tri_ranges;
+		const std::vector<glm::ivec2> &ranges = BVHNode::glob_tri_ranges;
 		//assert(materials.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);
+
 		const auto& padded_triangles = Padded(triangles);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_triangles.size(), padded_triangles.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+
+		const auto& padded_materials = Padded(materials);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialsBuffer);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_materials.size(), padded_materials.data(), GL_DYNAMIC_COPY);
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhNodeBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * nodes.size(), Padded(nodes).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhAabbBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3) + 8U) * aabbs.size(), Padded(aabbs).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhRangeBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::ivec2) * ranges.size(), ranges.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 	}
@@ -83,32 +93,33 @@ void BufferSystem::Send()
 
 	// 2nd buffer : vertices
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, trianglesBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bvhNodeBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bvhAabbBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhRangeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, materialsBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bvhNodeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhAabbBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhRangeBuffer);
 }
 
-std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>s)const {
+std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>&s)const {
 	std::vector<glm::vec4>ret;
 	for (const auto& v : s)ret.push_back(glm::vec4(v, 0.0f));
 	return ret;
 }
-std::vector<glm::ivec4> BufferSystem::Padded(const std::vector<glm::ivec3>s)const {
+std::vector<glm::ivec4> BufferSystem::Padded(const std::vector<glm::ivec3>&s)const {
 	std::vector<glm::ivec4>ret;
 	for (const auto& v : s)ret.push_back(glm::ivec4(v, 0.0f));
 	return ret;
 }
-std::vector<glm::mat2x4> BufferSystem::Padded(const std::vector<glm::mat2x3>s)const {
+std::vector<glm::mat2x4> BufferSystem::Padded(const std::vector<glm::mat2x3>&s)const {
 	std::vector<glm::mat2x4>ret;
 	for (const auto& v : s)ret.push_back(glm::mat2x3(glm::vec4(v[0], 0.0f), glm::vec4(v[1], 0.0f)));
 	return ret;
 }
-std::vector<glm::mat3x4> BufferSystem::Padded(const std::vector<glm::mat3>s)const {
+std::vector<glm::mat3x4> BufferSystem::Padded(const std::vector<glm::mat3>&s)const {
 	std::vector<glm::mat3x4>ret;
 	for (const auto& v : s)ret.push_back(glm::mat3x4(glm::vec4(v[0], 0.0f), glm::vec4(v[1], 0.0f), glm::vec4(v[2], 0.0f)));
 	return ret;
 }
-std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>triangles)const {
+std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>&triangles)const {
 	std::vector<uint32_t>ret;
 	for (const auto& triangle : triangles) {
 		const auto vertices = triangle.GetVertices();
@@ -119,6 +130,31 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>triangles)
 			ret.push_back(0);
 		}
 		ret.push_back(triangle.material);
+		ret.push_back(0);
+		ret.push_back(0);
+		ret.push_back(0);
+	}
+	return ret;
+}
+std::vector<uint32_t> BufferSystem::Padded(const std::vector<Material>& materials)const {
+	std::vector<uint32_t>ret;
+	for (const auto& material : materials) {
+		ret.push_back(glm::floatBitsToUint(material.ambient.r));
+		ret.push_back(glm::floatBitsToUint(material.ambient.g));
+		ret.push_back(glm::floatBitsToUint(material.ambient.b));
+		ret.push_back(0);
+
+		ret.push_back(glm::floatBitsToUint(material.diffuse.r));
+		ret.push_back(glm::floatBitsToUint(material.diffuse.g));
+		ret.push_back(glm::floatBitsToUint(material.diffuse.b));
+		ret.push_back(0);
+
+		ret.push_back(glm::floatBitsToUint(material.specular.r));
+		ret.push_back(glm::floatBitsToUint(material.specular.g));
+		ret.push_back(glm::floatBitsToUint(material.specular.b));
+		ret.push_back(glm::floatBitsToUint(material.specular_exp));
+
+		ret.push_back(glm::floatBitsToUint(material.alpha));
 		ret.push_back(0);
 		ret.push_back(0);
 		ret.push_back(0);

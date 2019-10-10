@@ -6,11 +6,19 @@ struct Triangle{
 	mat3 verticez;
 	int material;
 };
+struct Material{
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	float specular_exp;
+	float alpha;
+};
 
-layout(std430,  binding = 0) buffer trianglez    { Triangle buf_triangle[];};
-layout(std430,  binding = 1) buffer bvh_nodes    { ivec3 buf_bvh_node[]; };
-layout(std430,  binding = 2) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[]; };
-layout(std430,  binding = 3) buffer bvh_ranges   { ivec2 buf_bvh_range[]; };
+layout(std430,  binding = 0) buffer trianglez    { Triangle buf_triangle[]; };
+layout(std430,  binding = 1) buffer materials    { Material buf_material[]; };
+layout(std430,  binding = 2) buffer bvh_nodes    { ivec3 buf_bvh_node[];    };
+layout(std430,  binding = 3) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[];   };
+layout(std430,  binding = 4) buffer bvh_ranges   { ivec2 buf_bvh_range[];   };
 
 const float PI    = acos(-1);
 // https://stackoverflow.com/questions/16069959/glsl-how-to-ensure-largest-possible-float-value-without-overflow
@@ -18,13 +26,13 @@ const float FLT_MAX=3.402823466e+38f;
 
 uniform int tri_num;
 
-const int mtl_num = 2;
-const int mtl_jmp = 10;
+//const int mtl_num = 2;
+//const int mtl_jmp = 10;
 
-const float materials[mtl_jmp * mtl_num] = float[](
-	1.0f,  1.0f,  1.0f, 0.1f, 0.9f, 0.3f, 20.0f, 0.4f, 0.0f, 1.0f,
+/*const float materials[mtl_jmp * mtl_num] = float[](
+	1.0f,  1.0f,  1.0f, 0.1f, 0.9f, 0.3f, 20.0f, 0.4f, 0.0f, 1.0f, // r,g,b,_,_,_,ks_exp,_,_,_
 	0.25f, 0.87f, 0.5f, 0.1f, 0.9f, 0.3f, 20.0f, 0.1f, 0.4f, 1.2f
-);
+);*/
 
 uniform vec3  eye;   // vec3( -0.75f,  1.40f,  2.25f );
 uniform vec3  view;  // horizontalAngle = 2.5f, verticalAngle = -0.5f;
@@ -142,8 +150,7 @@ void BVHIntersect(inout Ray r){
 	}
 }
 
-void Intersect(inout Ray r)
-{
+void Intersect(inout Ray r){
 	r.t=FLT_MAX;
 	r.pre_obj=r.obj;
 	r.obj=-1;
@@ -160,14 +167,17 @@ void Intersect(inout Ray r)
 	}
 }
 
-vec3 PhongLighting(Ray ray)
-{
-	int   id  = buf_triangle[ray.obj].material * mtl_jmp;
-	float r   = materials[id+0], g  = materials[id+1], b  = materials[id+2], ia = 1.0f,
-		  ka  = materials[id+3], kd = materials[id+4], ks = materials[id+5], ks_exp = materials[id+6];
+vec3 PhongLighting(Ray ray){
+	int   id  = buf_triangle[ray.obj].material;
+//	float r   = materials[id+0], g  = materials[id+1], b  = materials[id+2], ia = 1.0f,
+//		  ka  = materials[id+3], kd = materials[id+4], ks = materials[id+5], ks_exp = materials[id+6];
+	const vec3 ambient_color=buf_material[id].ambient;
+	const vec3 diffuse_color=buf_material[id].diffuse;
+	const vec3 specular_color=buf_material[id].specular;
+	const float ks_exp=buf_material[id].specular_exp;
+
 	vec3  light_dir   = normalize(light - ray.pos);
 	vec3  h   = normalize(-ray.dir + light_dir);
-	vec3  rgb = vec3(0.0f);
 	
 	/*struct Ray {
 		int   pre_obj, obj;
@@ -177,25 +187,21 @@ vec3 PhongLighting(Ray ray)
 	Ray ray_light = Ray(-1, ray.obj, FLT_MAX, 0.0f, ray.pos+1e-5*light_dir, light_dir, vec3(0.0f));
 	Intersect(ray_light);
 
-	vec3  diffuse_color  = vec3(r,g,b);
-	vec3  specular_color = vec3(0.3f);
-	vec3  ambient_color  = diffuse_color * 0.5f;
+//	vec3  diffuse_color  = vec3(r,g,b);
+//	vec3  specular_color = vec3(0.3f);
+//	vec3  ambient_color  = diffuse_color * 0.5f;
 	float diffuse_factor  = clamp(dot(ray.n, light_dir), 0.0f, 1.0f);
 	float specular_factor = pow(clamp(dot(ray.n, h), 0.0f, 1.0f), ks_exp);
 
-	if(ray_light.t<distance(light,ray.pos))
-	{
+	vec3  rgb = vec3(0.0f);
+	if(ray_light.t<distance(light,ray.pos)){
 		rgb = ambient_color;
-	}
-	else
-	{
-		
+	}else{
 		float dist = length(light - ray.pos), light_power = 100.0f;
 		rgb =
 			ambient_color  +
 			diffuse_color  * light_power * diffuse_factor  / (dist * dist) +
 			specular_color * light_power * specular_factor / (dist * dist);
-		
 	}
 	
 	return rgb * ray.i;

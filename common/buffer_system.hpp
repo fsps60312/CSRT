@@ -24,14 +24,16 @@ class BufferSystem {
 private:
 	BVHNode* root = NULL;
 	GLuint trianglesBuffer = 0;
+	GLuint materialsBuffer = 0;
 	GLuint bvhNodeBuffer = 0;
 	GLuint bvhAabbBuffer = 0;
 	GLuint bvhRangeBuffer = 0;
-	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>s)const;
-	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>s)const;
-	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>s)const;
-	std::vector<glm::mat3x4> Padded(const std::vector<glm::mat3>s)const;
-	std::vector<uint32_t> Padded(const std::vector<Triangle>s)const;
+	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>& s)const;
+	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>& s)const;
+	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>& s)const;
+	std::vector<glm::mat3x4> Padded(const std::vector<glm::mat3>& s)const;
+	std::vector<uint32_t> Padded(const std::vector<Triangle>& s)const;
+	std::vector<uint32_t> Padded(const std::vector<Material>& s)const;
 public:
 	VisibleObject* obj = NULL;
 	BufferSystem();
