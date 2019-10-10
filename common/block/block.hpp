@@ -17,7 +17,9 @@ namespace block {
 		std::vector<Triangle>GetTriangles(const glm::dvec3& size, const Type type)const;
 	public:
 		bool IsCollidable(const double dx, const double dy)const;
-		void SetDigState(const DigDirection dig_direction, const double remain_ratio);
+		void SetDigState(const DigDirection dig_direction, const double dig_progress);
+		DigDirection GetDigDirection()const;
+		double GetDigProgress()const;
 		Block(const glm::dvec3& position, const glm::dvec3& size, const Type type);
 	};
 }

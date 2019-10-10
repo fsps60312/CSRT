@@ -22,6 +22,8 @@ namespace block {
 		default:throw;
 		}
 	}
+	Block::DigDirection Block::GetDigDirection()const { return dig_direction; }
+	double Block::GetDigProgress()const { return dig_progress; }
 	void Block::SetDigState(const DigDirection dig_direction, const double dig_progress) {
 		this->dig_direction = dig_direction;
 		this->dig_progress = dig_progress;

@@ -4,12 +4,15 @@
 #include<common/control.hpp>
 #include<common/camera.hpp>
 #include<deque>
+#include<map>
 namespace block {
 	bool IsCollidable(const glm::dvec3& position, Block*& collided);
+	bool Destroy(const Block* block);
 	class Blocks :public VisibleObject {
 	private:
 		const glm::dvec3 anchor;
 		std::deque<std::pair<int, std::deque<std::pair<int, Block*>>>>blocks;
+		std::map<const Block*, std::pair<int, int>>block_positions;
 		void RecycleBlock(Block* b);
 		void RemoveXMin();
 		void RemoveXMax();
@@ -23,10 +26,12 @@ namespace block {
 		void RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max)const;
 		Block* GetBlock(const int x, const int y)const;
 		Block* GetBlock(const glm::dvec2& position)const;
+		bool Destroy(const int x, const int y);
 	public:
 		static Blocks instance;
 		bool IsCollidable(const int x, const int y)const;
 		bool IsCollidable(const glm::dvec2& position, Block*& collided)const;
+		bool Destroy(const Block* block);
 		Blocks(const glm::dvec3 &anchor);
 		void Update(const double secs)override;
 	};

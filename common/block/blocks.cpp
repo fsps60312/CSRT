@@ -4,6 +4,42 @@ namespace block {
 	bool IsCollidable(const glm::dvec3& position, Block*& collided) {
 		return Blocks::instance.IsCollidable(glm::dvec2(position.x, position.y), collided);
 	}
+	bool Destroy(const Block* block) { return Blocks::instance.Destroy(block); }
+	bool Blocks::Destroy(const int x, const int y) {
+		const int x_offset = x - blocks.front().first;
+		if (x_offset < 0 || (int)blocks.size() <= x_offset)return false;
+		auto& blks = blocks[x_offset].second;
+		const int y_offset = y - blks.front().first;
+		if (y_offset < 0 || (int)blks.size() <= y_offset)return false;
+		RecycleBlock(blks[y_offset].second);
+		blks[y_offset].second = NULL;
+		return true;
+	}
+	bool Blocks::Destroy(const Block* block) {
+		const auto block_position = block_positions.at(block);
+		return Destroy(block_position.first, block_position.second);
+	}
+	Block* Blocks::NewBlock(const int xi, const int yi) {
+		if (!IsCollidable(xi, yi))return NULL;
+		const glm::dvec3& position = anchor + glm::dvec3(constants::block_width * xi, constants::block_height * yi, 0.0);
+		const glm::dvec3& size = glm::dvec3(constants::block_width - 0.2, constants::block_height - 0.2, constants::block_depth);
+		Block* blk = new Block(position, size, Block::Type::General);
+		children.insert(blk);
+		block_positions[blk] = std::make_pair(xi, yi);
+		return blk;
+	}
+	void Blocks::RecycleBlock(Block* b) {
+		if (b == NULL)return;
+		{
+			const size_t erased = children.erase(b);
+			assert(erased == 1);
+		}
+		{
+			const size_t erased = block_positions.erase(b);
+			assert(erased == 1);
+		}
+		VisibleObject::Delete(b);
+	}
 	bool Blocks::IsCollidable(const glm::dvec2& position, Block*& collided)const {
 		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
 		const int y = (int)std::floor((position.y - anchor.y) / constants::block_height);
@@ -29,12 +65,6 @@ namespace block {
 	bool Blocks::IsCollidable(const int x, const int y) const{
 		return y <= -5 || y >= 15 || x <= -15 || x >= 15 || (x >= -1 && x <= 1 && y == 2);
 	}
-	void Blocks::RecycleBlock(Block* b) {
-		if (b == NULL)return;
-		const size_t erased = children.erase(b);
-		assert(erased == 1);
-		VisibleObject::Delete(b);
-	}
 	void Blocks::RemoveXMin() {
 		for (const std::pair<int, Block*>& b : blocks.front().second)RecycleBlock(b.second);
 		blocks.pop_front();
@@ -56,14 +86,6 @@ namespace block {
 			bs.second.pop_back();
 		}
 		if (blocks.front().second.empty())blocks.clear();
-	}
-	Block* Blocks::NewBlock(const int xi, const int yi) {
-		if (!IsCollidable(xi, yi))return NULL;
-		const glm::dvec3& position = anchor + glm::dvec3(constants::block_width * xi, constants::block_height * yi, 0.0);
-		const glm::dvec3& size = glm::dvec3(constants::block_width - 0.2, constants::block_height - 0.2, constants::block_depth);
-		Block* blk = new Block(position, size, Block::Type::General);
-		children.insert(blk);
-		return blk;
 	}
 	void Blocks::AppendYMin() {
 		for (auto& bs : blocks) {

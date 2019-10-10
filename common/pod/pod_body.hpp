@@ -16,8 +16,7 @@ namespace pod {
 	class PodBody :public VisibleObject {
 	private:
 		enum DigIntention { None, Left, Right, Down };
-		DigIntention dig_intention = DigIntention::None;
-		block::Block** in_digging_block = NULL;
+		block::Block* block_digging = NULL;
 		const static double body_radius;
 		double rotation_y = 0;
 		double desired_rotation_y = 0;
@@ -27,7 +26,7 @@ namespace pod {
 		PodDrill* drill;
 		std::vector<Triangle>GetTriangles()const;
 		DigIntention GetDigIntention()const;
-		void UpdateDigIntention();
+		void UpdateDigIntention(const double secs);
 		void UpdateRotationZ();
 		void UpdateRotationY();
 		void UpdateRigidBody();

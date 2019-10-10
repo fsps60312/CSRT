@@ -44,10 +44,10 @@ namespace pod {
 		rb.force += GetForce();
 	}
 	PodBody::DigIntention PodBody::GetDigIntention()const {
-		if (!pod->IsPodStableOnGround())return DigIntention::None;
-		if (dig_intention == DigIntention::Down && !environment::IsKeyDown(GLFW_KEY_S))return DigIntention::None;
-		if (dig_intention == DigIntention::Left && !environment::IsKeyDown(GLFW_KEY_A))return DigIntention::None;
-		if (dig_intention == DigIntention::Right && !environment::IsKeyDown(GLFW_KEY_D))return DigIntention::None;
+		if (!pod->IsPodStableOnGround()) {
+			drill->SetFoldTarget(pod->IsOnGround() ? 1 : 0);
+			return DigIntention::None;
+		}
 		if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D)) {
 			drill->SetFoldTarget(1);
 			return drill->GetFoldState() == 1 ? DigIntention::Left : DigIntention::None;
@@ -60,27 +60,36 @@ namespace pod {
 			drill->SetFoldTarget(-1);
 			return drill->GetFoldState() == -1 ? DigIntention::Down : DigIntention::None;
 		}
+		drill->SetFoldTarget(pod->IsOnGround() ? 1 : 0);
 		return DigIntention::None;
 	}
-	void PodBody::UpdateDigIntention() {
-		dig_intention = GetDigIntention();
-		if (dig_intention == DigIntention::Left || dig_intention == DigIntention::Right) {
-			block::Block* b = pod->GetCollideFront();
-			if (b != NULL) {
-				b->SetDigState(dig_intention == DigIntention::Left ? block::Block::DigDirection::Left : block::Block::DigDirection::Right, 0.5);
-				//std::clog << "dig dig dig!\n";
+	void PodBody::UpdateDigIntention(const double secs) {
+		if (block_digging == NULL) {
+			const DigIntention dig_intention = GetDigIntention();
+			if (dig_intention == DigIntention::Left || dig_intention == DigIntention::Right) {
+				block::Block* b = block_digging = pod->GetCollideFront();
+				if (b != NULL) {
+					b->SetDigState(dig_intention == DigIntention::Left ? block::Block::DigDirection::Left : block::Block::DigDirection::Right, 0);
+					//std::clog << "dig dig dig!\n";
+				}
 			}
-		}
-		if (dig_intention == DigIntention::Down) {
-			block::Block* b = pod->GetCollideDown();
-			if (b != NULL) {
-				b->SetDigState(block::Block::DigDirection::Down, 0.5);
+			if (dig_intention == DigIntention::Down) {
+				block::Block* b = block_digging = pod->GetCollideDown();
+				if (b != NULL) {
+					b->SetDigState(block::Block::DigDirection::Down, 0);
+				}
+			}
+		} else {
+			block_digging->SetDigState(block_digging->GetDigDirection(), std::min(1.0, block_digging->GetDigProgress() + secs));
+			if (block_digging->GetDigProgress() == 1) {
+				block::Destroy(block_digging);
+				block_digging = NULL;
 			}
 		}
 	}
 	void PodBody::Update(const double secs) {
 		//if (pod->IsPodStableOnGround())std::clog << "stable!" << std::endl;
-		UpdateDigIntention();
+		UpdateDigIntention(secs);
 		UpdateRotationY();
 		UpdateRotationZ();
 		UpdateRigidBody();
