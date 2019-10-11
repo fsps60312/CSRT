@@ -10,6 +10,7 @@
 #include<common/pod/pod_drill.hpp>
 #include<common/block/block.hpp>
 #include<common/effects/fume.hpp>
+#include<common/effects/gravel.hpp>
 #include<iostream>
 #include<vector>
 #include<cmath>

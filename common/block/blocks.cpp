@@ -111,7 +111,7 @@ namespace block {
 		for (auto& b : blocks.back().second)new_list.push_back(std::make_pair(b.first, NewBlock(xi, b.first)));
 		blocks.push_back(make_pair(xi, new_list));
 	}
-	void Blocks::RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max)const {
+	void Blocks::RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max) {
 		const glm::dvec3& camera_dir = camera::GetDirection();
 		const glm::dvec3& up = camera::GetUp();
 		const glm::dvec3& dx = glm::normalize(glm::cross(camera_dir, up));

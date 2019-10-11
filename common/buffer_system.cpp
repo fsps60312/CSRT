@@ -26,6 +26,7 @@ BufferSystem::BufferSystem(std::string filename)
 		obj->children.insert(pod);
 		obj->children.insert(block::Blocks::instance);
 		obj->children.insert(effects::Fume::fumes_parent);
+		obj->children.insert(effects::Gravel::gravels_parent);
 		/*if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->Translate(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));

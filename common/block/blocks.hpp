@@ -23,12 +23,12 @@ namespace block {
 		void AppendXMax();
 		void AppendYMin();
 		void AppendYMax();
-		void RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max)const;
 		Block* GetBlock(const int x, const int y)const;
 		Block* GetBlock(const glm::dvec2& position)const;
 		bool Destroy(const int x, const int y);
 	public:
 		static Blocks* instance;
+		static void RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max);
 		bool IsCollidable(const int x, const int y)const;
 		bool IsCollidable(const glm::dvec2& position, Block*& collided)const;
 		bool Destroy(const Block* block);

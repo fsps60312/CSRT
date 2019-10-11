@@ -89,16 +89,36 @@ namespace pod {
 			const double next_dig_progress = std::min(1.0, dig_progress + secs);
 			const auto dig_direction = block_digging->GetDigDirection();
 			block_digging->SetDigState(dig_direction, next_dig_progress);
+			static double gravel_pop = 0;
+			gravel_pop += secs * 60; // 60 gravels per sec
 			switch (dig_direction) {
 			case block::Block::DigDirection::Down: {
+				while (gravel_pop >= 1) {
+					gravel_pop -= 1;
+					const glm::dvec3 pos = rb.position + glm::dvec3(0, -body_radius, 0);
+					const glm::dvec3 speed = glm::dvec3((mylib::Rand::NextDouble() * 2 - 1) * 10, 5 + 5 * mylib::Rand::NextDouble(), (mylib::Rand::NextDouble() * 2 - 1) * 5);
+					effects::Gravel::AddGravel(pos, speed);
+				}
 				pod->ApplyTranslate(glm::dvec3(0, -constants::block_height * (next_dig_progress - dig_progress), 0));
 				break;
 			}
 			case block::Block::DigDirection::Left: {
+				while (gravel_pop >= 1) {
+					gravel_pop -= 1;
+					const glm::dvec3 pos = rb.position + glm::dvec3(-body_radius, 0, 0);
+					const glm::dvec3 speed = glm::dvec3((mylib::Rand::NextDouble()) * 10, 5 + 5 * mylib::Rand::NextDouble(), (mylib::Rand::NextDouble() * 2 - 1) * 5);
+					effects::Gravel::AddGravel(pos, speed);
+				}
 				pod->ApplyTranslate(glm::dvec3(-constants::block_width * (next_dig_progress - dig_progress), 0, 0));
 				break;
 			}
 			case block::Block::DigDirection::Right: {
+				while (gravel_pop >= 1) {
+					gravel_pop -= 1;
+					const glm::dvec3 pos = rb.position + glm::dvec3(body_radius, 0, 0);
+					const glm::dvec3 speed = glm::dvec3((-mylib::Rand::NextDouble()) * 10, 5 + 5 * mylib::Rand::NextDouble(), (mylib::Rand::NextDouble() * 2 - 1) * 5);
+					effects::Gravel::AddGravel(pos, speed);
+				}
 				pod->ApplyTranslate(glm::dvec3(constants::block_width * (next_dig_progress - dig_progress), 0, 0));
 				break;
 			}

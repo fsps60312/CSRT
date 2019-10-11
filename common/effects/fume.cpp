@@ -12,9 +12,8 @@ namespace effects {
 			VisibleObject::Delete(this);
 			return;
 		}
+		theta = std::fmod(theta + omega * secs, 2.0 * PI);
 		VisibleObject::Delete(*children.begin());
-		theta += omega * secs;
-		theta = std::fmod(theta, 2.0 * PI);
 		children.erase(children.begin());
 		children.insert(new VisibleObject(GetTriangles()));
 		SetTransform(GetTransform());
