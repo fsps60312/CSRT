@@ -39,7 +39,7 @@ namespace environment {
 
 			compute_shader.Disable();
 
-			DrawSubWindow(0, 0, SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, GetTextureShader());
+			DrawSubWindow(0, 0, SCREEN_WIDTH * SCREEN_SCALE_X, SCREEN_HEIGHT * SCREEN_SCALE_Y, GetTextureShader());
 		}
 
 
@@ -147,7 +147,7 @@ namespace environment {
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); glfw_check_error();
 
 		// Open a window and create its OpenGL context
-		window = glfwCreateWindow(SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2, "Compute_Shader_Ray_Tracing", NULL, NULL); glfw_check_error();
+		window = glfwCreateWindow(SCREEN_WIDTH * SCREEN_SCALE_X, SCREEN_HEIGHT * SCREEN_SCALE_Y, "Compute_Shader_Ray_Tracing", NULL, NULL); glfw_check_error();
 		if (window == NULL) {
 			fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
 			glfwTerminate(); glfw_check_error();
