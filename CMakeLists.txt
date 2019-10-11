@@ -57,6 +57,30 @@ add_definitions(
 # User playground
 add_executable(playground 
 	playground/playground.cpp
+	common/block/block.hpp
+	common/block/block.cpp
+	common/block/blocks.hpp
+	common/block/blocks.cpp
+	common/effects/fume.hpp
+	common/effects/fume.cpp
+	common/effects/gravel.hpp
+	common/effects/gravel.cpp
+	common/pod/pod.hpp
+	common/pod/pod.cpp
+	common/pod/pod_body.hpp
+	common/pod/pod_body.cpp
+	common/pod/pod_drill.hpp
+	common/pod/pod_drill.cpp
+	common/pod/pod_drill_blade.cpp
+	common/pod/pod_interface.hpp
+	common/pod/pod_propeller.hpp
+	common/pod/pod_propeller.cpp
+	common/pod/pod_propeller_blade.cpp
+	common/pod/pod_propeller_bladeset.cpp
+	common/pod/pod_tracks.hpp
+	common/pod/pod_tracks.cpp
+	common/pod/pod_tracks_gear.cpp
+	common/pod/pod_tracks_tooth.cpp
 	common/control.hpp
 	common/aabb.hpp
 	common/aabb.cpp
@@ -72,10 +96,22 @@ add_executable(playground
 	common/game.cpp
 	common/gl_check_error.hpp
 	common/gl_check_error.cpp
+	common/light.hpp
+	common/light.cpp
+	common/material.hpp
+	common/material.cpp
+	common/matrix_d.hpp
+	common/matrix_d.cpp
+	common/mylib.hpp
+	common/mylib.cpp
 	common/objloader.hpp
 	common/objloader.cpp
+	common/rigid_body.hpp
+	common/rigid_body.cpp
 	common/shader.hpp
 	common/shader.cpp
+	common/triangle.hpp
+	common/triangle.cpp
 	common/visible_object.hpp
 	common/visible_object.cpp
 	common/world.hpp
