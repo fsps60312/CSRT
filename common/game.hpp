@@ -13,7 +13,6 @@ private:
 	int money = 150;
 	World world;
 	BufferSystem model;
-	glm::vec3 light = glm::vec3(0.0f, 10.0f, 5.0f);
 public:
 	enum Keys {
 		Z, X,

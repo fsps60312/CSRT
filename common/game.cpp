@@ -19,7 +19,6 @@ void Game::Render(){
 	glUniform3f(compute_shader.GetVariable("eye"), camera_position.x, camera_position.y, camera_position.z);
 	glUniform3f(compute_shader.GetVariable("view"), camera_direction.x, camera_direction.y, camera_direction.z);
 	glUniform3f(compute_shader.GetVariable("up"), camera_up.x, camera_up.y, camera_up.z);
-	glUniform3f(compute_shader.GetVariable("light"), light.x, light.y, light.z);
 	glUniform1f(compute_shader.GetVariable("fov"), camera::GetFoV());
 	glUniform1i(compute_shader.GetVariable("tri_num"), model.GetTriangleNum());
 	glUniform1ui(compute_shader.GetVariable("initial_random_seed"),mylib::Rand::NextUint());
@@ -40,7 +39,7 @@ void Game::Advance(std::chrono::nanoseconds timespan) {
 }
 void Game::ReceiveKey(Keys key) {
 	switch (key) {
-	case Keys::D1:
+	/*case Keys::D1:
 		light.x += 1.0f; break;
 	case Keys::D2:	
 		light.x -= 1.0f; break;
@@ -51,7 +50,7 @@ void Game::ReceiveKey(Keys key) {
 	case Keys::D5:	
 		light.z += 1.0f; break;
 	case Keys::D6:	
-		light.z -= 1.0f; break;
+		light.z -= 1.0f; break;*/
 	case Keys::F1:break;
 	case Keys::F2:break;
 	case Keys::F3:break;

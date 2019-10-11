@@ -11,6 +11,7 @@
 #include<common/block/block.hpp>
 #include<common/effects/fume.hpp>
 #include<common/effects/gravel.hpp>
+#include<common/light.hpp>
 #include<iostream>
 #include<vector>
 #include<cmath>

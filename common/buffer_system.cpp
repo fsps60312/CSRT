@@ -37,6 +37,7 @@ BufferSystem::BufferSystem(std::string filename)
 		//glGenBuffers(1, &materialBuffer);
 		glGenBuffers(1, &trianglesBuffer);
 		glGenBuffers(1, &materialsBuffer);
+		glGenBuffers(1, &lightsBuffer);
 		glGenBuffers(1, &bvhNodeBuffer);
 		glGenBuffers(1, &bvhAabbBuffer);
 		glGenBuffers(1, &bvhRangeBuffer);
@@ -85,6 +86,10 @@ void BufferSystem::Send()
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialsBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_materials.size(), padded_materials.data(), GL_DYNAMIC_COPY);
 
+		const auto& padded_lights = Padded(Light::glob_lights);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsBuffer);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_lights.size(), padded_lights.data(), GL_DYNAMIC_COPY);
+
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhNodeBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * nodes.size(), Padded(nodes).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
 
@@ -99,9 +104,10 @@ void BufferSystem::Send()
 	// 2nd buffer : vertices
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, trianglesBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, materialsBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bvhNodeBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhAabbBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhRangeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, lightsBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhNodeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhAabbBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, bvhRangeBuffer);
 }
 
 std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>&s)const {
@@ -163,6 +169,23 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Material>& material
 		ret.push_back(0);
 		ret.push_back(0);
 		ret.push_back(0);
+	}
+	return ret;
+}
+
+std::vector<uint32_t>BufferSystem::Padded(const std::vector<Light>& lights)const {
+	std::vector<uint32_t>ret;
+	ret.push_back(lights.size());
+	ret.push_back(0);
+	ret.push_back(0);
+	ret.push_back(0);
+	for (const auto& light : lights) {
+		const glm::dvec3& position = light.GetPosition();
+		const double power = light.GetPower();
+		ret.push_back(glm::floatBitsToUint(position.x));
+		ret.push_back(glm::floatBitsToUint(position.y));
+		ret.push_back(glm::floatBitsToUint(position.z));
+		ret.push_back(glm::floatBitsToUint(power));
 	}
 	return ret;
 }

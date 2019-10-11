@@ -146,6 +146,8 @@ namespace pod {
 		UpdateRotationZ();
 		UpdateRigidBody();
 		UpdateFume(secs);
+		Light::glob_lights[0] = Light(rb.position + glm::dvec3(constants::block_width * 10, constants::block_height * 8, 50), 3000);
+		Light::glob_lights[1] = Light(rb.position + glm::dvec3(-constants::block_width * 8, constants::block_height * 6, 20), 2000);
 		for (auto& ch : children)ch->Update(secs);
 	}
 	void PodBody::AdvanceCamera(const double secs) {
