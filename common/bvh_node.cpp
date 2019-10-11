@@ -100,33 +100,44 @@ int BVHNode::CalMid(const int id, std::vector<int>& tri_ids) {
 		const glm::vec3 d = aabb.GetMx() - aabb.GetMn();
 		return 2 * (d.x * d.y + d.x * d.z + d.y * d.z);
 	};
-	// sort along longest axis
-	glm::vec3 c(0); c[glob_bvh_aabbs[id].LongestAxis()] = 1;
-	const int l = glob_tri_ranges[id].x, r = glob_tri_ranges[id].y;
-	std::sort(tri_ids.begin() + l, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
-	//std::nth_element(tri_ids.begin() + l, tri_ids.begin() + (l + r) / 2, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
-		return dot_max(glob_triangles[t1].GetVertices(), c) < dot_max(glob_triangles[t2].GetVertices(), c);
-	});
-	// left aabbs
-	std::vector<AABB>left_aabbs(long long(r) - l);
-	AABB left_aabb;
-	for (long long i = l; i < r; i++) {
-		left_aabb.AddTriangle(glob_triangles[tri_ids[i]]);
-		left_aabbs[i - l] = left_aabb;
-	}
 	int best_mid = -1;
 	float best_sah_cost = FLT_MAX;
-	// rigt aabbs
-	AABB rigt_aabb;
-	for (long long i = r; i > l; i--) {
-		rigt_aabb.AddTriangle(glob_triangles[tri_ids[i]]);
-		const float sah_cost = (i - l) * surface_area(left_aabbs[i - l - 1]) + (r - i + 1) * surface_area(rigt_aabb);
-		if (sah_cost < best_sah_cost) {
-			best_sah_cost = sah_cost;
-			best_mid = (int)(i - 1);
+	int best_axis = -1;
+	const int l = glob_tri_ranges[id].x, r = glob_tri_ranges[id].y;
+	for (int axis = 0; axis < 3; axis++) {
+		// sort along longest axis
+		glm::vec3 c(0);// c[glob_bvh_aabbs[id].LongestAxis()] = 1;
+		c[axis] = 1;
+		std::sort(tri_ids.begin() + l, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+			//std::nth_element(tri_ids.begin() + l, tri_ids.begin() + (l + r) / 2, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+			return dot_max(glob_triangles[t1].GetVertices(), c) < dot_max(glob_triangles[t2].GetVertices(), c);
+		});
+		// left aabbs
+		std::vector<AABB>left_aabbs(long long(r) - l);
+		AABB left_aabb;
+		for (long long i = l; i < r; i++) {
+			left_aabb.AddTriangle(glob_triangles[tri_ids[i]]);
+			left_aabbs[i - l] = left_aabb;
+		}
+		// rigt aabbs
+		AABB rigt_aabb;
+		for (long long i = r; i > l; i--) {
+			rigt_aabb.AddTriangle(glob_triangles[tri_ids[i]]);
+			const float sah_cost = (i - l) * surface_area(left_aabbs[i - l - 1]) + (r - i + 1) * surface_area(rigt_aabb);
+			if (sah_cost < best_sah_cost) {
+				best_sah_cost = sah_cost;
+				best_mid = (int)(i - 1);
+				best_axis = axis;
+			}
 		}
 	}
 	assert(best_mid != -1);
+	glm::vec3 c(0);// c[glob_bvh_aabbs[id].LongestAxis()] = 1;
+	c[best_axis] = 1;
+	std::sort(tri_ids.begin() + l, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+		//std::nth_element(tri_ids.begin() + l, tri_ids.begin() + (l + r) / 2, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+		return dot_max(glob_triangles[t1].GetVertices(), c) < dot_max(glob_triangles[t2].GetVertices(), c);
+	});
 	return best_mid;
 }
 

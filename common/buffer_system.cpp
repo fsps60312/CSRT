@@ -77,27 +77,28 @@ void BufferSystem::Send()
 		for (const auto& aabb : aabbs_raw)aabbs.push_back(glm::mat2x3(aabb.GetMn(), aabb.GetMx()));
 		const std::vector<glm::ivec2> &ranges = BVHNode::glob_tri_ranges;
 		//assert(materials.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
+		const GLenum usage = GL_STATIC_DRAW;
 
 		const auto& padded_triangles = Padded(triangles);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_triangles.size(), padded_triangles.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_triangles.size(), padded_triangles.data(), usage); // Give vertices to OpenGL.
 
 		const auto& padded_materials = Padded(materials);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialsBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_materials.size(), padded_materials.data(), GL_DYNAMIC_COPY);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_materials.size(), padded_materials.data(), usage);
 
 		const auto& padded_lights = Padded(Light::glob_lights);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_lights.size(), padded_lights.data(), GL_DYNAMIC_COPY);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_lights.size(), padded_lights.data(), usage);
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhNodeBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * nodes.size(), Padded(nodes).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * nodes.size(), Padded(nodes).data(), usage); // Give vertices to OpenGL.
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhAabbBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3) + 8U) * aabbs.size(), Padded(aabbs).data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3) + 8U) * aabbs.size(), Padded(aabbs).data(), usage); // Give vertices to OpenGL.
 
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhRangeBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::ivec2) * ranges.size(), ranges.data(), GL_DYNAMIC_COPY); // Give vertices to OpenGL.
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::ivec2) * ranges.size(), ranges.data(), usage); // Give vertices to OpenGL.
 	}
 	// 1st buffer : materials
 
