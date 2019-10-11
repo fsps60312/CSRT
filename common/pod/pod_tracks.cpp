@@ -69,7 +69,7 @@ namespace pod {
 			new Gear(offset + glm::dvec3(                - lengthUp / 10,          height / 2 + 0.0, 0), 0.3,                10.0,  0.01, pod, this),
 		};
 		for (Gear* gv : gears) children.insert(gv);
-		for (const int i : {0, 1/*, 2, 3, 4*/})ground_gears.push_back(gears[i]);
+		for (const int i : {/*0, 1, 2,*/ 3, 4})ground_gears.push_back(gears[i]);
 		front_gear = gears[5];
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;

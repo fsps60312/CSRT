@@ -111,7 +111,7 @@ namespace pod {
 	}
 	void PodBody::UpdateFume(const double secs) {
 		static double fume_pop = 0;
-		fume_pop += secs * 30; // 30 fumes per sec
+		fume_pop += secs * 60; // 60 fumes per sec
 		while (fume_pop > 1) {
 			fume_pop -= 1.0;
 			const glm::dvec3& pos = glm::dvec3(-body_radius, body_radius, mylib::Rand::NextDouble() - 0.5);
