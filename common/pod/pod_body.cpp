@@ -136,7 +136,7 @@ namespace pod {
 			fume_pop -= 1.0;
 			const glm::dvec3& pos = glm::dvec3(-body_radius, body_radius, mylib::Rand::NextDouble() - 0.5);
 			const glm::dvec3& speed = glm::dvec3(-mylib::Rand::NextDouble() * 0.5 - 0.1, 1.0 + mylib::Rand::NextDouble() * 0.5, 0);
-			effects::Fume::AddFume(matrix::Multiply(GetMatrixT() * GetMatrixZ() * GetMatrixY(), pos), matrix::Multiply(GetMatrixY(), speed), 0.1, 1.5, 0.5, 3);
+			effects::Fume::AddFume(matrix::Multiply(GetMatrixT() * GetMatrixZ() * GetMatrixY(), pos), matrix::Multiply(GetMatrixY(), speed), 0.1, 1.5, 0.1, 3);
 		}
 	}
 	void PodBody::Update(const double secs) {

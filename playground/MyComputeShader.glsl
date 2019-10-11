@@ -142,6 +142,38 @@ void BVHIntersect(inout Ray r){
 	}
 }
 
+bool HitTest(in Ray r){
+	int id=0;
+	uint goto_sibling=0;
+	const float initial_t=r.t;
+	while(true){
+		// trace down
+		while(true){
+			const ivec3 node=buf_bvh_node[id];
+			if(node.x==-1&&node.y==-1){
+				for(int i=buf_bvh_range[id].x;i<=buf_bvh_range[id].y;i++)TriangleIntersect(r,i);
+				if(r.t!=initial_t)return true;
+				break;
+			}
+			const float tx=AABBIntersect(r,node.x);
+			const float ty=AABBIntersect(r,node.y);
+			if(min(tx,ty)==FLT_MAX)break;
+			id=tx<=ty?node.x:node.y;
+			goto_sibling<<=1;
+			if(max(tx,ty)!=FLT_MAX)goto_sibling|=1;
+		}
+		// trace back
+		while(goto_sibling!=0&&(goto_sibling&1)==0){
+			goto_sibling>>=1;
+			id=buf_bvh_node[id].z;
+		}
+		if(goto_sibling==0)return false;
+		const ivec3 node=buf_bvh_node[buf_bvh_node[id].z];
+		id=id==node.x?node.y:node.x;
+		goto_sibling^=1;
+	}
+}
+
 void Intersect(inout Ray r){
 	r.t=FLT_MAX;
 	r.pre_obj=r.obj;
@@ -171,20 +203,16 @@ vec3 PhongLighting(in Ray ray){
 		const vec3 light_pos=buf_light[i].xyz;
 		const float light_power=buf_light[i].w;
 
-		if(light_power==100.0f && light_pos==vec3(-2.0f, 10.0f, -2.0f)){
-			return vec3(1.0f,1.0f,0.0f);
-		}
+		const vec3 light_dir = normalize(light_pos - ray.pos);
+		const float dist = distance(light_pos, ray.pos); // light_power = 100.0f;
 		/*struct Ray {
 			int   pre_obj, obj;
 			float t, i;
 			vec3  pos, dir, n;
 		};*/
-		const vec3 light_dir = normalize(light_pos - ray.pos);
-		Ray ray_light = Ray(-1, ray.obj, FLT_MAX, 0.0f, ray.pos + 1e-5f * light_dir, light_dir, vec3(0.0f));
-		Intersect(ray_light);
+		Ray ray_light = Ray(-1, ray.obj, dist /*FLT_MAX*/, 0.0f, ray.pos + 1e-5f * light_dir, light_dir, vec3(0.0f));
 
-		const float dist = distance(light_pos, ray.pos); // light_power = 100.0f;
-		if(ray_light.t>=dist){
+		if(!HitTest(ray_light)){
 			vec3  h   = normalize(-ray.dir + light_dir);
 			
 			float diffuse_factor  = clamp(dot(ray.n, light_dir), 0.0f, 1.0f);
