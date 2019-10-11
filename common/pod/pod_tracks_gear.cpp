@@ -2,6 +2,7 @@
 namespace pod {
 	void PodTracks::Track::Gear::ApplyTranslate(const glm::dvec3& offset) {
 		rb.position += offset;
+		rb.theta += std::abs(offset.x) / radius;
 	}
 	block::Block* PodTracks::Track::Gear::GetCollided()const {
 		return collided;

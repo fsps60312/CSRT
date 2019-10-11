@@ -2,6 +2,7 @@
 namespace pod {
 	void PodTracks::Track::ApplyTranslate(const glm::dvec3& offset) {
 		for (Gear* gear : gears)gear->ApplyTranslate(offset);
+		track_cycle_position = std::fmod(std::fmod(track_cycle_position - std::abs(offset.x) / GetChainLength(gears), 1) + 1, 1);
 	}
 	void PodTracks::ApplyTranslate(const glm::dvec3& offset) {
 		left_track->ApplyTranslate(offset);
@@ -68,11 +69,11 @@ namespace pod {
 			new Gear(offset + glm::dvec3(                - lengthUp / 10,          height / 2 + 0.0, 0), 0.3,                10.0,  0.01, pod, this),
 		};
 		for (Gear* gv : gears) children.insert(gv);
-		for (const int i : {0, 1, 2, 3, 4})ground_gears.push_back(gears[i]);
+		for (const int i : {0, 1/*, 2, 3, 4*/})ground_gears.push_back(gears[i]);
 		front_gear = gears[5];
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;
-		const int count = (int)(chain_length / 0.3);
+		const int count = (int)(chain_length / 1.0);
 		for (int i = 0; i < count; i++) {
 			auto t = new Tooth(GetToothPosition(gears, (double)i / count));
 			children.insert(t);

@@ -69,9 +69,11 @@ namespace pod {
 	void PodBody::UpdateDigIntention(const double secs) {
 		if (block_digging == NULL) {
 			const DigIntention dig_intention = GetDigIntention();
-			if (dig_intention == DigIntention::Left || dig_intention == DigIntention::Right) {
-				block::Block* b = block_digging = pod->GetCollideFront();
+			const glm::dvec3 face_dir = matrix::Multiply(GetMatrixY(), glm::dvec3(1, 0, 0));
+			if ((dig_intention == DigIntention::Left && face_dir.x < 0) || (dig_intention == DigIntention::Right && face_dir.x > 0)) {
+				block::Block* b = pod->GetCollideFront();
 				if (b != NULL) {
+					block_digging = b;
 					b->SetDigState(dig_intention == DigIntention::Left ? block::Block::DigDirection::Left : block::Block::DigDirection::Right, 0);
 					//std::clog << "dig dig dig!\n";
 				}
@@ -177,7 +179,11 @@ namespace pod {
 	}
 	const double PodBody::body_radius = 1.5;
 	std::vector<Triangle> PodBody::GetTriangles()const {
-		return Triangle::Cube(glm::vec3(body_radius));
+		Material mtl;
+		mtl.diffuse = glm::vec3(0.3, 0.2, 0.8);
+		mtl.ambient = mtl.diffuse * 0.5f;
+		mtl.alpha = 1;
+		return Triangle::Cube(glm::vec3(body_radius), Material::GetMaterialId("pod_body", mtl));
 	}
 	PodBody::PodBody(PodInterface* pod) :
 		pod(pod),
