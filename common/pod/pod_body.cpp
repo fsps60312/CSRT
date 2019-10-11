@@ -198,14 +198,39 @@ namespace pod {
 		AdvanceCamera(secs);
 		const glm::dmat4& mat_t = GetMatrixT(), & mat_z = GetMatrixZ(), & mat_y = GetMatrixY();
 		SetTransform(mat_t * mat_z * mat_y);
+		const glm::dmat4& trans = mat_t * mat_z * mat_y;
+		Light::glob_lights[2] = Light(matrix::Multiply(trans, glm::dvec3(body_radius + 0.2, body_radius, -body_radius)), 100);
+		Light::glob_lights[3] = Light(matrix::Multiply(trans, glm::dvec3(body_radius + 0.2, body_radius, body_radius)), 100);
 	}
 	const double PodBody::body_radius = 1.5;
+	std::vector<Triangle>PodBody::GetSpotLightTrianlges()const {
+		std::vector<glm::dvec3>light_edges;
+		const int n = 10;
+		for (int i = 0; i < n; i++) {
+			const double theta = 2.0 * PI * i / n;
+			light_edges.push_back(glm::dvec3(std::cos(theta), std::sin(theta), 1));
+		}
+		std::vector<Triangle>ret;
+		for (int i = 0; i < n; i++) {
+			const Triangle& t1 = Triangle(glm::dmat3(light_edges[i], light_edges[(i + 1) % n], glm::dvec3(0)), Material::GetMaterialId("pod_body"));
+			const Triangle& t2 = Triangle(glm::dmat3(light_edges[(i + 1) % n], light_edges[i], glm::dvec3(0)), Material::GetMaterialId("pod_body"));
+			ret.push_back(t1.ApplyTransform(matrix::RotateD(glm::dvec3(0, 1, 0), 0.5 * PI) * matrix::ScaleD(glm::dvec3(0.5))));
+			ret.push_back(t2.ApplyTransform(matrix::RotateD(glm::dvec3(0, 1, 0), 0.5 * PI) * matrix::ScaleD(glm::dvec3(0.5))));
+		}
+		return ret;
+	}
 	std::vector<Triangle> PodBody::GetTriangles()const {
 		Material mtl;
 		mtl.diffuse = glm::vec3(0.3, 0.2, 0.8);
 		mtl.ambient = mtl.diffuse * 0.5f;
 		mtl.alpha = 1;
-		return Triangle::Cube(glm::vec3(body_radius), Material::GetMaterialId("pod_body", mtl));
+		std::vector<Triangle>tris = Triangle::Cube(glm::vec3(body_radius), Material::GetMaterialId("pod_body", mtl));
+		const std::vector<Triangle>& spot_light = GetSpotLightTrianlges();
+		for (const Triangle& t : spot_light) {
+			tris.push_back(t.ApplyTransform(matrix::TranslateD(glm::dvec3(body_radius, body_radius, -body_radius))));
+			tris.push_back(t.ApplyTransform(matrix::TranslateD(glm::dvec3(body_radius, body_radius, body_radius))));
+		}
+		return tris;
 	}
 	PodBody::PodBody(PodInterface* pod) :
 		pod(pod),

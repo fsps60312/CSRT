@@ -28,6 +28,7 @@ namespace pod {
 		PodPropeller* propeller;
 		PodDrill* drill;
 		std::vector<Triangle>GetTriangles()const;
+		std::vector<Triangle>GetSpotLightTrianlges()const;
 		DigIntention GetDigIntention()const;
 		void UpdateDigIntention(const double secs);
 		void UpdateRotationZ();
