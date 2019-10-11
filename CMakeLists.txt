@@ -127,6 +127,9 @@ create_target_launcher(playground WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}
 
 
 SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
+SOURCE_GROUP(common\\block REGULAR_EXPRESSION ".*/common/block/.*")
+SOURCE_GROUP(common\\effects REGULAR_EXPRESSION ".*/common/effects/.*")
+SOURCE_GROUP(common\\pod REGULAR_EXPRESSION ".*/common/pod/.*")
 SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$" )
 
 
