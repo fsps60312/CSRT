@@ -1,8 +1,11 @@
 #include<common/block/blocks.hpp>
 namespace block {
 	Blocks* Blocks::instance = new Blocks(glm::dvec3(0, 0, -constants::block_depth / 2));
-	bool IsCollidable(const glm::dvec3& position, Block*& collided) {
-		return Blocks::instance->IsCollidable(glm::dvec2(position.x, position.y), collided);
+	bool IsCollidable(const glm::dvec3& position) {
+		return Blocks::instance->IsCollidable(glm::dvec2(position.x, position.y));
+	}
+	Block* GetBlock(const glm::dvec3& position) {
+		return Blocks::instance->GetBlock(position);
 	}
 	bool Destroy(const Block* block) { return Blocks::instance->Destroy(block); }
 	bool Blocks::Destroy(const int x, const int y) {
@@ -40,10 +43,10 @@ namespace block {
 		}
 		VisibleObject::Delete(b);
 	}
-	bool Blocks::IsCollidable(const glm::dvec2& position, Block*& collided)const {
+	bool Blocks::IsCollidable(const glm::dvec2& position)const {
 		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
 		const int y = (int)std::floor((position.y - anchor.y) / constants::block_height);
-		collided = GetBlock(x, y);
+		Block* collided = GetBlock(x, y);
 		if (collided == NULL)return false;
 		const double dx = position.x - (x * constants::block_width + anchor.x);
 		const double dy = position.y - (y * constants::block_height + anchor.y);

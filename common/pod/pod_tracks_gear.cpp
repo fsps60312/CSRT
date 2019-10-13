@@ -61,24 +61,22 @@ namespace pod {
 		double l = 0, r = 1;
 		while (r - l > 1e-9) {
 			double mid = (l + r) / 2;
-			static block::Block* _;
-			if (block::IsCollidable(rb.position + offset * mid, _))r = mid;
+			if (block::IsCollidable(rb.position + offset * mid))r = mid;
 			else l = mid;
 		}
 		rb.position += offset * (-1 + r);
 	}
 	void PodTracks::Track::Gear::InverseVelocityIfCollideWithBlocks() {
 		glm::dvec3 ret = glm::dvec3(0);
-		static block::Block* _;
-		if (block::IsCollidable(rb.position, _))return; // inside a block, no respond
+		if (block::IsCollidable(rb.position))return; // inside a block, no respond
 		//bool rollback = false;
 		const double rollback_speed = 0.1;
 		const double bounce_coe = 0.1;
 		const double friction_coe = 0.5;
 		for (const glm::dvec3& offset : { glm::dvec3(-radius,0,0),glm::dvec3(radius,0,0),glm::dvec3(0,-radius,0),glm::dvec3(0,radius,0) }) {
 			const glm::dvec3& dir = glm::normalize(offset);
-			if (block::IsCollidable(rb.position + offset, _)) {
-				collided = _;
+			if (block::IsCollidable(rb.position + offset)) {
+				collided = block::GetBlock(rb.position + offset);
 				MoveGearBackToTouchSurface(offset);
 				const double sub_velocity_length = glm::dot(rb.velocity, dir);
 				if (sub_velocity_length > 0) {

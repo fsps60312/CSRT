@@ -123,6 +123,9 @@ namespace environment {
 		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &v1); gl_check_error();
 		glGetInteger64i_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &v2); gl_check_error();
 		std::clog << "GL_MAX_COMPUTE_WORK_GROUP_SIZE     " << v0 << " " << v1 << " " << v2 << std::endl;
+		glGetInteger64v(GL_MAJOR_VERSION, &v0); gl_check_error();
+		glGetInteger64v(GL_MINOR_VERSION, &v1); gl_check_error();
+		std::clog << "GL_VERSION     " << v0 << "." << v1 << std::endl;
 	}
 	void InitGLEW() {
 		// Initialize GLEW ( OpenGL Extension Wrangler Library )

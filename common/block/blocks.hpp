@@ -6,7 +6,8 @@
 #include<deque>
 #include<map>
 namespace block {
-	bool IsCollidable(const glm::dvec3& position, Block*& collided);
+	bool IsCollidable(const glm::dvec3& position);
+	Block* GetBlock(const glm::dvec3& position);
 	bool Destroy(const Block* block);
 	class Blocks :public VisibleObject {
 	private:
@@ -23,14 +24,14 @@ namespace block {
 		void AppendXMax();
 		void AppendYMin();
 		void AppendYMax();
-		Block* GetBlock(const int x, const int y)const;
-		Block* GetBlock(const glm::dvec2& position)const;
 		bool Destroy(const int x, const int y);
 	public:
 		static Blocks* instance;
 		static void RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max);
 		bool IsCollidable(const int x, const int y)const;
-		bool IsCollidable(const glm::dvec2& position, Block*& collided)const;
+		bool IsCollidable(const glm::dvec2& position)const;
+		Block* GetBlock(const glm::dvec2& position)const;
+		Block* GetBlock(const int x, const int y)const;
 		bool Destroy(const Block* block);
 		Blocks(const glm::dvec3 &anchor);
 		void Update(const double secs)override;

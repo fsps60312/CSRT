@@ -36,9 +36,7 @@ namespace pod {
 		return tracks->CollideFront();
 	}
 	block::Block* Pod::GetCollideDown()const {
-		block::Block* ret;
-		block::IsCollidable(body->GetRigidBody()->position + glm::dvec3(0, -constants::block_height, 0), ret);
-		return ret;
+		return block::GetBlock(body->GetRigidBody()->position + glm::dvec3(0, -constants::block_height, 0));
 	}
 	void Pod::ApplyTranslate(const glm::dvec3& offset) {
 		body->ApplyTranslate(offset);
