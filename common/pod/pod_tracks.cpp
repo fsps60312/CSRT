@@ -24,7 +24,9 @@ namespace pod {
 		return ret;
 	}
 	void PodTracks::Track::UpdateTrackSpeed(const double secs) {
-		const double deacceleration = environment::IsKeyDown(GLFW_KEY_A) && environment::IsKeyDown(GLFW_KEY_D) ? 100 : 20;
+		const double deacceleration =
+			(environment::IsKeyDown(GLFW_KEY_A) && environment::IsKeyDown(GLFW_KEY_D)) ||
+			(environment::IsKeyDown(GLFW_KEY_S) && !environment::IsKeyDown(GLFW_KEY_W)) ? 100 : 20;
 		double track_cycle_acceleration = track_cycle_speed > 0 ? -deacceleration : deacceleration;
 		if (pod->IsOnGround()) {
 			if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))track_cycle_acceleration += 70;
