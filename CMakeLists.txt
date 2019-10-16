@@ -36,6 +36,7 @@ include_directories(
 	external/glfw/include/
 	external/glm/
 	external/glew/include/
+	external/soil/src/
 	.
 )
 

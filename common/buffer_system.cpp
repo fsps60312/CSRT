@@ -8,6 +8,7 @@ BufferSystem::BufferSystem(){}
 
 BufferSystem::BufferSystem(std::string filename)
 {
+	Material::GetTextureInfo("Picture/Block/Copper.png");
 	{
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::vec2> uvs;
@@ -37,6 +38,7 @@ BufferSystem::BufferSystem(std::string filename)
 		//glGenBuffers(1, &materialBuffer);
 		glGenBuffers(1, &trianglesBuffer);
 		glGenBuffers(1, &materialsBuffer);
+		glGenBuffers(1, &texturesBuffer);
 		glGenBuffers(1, &lightsBuffer);
 		glGenBuffers(1, &bvhNodeBuffer);
 		glGenBuffers(1, &bvhAabbBuffer);
@@ -68,6 +70,7 @@ void BufferSystem::Send()
 		obj->Update();*/
 		const std::vector<Triangle>& triangles = BVHNode::glob_triangles;
 		const std::vector<Material>& materials = Material::glob_materials;
+		const std::vector<glm::vec4>& textures = Material::glob_textures;
 		//for (auto& t : triangles)if (t.material_id != 0)std::clog << "not 0!" << std::endl;
 		//if (materials.size() >= 2) std::clog << "material[1]: " << materials[1].alpha << std::endl;
 		//std::clog << "materials.size() = " << materials.size() << std::endl;
@@ -77,6 +80,7 @@ void BufferSystem::Send()
 		for (const auto& aabb : aabbs_raw)aabbs.push_back(glm::mat2x3(aabb.GetMn(), aabb.GetMx()));
 		const std::vector<glm::ivec2> &ranges = BVHNode::glob_tri_ranges;
 		//assert(materials.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
+
 		const GLenum usage = GL_STATIC_DRAW;
 
 		const auto& padded_triangles = Padded(triangles);
@@ -86,6 +90,9 @@ void BufferSystem::Send()
 		const auto& padded_materials = Padded(materials);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialsBuffer);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_materials.size(), padded_materials.data(), usage);
+
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, texturesBuffer);
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * textures.size(), textures.data(), usage);
 
 		const auto& padded_lights = Padded(Light::glob_lights);
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsBuffer);
@@ -105,10 +112,11 @@ void BufferSystem::Send()
 	// 2nd buffer : vertices
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, trianglesBuffer);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, materialsBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, lightsBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, bvhNodeBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhAabbBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, bvhRangeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, texturesBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, lightsBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhNodeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, bvhAabbBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvhRangeBuffer);
 }
 
 std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>&s)const {

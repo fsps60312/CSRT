@@ -2,6 +2,26 @@
 std::map<std::string, int>Material::material_id;
 std::vector<Material>Material::glob_materials(1);
 std::vector<int>Material::recycle_bin(0);
+std::vector<glm::vec4>Material::glob_textures;
+std::map<std::string, glm::ivec3>Material::texture_infos;
+glm::ivec3 Material::GetTextureInfo(const std::string& name) {
+	const auto it = texture_infos.find(name);
+	if (it != texture_infos.end())return it->second;
+	int width, height, channels;
+	std::clog << "loading... " << name << std::endl;
+	uint8_t* raw_data = SOIL_load_image(name.c_str(), &width, &height, &channels, 4); // RGBA
+	if (raw_data == NULL) {
+		std::clog << "failed to load: " << name << std::endl;
+		throw;
+	}
+	const int loc = (int)glob_textures.size();
+	for (int i = 0; i < width * height; i++) {
+		glm::vec4 v = glm::vec4(raw_data[i * 4], raw_data[i * 4 + 1], raw_data[i * 4 + 2], raw_data[i * 4 + 3]);
+		glob_textures.push_back(v / 255.0f);
+	}
+	SOIL_free_image_data(raw_data);
+	return texture_infos[name] = glm::ivec3(width, height, loc);
+}
 void Material::DeleteMaterialId(const std::string& name) {
 	const int id = material_id.at(name);
 	recycle_bin.push_back(id);

@@ -16,10 +16,11 @@ struct Material{
 
 layout(std430,  binding = 0) buffer trianglez    { Triangle buf_triangle[]; };
 layout(std430,  binding = 1) buffer materials    { Material buf_material[]; };
-layout(std430,  binding = 2) buffer lights       { int light_count; vec4 buf_light[]; };
-layout(std430,  binding = 3) buffer bvh_nodes    { ivec3 buf_bvh_node[];    };
-layout(std430,  binding = 4) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[];   };
-layout(std430,  binding = 5) buffer bvh_ranges   { ivec2 buf_bvh_range[];   };
+layout(std430,  binding = 2) buffer textures     { vec4     buf_texture[];  };
+layout(std430,  binding = 3) buffer lights       { int light_count; vec4 buf_light[]; };
+layout(std430,  binding = 4) buffer bvh_nodes    { ivec3 buf_bvh_node[];    };
+layout(std430,  binding = 5) buffer bvh_aabbs    { mat2x3 buf_bvh_aabb[];   };
+layout(std430,  binding = 6) buffer bvh_ranges   { ivec2 buf_bvh_range[];   };
 
 const float PI    = acos(-1);
 // https://stackoverflow.com/questions/16069959/glsl-how-to-ensure-largest-possible-float-value-without-overflow

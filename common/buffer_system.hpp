@@ -27,6 +27,7 @@ private:
 	BVHNode* root = NULL;
 	GLuint trianglesBuffer = 0;
 	GLuint materialsBuffer = 0;
+	GLuint texturesBuffer = 0;
 	GLuint lightsBuffer    = 0;
 	GLuint bvhNodeBuffer   = 0;
 	GLuint bvhAabbBuffer   = 0;
