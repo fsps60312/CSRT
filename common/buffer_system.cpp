@@ -8,7 +8,7 @@ BufferSystem::BufferSystem(){}
 
 BufferSystem::BufferSystem(std::string filename)
 {
-	Material::GetTextureInfo("Picture/Block/Copper.png");
+	//Material::GetTextureInfo("Picture/Block/Copper.png");
 	{
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::vec2> uvs;
@@ -58,8 +58,10 @@ void BufferSystem::Send()
 		BVHNode::ClearVectors();
 		obj->Build(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
 		root = BVHNode::Build();
-		const int v = root->Verify();
+		int max_depth = 0;
+		const int v = root->Verify(1, max_depth);
 		assert(v == (int)BVHNode::glob_bvh_nodes.size());
+		std::clog << "BVH depth = " << max_depth << std::endl;
 		/*std::clog << "triangles.size = " << BVHNode::glob_triangles.size() << std::endl;
 		std::clog << "bvh.size       = " << BVHNode::glob_bvh_nodes.size() << std::endl;
 		std::clog << "traverse       = " << v << std::endl;*/

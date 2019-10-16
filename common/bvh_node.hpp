@@ -34,5 +34,5 @@ public:
 	void SetR(BVHNode* r);
 	void SetRangeL();
 	void SetRangeR();
-	int Verify();
+	int Verify(int depth, int& max_depth);
 };

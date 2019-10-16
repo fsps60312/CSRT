@@ -23,7 +23,8 @@ void BVHNode::SetR(BVHNode* r) { this->r = r; glob_bvh_nodes[id].y = GetId(r); }
 void BVHNode::SetRangeL() { glob_tri_ranges[id].x = (int)glob_triangles.size(); }
 void BVHNode::SetRangeR() { glob_tri_ranges[id].y = (int)glob_triangles.size() - 1; }
 
-int BVHNode::Verify() {
+int BVHNode::Verify(int depth,int &max_depth) {
+	max_depth = std::max(max_depth, depth);
 	if (l == NULL && r == NULL) {
 		return 1;
 	} else if (l != NULL && r != NULL) {
@@ -32,20 +33,20 @@ int BVHNode::Verify() {
 		assert(glob_tri_ranges[l->id].x == glob_tri_ranges[id].x);
 		assert(glob_tri_ranges[l->id].y + 1 == glob_tri_ranges[r->id].x);
 		assert(glob_tri_ranges[r->id].y == glob_tri_ranges[id].y);
-		return 1 + l->Verify() + r->Verify();
+		return 1 + l->Verify(depth + 1, max_depth) + r->Verify(depth + 1, max_depth);
 	} else if (l != NULL && r == NULL) {
 		assert(glob_bvh_nodes[l->id].z == id && glob_bvh_nodes[id].x == l->id);
 		assert(glob_bvh_nodes[id].y == -1);
 		assert(glob_tri_ranges[l->id].x == glob_tri_ranges[id].x);
 		assert(glob_tri_ranges[l->id].y == glob_tri_ranges[id].y);
-		return 1 + l->Verify();
+		return 1 + l->Verify(depth + 1, max_depth);
 	} else {
 		assert(l == NULL && r != NULL);
 		assert(glob_bvh_nodes[id].x == -1);
 		assert(glob_bvh_nodes[r->id].z == id && glob_bvh_nodes[id].y == r->id);
 		assert(glob_tri_ranges[r->id].x == glob_tri_ranges[id].x);
 		assert(glob_tri_ranges[r->id].y == glob_tri_ranges[id].y);
-		return 1 + r->Verify();
+		return 1 + r->Verify(depth + 1, max_depth);
 	}
 }
 
