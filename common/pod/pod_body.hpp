@@ -18,7 +18,7 @@
 namespace pod {
 	class PodBody :public VisibleObject {
 	private:
-		enum DigIntention { None, Left, Right, Down };
+		enum class DigIntention { None, Left, Right, Down };
 		block::Block* block_digging = NULL;
 		const static double body_radius;
 		double rotation_y = 0;

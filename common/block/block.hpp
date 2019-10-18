@@ -6,8 +6,8 @@
 namespace block {
 	class Block :public  VisibleObject {
 	public:
-		enum Type { General };
-		enum DigDirection { Down, Left, Right };
+		enum class Type { General };
+		enum class DigDirection { Down, Left, Right };
 	private:
 		const glm::dvec3 position;
 		const glm::dvec3 size;

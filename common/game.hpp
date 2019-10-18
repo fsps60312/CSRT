@@ -14,7 +14,7 @@ private:
 	World world;
 	BufferSystem model;
 public:
-	enum Keys {
+	enum class Keys {
 		Z, X,
 		D1, D2, D3, D4, D5, D6,
 		F1, F2, F3, F4, F5, F6, F7

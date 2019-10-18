@@ -19,7 +19,7 @@ namespace pod {
 					std::vector<glm::dvec3>vertices;
 					Description(const std::vector<glm::dvec3>& vertices);
 				};
-				enum Types { BasicTriangle };
+				enum class Types { BasicTriangle };
 			private:
 				double fold_angle = 0;
 				const double turn_down_angle;
@@ -48,7 +48,7 @@ namespace pod {
 			double height = 0;
 			void SetFoldState(const double fold_state);
 			void SetHeight(const double height);
-			enum Types { Basic };
+			enum class Types { Basic };
 			const static std::map<Types, Description>descriptions;
 			void Advance(const double secs)override;
 			BladeSet(PodPropeller* propeller, const Types type, const double radius, const bool reversed, const double speed_ratio, const double theta_offset);
@@ -84,7 +84,7 @@ namespace pod {
 		double GetAirFriction(const double air_speed);
 		double GetDownwardSpeed();
 	public:
-		enum Types { Basic };
+		enum class Types { Basic };
 		const static std::map<Types, Description>descriptions;
 		double GetOmegaForBladeSets();
 		double GetLiftForce();
