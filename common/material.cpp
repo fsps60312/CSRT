@@ -50,5 +50,6 @@ Material::Material() :
 	diffuse(glm::vec3(0.25, 0.87, 0.5)),
 	specular(glm::vec3(0.3)),
 	specular_exp(20),
+	diffuse_texture(glm::ivec3(-1)),
 	alpha(0.5) {
 }

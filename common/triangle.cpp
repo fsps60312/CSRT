@@ -1,6 +1,5 @@
 #include<common/triangle.hpp>
-Triangle::Triangle(const glm::dmat3& vertices) :vertices(vertices), material_id(0) {}
-Triangle::Triangle(const glm::dmat3& vertices, const int mtl_id) : vertices(vertices), material_id(mtl_id) {}
+Triangle::Triangle(const glm::dmat3& vertices, const int mtl_id, const glm::dmat3x2& uv) : vertices(vertices), material_id(mtl_id), uv(uv) {}
 glm::dmat3 Triangle::GetVertices()const { return vertices; }
 Triangle Triangle::ApplyTransform(const glm::dmat4& transform)const {
 	glm::dmat3 ret;
@@ -12,7 +11,7 @@ Triangle Triangle::ApplyTransform(const glm::dmat4& transform)const {
 		ret[i].y = res.y;
 		ret[i].z = res.z;
 	}
-	return Triangle(ret, material_id);
+	return Triangle(ret, material_id, uv);
 }
 std::vector<Triangle>Triangle::Cube(const glm::dvec3 &xyz,const int mtl_id) {
 	glm::dvec3 ps[8] = {
@@ -36,8 +35,8 @@ std::vector<Triangle>Triangle::Cube(const glm::dvec3 &xyz,const int mtl_id) {
 	return {
 		Triangle(glm::dmat3(ps[0],ps[2],ps[3]),mtl_id),
 		Triangle(glm::dmat3(ps[0],ps[3],ps[1]),mtl_id),
-		Triangle(glm::dmat3(ps[0],ps[1],ps[5]),mtl_id),
-		Triangle(glm::dmat3(ps[0],ps[5],ps[4]),mtl_id),
+		Triangle(glm::dmat3(ps[0],ps[1],ps[5]),mtl_id,glm::dmat3x2(0,1,1,1,1,0)),
+		Triangle(glm::dmat3(ps[0],ps[5],ps[4]),mtl_id,glm::dmat3x2(0,1,1,0,0,0)),
 		Triangle(glm::dmat3(ps[0],ps[4],ps[6]),mtl_id),
 		Triangle(glm::dmat3(ps[0],ps[6],ps[2]),mtl_id),
 		Triangle(glm::dmat3(ps[7],ps[6],ps[4]),mtl_id),

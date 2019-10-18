@@ -10,7 +10,7 @@ BufferSystem::BufferSystem(std::string filename)
 {
 	//Material::GetTextureInfo("Picture/Block/Copper.png");
 	{
-		std::vector<glm::vec3> vertices;
+		/*std::vector<glm::vec3> vertices;
 		std::vector<glm::vec2> uvs;
 		std::vector<glm::vec3> normals;
 		std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
@@ -21,7 +21,7 @@ BufferSystem::BufferSystem(std::string filename)
 				vertices[vertex_ids[i].x],
 				vertices[vertex_ids[i].y],
 				vertices[vertex_ids[i].z]
-			)));
+			)));*/
 		obj = new VisibleObject();
 		auto pod = new pod::Pod();
 		obj->children.insert(pod);
@@ -149,12 +149,14 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>&triangles
 			ret.push_back(glm::floatBitsToUint(vertices[i].x));
 			ret.push_back(glm::floatBitsToUint(vertices[i].y));
 			ret.push_back(glm::floatBitsToUint(vertices[i].z));
-			ret.push_back(triangle.material_id);
+			ret.push_back(0);
+		}
+		for (int i = 0; i < 3; i++) {
+			ret.push_back(glm::floatBitsToUint(triangle.uv[i].x));
+			ret.push_back(glm::floatBitsToUint(triangle.uv[i].y));
 		}
 		ret.push_back(triangle.material_id);
-		ret.push_back(triangle.material_id);
-		ret.push_back(triangle.material_id);
-		ret.push_back(triangle.material_id);
+		ret.push_back(0);
 	}
 	return ret;
 }
@@ -176,10 +178,10 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Material>& material
 		ret.push_back(glm::floatBitsToUint(material.specular.b));
 		ret.push_back(glm::floatBitsToUint(material.specular_exp));
 
+		ret.push_back(material.diffuse_texture.x);
+		ret.push_back(material.diffuse_texture.y);
+		ret.push_back(material.diffuse_texture.z);
 		ret.push_back(glm::floatBitsToUint(material.alpha));
-		ret.push_back(0);
-		ret.push_back(0);
-		ret.push_back(0);
 	}
 	return ret;
 }

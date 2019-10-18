@@ -4,6 +4,7 @@ layout(rgba16f, binding = 0) uniform image2D img_output;
 
 struct Triangle{
 	mat3 verticez;
+	mat3x2 uv;
 	int material_id;
 };
 struct Material{
@@ -11,6 +12,7 @@ struct Material{
 	vec3 diffuse;
 	vec3 specular;
 	float specular_exp;
+	ivec3 diffuse_texture;
 	float alpha;
 };
 
@@ -38,6 +40,7 @@ struct Ray {
 	int   pre_obj, obj;
 	float t, i;
 	vec3  pos, dir, n;
+	vec2  uv;
 };
 
 // Returns a random number based on a vec3.
@@ -97,6 +100,7 @@ void TriangleIntersect(inout Ray r,in int obj_id){
 		{
 			r.obj = obj_id;
 			r.t   = t;
+			r.uv  = vec2(s1,s2);
 		}
 	}
 }
@@ -192,12 +196,29 @@ void Intersect(inout Ray r){
 	}
 }
 
+vec3 GetTextureColor(in ivec3 info,in vec2 uv){
+	const int width=info.x,height=info.y,id=info.z;
+	const int x=clamp(int(round(uv.x*(width-1))),0,width-1),y=clamp(int(round(uv.y*(height-1))),0,height-1);
+	return buf_texture[id+y*width+x].rgb;
+}
+
+void GetColors(in Triangle tri,in vec2 uv,out vec3 ambient_color,out vec3 diffuse_color,out vec3 specular_color,out float ks_exp){
+	const Material mtl=buf_material[tri.material_id];
+	specular_color = mtl.specular;
+	ks_exp         = mtl.specular_exp;
+	if(mtl.diffuse_texture.z==-1){
+		ambient_color  = mtl.ambient;
+		diffuse_color  = mtl.diffuse;
+	}else{
+		diffuse_color=GetTextureColor(mtl.diffuse_texture,tri.uv[1]*uv.x+tri.uv[2]*uv.y+tri.uv[0]*(1.0f-uv.x-uv.y));
+		ambient_color=diffuse_color*0.5f;
+	}
+}
+
 vec3 PhongLighting(in Ray ray){
-	Material mtl  = buf_material[buf_triangle[ray.obj].material_id];
-	const vec3 ambient_color  = mtl.ambient;
-	const vec3 diffuse_color  = mtl.diffuse;
-	const vec3 specular_color = mtl.specular;
-	const float ks_exp        = mtl.specular_exp;
+	vec3 ambient_color,diffuse_color,specular_color;
+	float ks_exp;
+	GetColors(buf_triangle[ray.obj],ray.uv,ambient_color,diffuse_color,specular_color,ks_exp);
 
 	vec3 ret = ambient_color;
 	for(int i=0;i<light_count;i++){
@@ -211,7 +232,7 @@ vec3 PhongLighting(in Ray ray){
 			float t, i;
 			vec3  pos, dir, n;
 		};*/
-		Ray ray_light = Ray(-1, ray.obj, dist /*FLT_MAX*/, 0.0f, ray.pos + 1e-5f * light_dir, light_dir, vec3(0.0f));
+		Ray ray_light = Ray(-1, ray.obj, dist /*FLT_MAX*/, 0.0f, ray.pos + 1e-5f * light_dir, light_dir, vec3(0.0f),vec2(0.0f));
 
 		if(!HitTest(ray_light)){
 			vec3  h   = normalize(-ray.dir + light_dir);
@@ -261,7 +282,7 @@ void main()
 	// Generate Ray
 	vec3 pos = eye;
 	vec3 dir = normalize(center + x * dx + y * dy - eye);
-	Ray  ray_start = Ray(-1, -1, FLT_MAX, 1, pos, dir, vec3(0.0f));
+	Ray  ray_start = Ray(-1, -1, FLT_MAX, 1, pos, dir, vec3(0.0f),vec2(0.0f));
 	
 	// Ray Tracing
 	vec4 pixel = vec4(RayTracing(ray_start), 1.0f);
