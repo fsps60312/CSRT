@@ -139,10 +139,15 @@ namespace pod {
 		const int n = 10;
 		std::vector<glm::dvec3> positions;
 		for (int i = 0; i < n; i++) positions.push_back(glm::dvec3(radius * std::cos(2 * PI * i / n), radius * std::sin(2 * PI * i / n), 0));
+		Material mtl;
+		mtl.diffuse *= 0.7f;
+		mtl.ambient = mtl.diffuse * 0.5f;
+		mtl.alpha = 1;
+		const int mtl_id = Material::GetMaterialId("pod_track_gear", mtl);
 		std::vector<Triangle>ret;
 		for (int i = 2; i < n; i++)if(i!=5) {
-			ret.push_back(Triangle(glm::mat3(positions[0], positions[i - 1LL], positions[i])));
-			ret.push_back(Triangle(glm::mat3(positions[i], positions[i - 1LL], positions[0])));
+			ret.push_back(Triangle(glm::mat3(positions[0], positions[i - 1LL], positions[i]), mtl_id));
+			ret.push_back(Triangle(glm::mat3(positions[i], positions[i - 1LL], positions[0]), mtl_id));
 		}
 		return ret;
 	}

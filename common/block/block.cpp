@@ -5,7 +5,7 @@ namespace block {
 		for (auto& v : ans)v = v.ApplyTransform(matrix::TranslateD(size / 2.0));
 		Material mtl_front,mtl_other;
 		mtl_front.diffuse_texture = Material::GetTextureInfo("Picture/Block/Copper.png");
-		mtl_other.diffuse_texture = Material::GetTextureInfo("Picture/Block/Copper.png");
+		mtl_other.diffuse_texture = Material::GetTextureInfo("Picture/Block/Soil.png");
 		for (int i = 0; i < (int)ans.size(); i++) {
 			ans[i].material_id = i == 2 || i == 3 ? Material::GetMaterialId("block_copper", mtl_front) : Material::GetMaterialId("block_soil", mtl_other);
 		}

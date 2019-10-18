@@ -78,7 +78,11 @@ namespace pod {
 		for (const auto& v : descriptions.at(propeller_type).bladesets) max_height = std::max(max_height, std::max(0.0, v.radius - v.height) + height);
 		const double pole_radius = 0.05;
 		const double z_min = height - max_height, z_max = height;
-		VisibleObject* pole = new VisibleObject(Triangle::Cube(glm::dvec3(pole_radius, pole_radius, 0.5 * (z_max - z_min))));
+		Material pole_mtl;
+		pole_mtl.diffuse = glm::vec3(0.5);
+		pole_mtl.ambient = pole_mtl.diffuse * 0.5f;
+		pole_mtl.alpha = 1;
+		VisibleObject* pole = new VisibleObject(Triangle::Cube(glm::dvec3(pole_radius, pole_radius, 0.5 * (z_max - z_min)), Material::GetMaterialId("pod_propeller_pole", pole_mtl)));
 		pole->Translate(glm::dvec3(0, 0, 0.5 * (z_max - z_min) + z_min));
 		children.insert(pole);
 		SetFoldState(0);

@@ -75,7 +75,7 @@ namespace pod {
 		front_gear = gears[5];
 		const double chain_length = GetChainLength(gears);
 		std::clog << "chain length = " << chain_length << std::endl;
-		const int count = (int)(chain_length / 1.0);
+		const int count = (int)(chain_length / 0.3);
 		for (int i = 0; i < count; i++) {
 			auto t = new Tooth(GetToothPosition(gears, (double)i / count));
 			children.insert(t);

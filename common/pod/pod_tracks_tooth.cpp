@@ -1,7 +1,11 @@
 #include<common/pod/pod_tracks.hpp>
 namespace pod {
 	std::vector<Triangle> PodTracks::Track::Tooth::GetTriangles()const {
-		return Triangle::Cube(glm::vec3(0.1f));
+		Material mtl;
+		mtl.diffuse = glm::vec3(0.5f);
+		mtl.ambient = mtl.diffuse * 0.5f;
+		mtl.alpha = 1;
+		return Triangle::Cube(glm::vec3(0.1f), Material::GetMaterialId("pod_track_tooth", mtl));
 	}
 	glm::vec3 PodTracks::Track::Tooth::GetPosition()const {
 		return position;

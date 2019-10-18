@@ -20,10 +20,15 @@ namespace pod {
 			std::reverse(vs.begin(), vs.end());
 		}
 		std::vector<Triangle>ret;
-		ret.push_back(Triangle(glm::mat3(vs[3], vs[2], vs[0])));
-		ret.push_back(Triangle(glm::mat3(vs[0], vs[2], vs[3])));
-		ret.push_back(Triangle(glm::mat3(vs[2], vs[1], vs[0])));
-		ret.push_back(Triangle(glm::mat3(vs[0], vs[1], vs[2])));
+		Material mtl;
+		mtl.diffuse = glm::vec3(1, 1, 0);
+		mtl.ambient = mtl.diffuse * 0.5f;
+		mtl.alpha = 1;
+		const int mtl_id = Material::GetMaterialId("pod_blade_basic", mtl);
+		ret.push_back(Triangle(glm::mat3(vs[3], vs[2], vs[0]), mtl_id));
+		ret.push_back(Triangle(glm::mat3(vs[0], vs[2], vs[3]), mtl_id));
+		ret.push_back(Triangle(glm::mat3(vs[2], vs[1], vs[0]), mtl_id));
+		ret.push_back(Triangle(glm::mat3(vs[0], vs[1], vs[2]), mtl_id));
 		return ret;
 	}
 	PodPropeller::BladeSet::Blade::Blade(const Types type, const double radius, const double cycle_angle, const double turn_down_angle, const double reversed) :
