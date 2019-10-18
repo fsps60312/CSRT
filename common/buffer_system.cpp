@@ -61,7 +61,7 @@ void BufferSystem::Send()
 		int max_depth = 0;
 		const int v = root->Verify(1, max_depth);
 		assert(v == (int)BVHNode::glob_bvh_nodes.size());
-		std::clog << "BVH depth = " << max_depth << std::endl;
+		std::clog << "BVH depth = " << max_depth << ", size = " << v << std::endl;
 		/*std::clog << "triangles.size = " << BVHNode::glob_triangles.size() << std::endl;
 		std::clog << "bvh.size       = " << BVHNode::glob_bvh_nodes.size() << std::endl;
 		std::clog << "traverse       = " << v << std::endl;*/
