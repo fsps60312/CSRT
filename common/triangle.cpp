@@ -33,17 +33,17 @@ std::vector<Triangle>Triangle::Cube(const glm::dvec3 &xyz,const int mtl_id) {
 	o----o
 	*/
 	return {
-		Triangle(glm::dmat3(ps[0],ps[2],ps[3]),mtl_id,glm::dmat3x2(0,0,0,1,1,1)),
+		Triangle(glm::dmat3(ps[0],ps[2],ps[3]),mtl_id,glm::dmat3x2(0,0,0,1,1,1)),//down
 		Triangle(glm::dmat3(ps[0],ps[3],ps[1]),mtl_id,glm::dmat3x2(0,0,1,1,1,0)),
-		Triangle(glm::dmat3(ps[0],ps[1],ps[5]),mtl_id,glm::dmat3x2(0,1,1,1,1,0)),
+		Triangle(glm::dmat3(ps[0],ps[1],ps[5]),mtl_id,glm::dmat3x2(0,1,1,1,1,0)),//front
 		Triangle(glm::dmat3(ps[0],ps[5],ps[4]),mtl_id,glm::dmat3x2(0,1,1,0,0,0)),
-		Triangle(glm::dmat3(ps[0],ps[4],ps[6]),mtl_id,glm::dmat3x2(1,1,1,0,0,0)),
+		Triangle(glm::dmat3(ps[0],ps[4],ps[6]),mtl_id,glm::dmat3x2(1,1,1,0,0,0)),//left
 		Triangle(glm::dmat3(ps[0],ps[6],ps[2]),mtl_id,glm::dmat3x2(1,1,0,0,0,1)),
-		Triangle(glm::dmat3(ps[7],ps[6],ps[4]),mtl_id,glm::dmat3x2(1,0,0,0,0,1)),
+		Triangle(glm::dmat3(ps[7],ps[6],ps[4]),mtl_id,glm::dmat3x2(1,0,0,0,0,1)),//up
 		Triangle(glm::dmat3(ps[7],ps[4],ps[5]),mtl_id,glm::dmat3x2(1,0,0,1,1,1)),
-		Triangle(glm::dmat3(ps[7],ps[5],ps[1]),mtl_id,glm::dmat3x2(1,0,0,0,0,1)),
+		Triangle(glm::dmat3(ps[7],ps[5],ps[1]),mtl_id,glm::dmat3x2(1,0,0,0,0,1)),//right
 		Triangle(glm::dmat3(ps[7],ps[1],ps[3]),mtl_id,glm::dmat3x2(1,0,0,1,1,1)),
-		Triangle(glm::dmat3(ps[7],ps[3],ps[2]),mtl_id,glm::dmat3x2(0,0,0,1,1,1)),
+		Triangle(glm::dmat3(ps[7],ps[3],ps[2]),mtl_id,glm::dmat3x2(0,0,0,1,1,1)),//back
 		Triangle(glm::dmat3(ps[7],ps[2],ps[6]),mtl_id,glm::dmat3x2(0,0,1,1,1,0))
 	};
 }

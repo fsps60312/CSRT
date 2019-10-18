@@ -5,7 +5,7 @@ namespace block {
 		for (auto& v : ans)v = v.ApplyTransform(matrix::TranslateD(size / 2.0));
 		Material mtl_front,mtl_other;
 		mtl_front.diffuse_texture = Material::GetTextureInfo("Picture/Block/Copper.png");
-		mtl_other.diffuse_texture = Material::GetTextureInfo("Picture/Block/Soil.png");
+		mtl_other.diffuse_texture = Material::GetTextureInfo("Picture/Block/Copper.png");
 		for (int i = 0; i < (int)ans.size(); i++) {
 			ans[i].material_id = i == 2 || i == 3 ? Material::GetMaterialId("block_copper", mtl_front) : Material::GetMaterialId("block_soil", mtl_other);
 		}
@@ -38,17 +38,44 @@ namespace block {
 		children.erase(it);
 		switch (dig_direction) {
 		case DigDirection::Down: {
-			auto kid = new VisibleObject(GetTriangles(glm::dvec3(size.x, size.y * (1 - dig_progress), size.z), type));
+			auto tris = GetTriangles(glm::dvec3(size.x, size.y * (1 - dig_progress), size.z), type);
+			for (int i : {2, 3, 4, 5, 8, 9, 10, 11}) { // front left right back
+				for (int j = 0; j < 3; j++) {
+					if (tris[i].uv[j].y == 0)tris[i].uv[j].y = dig_progress;
+				}
+			}
+			auto kid = new VisibleObject(tris);
 			children.insert(kid);
 			break;
 		}
 		case DigDirection::Left: {
-			auto kid = new VisibleObject(GetTriangles(glm::dvec3(size.x * (1 - dig_progress), size.y, size.z), type));
+			auto tris = GetTriangles(glm::dvec3(size.x * (1 - dig_progress), size.y, size.z), type);
+			for (int i : {0, 1, 2, 3, 6, 7}) { // down front up
+				for (int j = 0; j < 3; j++) {
+					if (tris[i].uv[j].x == 1)tris[i].uv[j].x = 1 - dig_progress;
+				}
+			}
+			for (int i : {10,11}) { // back
+				for (int j = 0; j < 3; j++) {
+					if (tris[i].uv[j].x == 0)tris[i].uv[j].x = dig_progress;
+				}
+			}
+			auto kid = new VisibleObject(tris);
 			children.insert(kid);
 			break;
 		}
 		case DigDirection::Right: {
-			auto kid = new VisibleObject(GetTriangles(glm::dvec3(size.x * (1 - dig_progress), size.y, size.z), type));
+			auto tris = GetTriangles(glm::dvec3(size.x * (1 - dig_progress), size.y, size.z), type);
+			for (int i : {0, 1, 2, 3, 6, 7}) { // down front up
+				for (int j = 0; j < 3; j++) {
+					if (tris[i].uv[j].x == 0)tris[i].uv[j].x = dig_progress;
+				}
+			}
+			for (int i : {10, 11}) { // back
+				for (int j = 0; j < 3; j++) {
+					if (tris[i].uv[j].x == 1)tris[i].uv[j].x = 1 - dig_progress;
+				}
+			}auto kid = new VisibleObject(tris);
 			kid->Translate(glm::dvec3(size.x * dig_progress, 0, 0));
 			children.insert(kid);
 			break;
