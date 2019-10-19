@@ -51,13 +51,14 @@ int BVHNode::Verify(int depth,int &max_depth) {
 }
 
 void BVHNode::NewNode() {
-	glob_bvh_nodes.push_back(glm::ivec3(GetId(l), GetId(r), GetId(p)));
+	glob_bvh_nodes.push_back(glm::ivec3(-1));
 	glob_bvh_aabbs.push_back(AABB());
 	glob_tri_ranges.push_back(glm::ivec2(-1));
 }
 
-BVHNode::BVHNode(BVHNode* parent) :id((int)glob_bvh_nodes.size()), p(parent) {
-	NewNode();
+BVHNode::BVHNode(BVHNode* parent, const int id) :id(id), p(parent) {
+	while ((int)glob_bvh_nodes.size() <= id)NewNode();
+	glob_bvh_nodes[id].z = GetId(p);
 }
 
 void BVHNode::Build(const int l, const int r,const int depth, std::vector<int>& tri_ids) {
@@ -75,7 +76,9 @@ void BVHNode::Build(const int l, const int r,const int depth, std::vector<int>& 
 	assert(l <= mid && mid < r);
 	// dfs
 	new_node_lock.lock();
-	BVHNode* lch = new BVHNode(this), * rch = new BVHNode(this);
+	const int lch_id = (int)glob_bvh_nodes.size();
+	assert(lch_id % 2 == 0);
+	BVHNode* lch = new BVHNode(this, lch_id), * rch = new BVHNode(this, lch_id ^ 1);
 	new_node_lock.unlock();
 	if (r - l + 1 > 10000) {
 		std::thread l_thread = std::thread([lch, l, mid, depth, &tri_ids]() {
@@ -143,10 +146,10 @@ int BVHNode::CalMid(const int id, std::vector<int>& tri_ids) {
 }
 
 BVHNode* BVHNode::Build() {
-	BVHNode* o = new BVHNode(NULL);
+	BVHNode* o = new BVHNode(NULL, 1);
 	std::vector<int>tri_ids(glob_triangles.size());
 	for (int i = 0; i < (int)glob_triangles.size(); i++)tri_ids[i] = i;
-	o->Build(0, (int)(glob_triangles.size() - 1), 0, tri_ids);
+	o->Build(0, (int)glob_triangles.size() - 1, 0, tri_ids);
 	std::vector<Triangle>new_glob_triangles;
 	for (int i = 0; i < (int)glob_triangles.size(); i++)new_glob_triangles.push_back(glob_triangles[tri_ids[i]]);
 	glob_triangles.swap(new_glob_triangles);

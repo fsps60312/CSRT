@@ -26,7 +26,7 @@ private:
 	int CalMid(const int id, std::vector<int>& tri_ids);
 	void Build(const int l, const int r,const int depth, std::vector<int>& tri_ids);
 public:
-	BVHNode(BVHNode* parent);
+	BVHNode(BVHNode* parent, const int id);
 	static void ClearVectors();
 	static void DeleteTree(BVHNode* root);
 	static BVHNode* Build();

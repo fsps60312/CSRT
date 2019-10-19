@@ -26,6 +26,7 @@ void Game::Render(){
 	world.SendToShader();
 }
 void Game::Advance(std::chrono::nanoseconds timespan) {
+	if (timespan.count() == 0)return;
 	const double secs = timespan.count() / 1000000000.0;
 	if (secs > 1.0 / 60) {
 		Advance(timespan / 2);

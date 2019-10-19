@@ -106,25 +106,25 @@ void TriangleIntersect(inout Ray r,in int obj_id){
 }
 
 float AABBIntersect(in Ray r, in int aabb_id){
-	if(aabb_id==-1)return FLT_MAX;
+	// if(aabb_id==-1)return FLT_MAX;
 	// r.pos, r.dir
 	const mat2x3 aabb=buf_bvh_aabb[aabb_id];
 	const vec3 v1=(aabb[0]-r.pos)/r.dir;
 	const vec3 v2=(aabb[1]-r.pos)/r.dir;
 	const vec3 mn=min(v1,v2),mx=max(v1,v2);
 	const float mn_v=max(max(mn.x,mn.y),mn.z),mx_v=min(min(mx.x,mx.y),min(mx.z,r.t));
-	return mn_v>mx_v?FLT_MAX:mn_v;
+	return mn_v<=mx_v?mn_v:FLT_MAX;
 }
 
 void BVHIntersect(inout Ray r){
 	//for(int i=0;i<tri_num;i++)TriangleIntersect(r,i);
-	int id=0;
+	int id=1;
 	uint goto_sibling=0;
 	while(true){
 		// trace down
 		while(true){
 			const ivec3 node=buf_bvh_node[id];
-			if(node.x==-1&&node.y==-1){
+			if(node.x==-1){
 				for(int i=buf_bvh_range[id].x;i<=buf_bvh_range[id].y;i++)TriangleIntersect(r,i);
 				break;
 			}
@@ -141,21 +141,20 @@ void BVHIntersect(inout Ray r){
 			id=buf_bvh_node[id].z;
 		}
 		if(goto_sibling==0)return;
-		const ivec3 node=buf_bvh_node[buf_bvh_node[id].z];
-		id=id==node.x?node.y:node.x;
+		id^=1;
 		goto_sibling^=1;
 	}
 }
 
 bool HitTest(in Ray r){
-	int id=0;
+	int id=1;
 	uint goto_sibling=0;
 	const float initial_t=r.t;
 	while(true){
 		// trace down
 		while(true){
 			const ivec3 node=buf_bvh_node[id];
-			if(node.x==-1&&node.y==-1){
+			if(node.x==-1){
 				for(int i=buf_bvh_range[id].x;i<=buf_bvh_range[id].y;i++)TriangleIntersect(r,i);
 				if(r.t!=initial_t)return true;
 				break;
@@ -173,8 +172,7 @@ bool HitTest(in Ray r){
 			id=buf_bvh_node[id].z;
 		}
 		if(goto_sibling==0)return false;
-		const ivec3 node=buf_bvh_node[buf_bvh_node[id].z];
-		id=id==node.x?node.y:node.x;
+		id^=1;
 		goto_sibling^=1;
 	}
 }
