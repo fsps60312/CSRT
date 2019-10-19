@@ -35,6 +35,7 @@ namespace pod {
 		void UpdateRotationY();
 		void UpdateRigidBody();
 		void UpdateFume(const double secs);
+		void InverseVelocityIfCollideWithBlocks();
 		void AdvanceCamera(const double secs);
 		void AdvanceRigidBody(const double secs);
 		bool IsRigidBodyMoveTooMuch(const double secs)const;

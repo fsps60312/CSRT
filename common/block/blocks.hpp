@@ -8,6 +8,7 @@
 namespace block {
 	bool IsCollidable(const glm::dvec3& position);
 	Block* GetBlock(const glm::dvec3& position);
+	glm::ivec2 GetPositionId(const glm::dvec3& position);
 	bool Destroy(const Block* block);
 	class Blocks :public VisibleObject {
 	private:
@@ -30,6 +31,7 @@ namespace block {
 		static void RegionOnXYPlane(double& x_min, double& x_max, double& y_min, double& y_max);
 		bool IsCollidable(const int x, const int y)const;
 		bool IsCollidable(const glm::dvec2& position)const;
+		glm::ivec2 GetPositionId(const glm::dvec2& position)const;
 		Block* GetBlock(const glm::dvec2& position)const;
 		Block* GetBlock(const int x, const int y)const;
 		bool Destroy(const Block* block);

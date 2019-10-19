@@ -172,6 +172,66 @@ namespace pod {
 		camera::SetPosition(camera_position);
 		camera::SetDirection(camera_direction);
 	}
+	void PodBody::InverseVelocityIfCollideWithBlocks() {
+		if (block::IsCollidable(rb.position))return; // inside a block, no respond
+		const double r = body_radius;
+		const double bounce = 0.5;
+		bool is_collided = false;
+		for (const glm::dvec3& offset : {
+			glm::dvec3(-r,-r,0),
+			glm::dvec3(-r,0,0),
+			glm::dvec3(-r,r,0),
+			glm::dvec3(0,-r,0),
+			glm::dvec3(0,r,0),
+			glm::dvec3(r,-r,0),
+			glm::dvec3(r,0,0),
+			glm::dvec3(r,r,0)}) {
+			const glm::dvec3& pre_pos = matrix::Multiply(matrix::TranslateD(rb._position) * matrix::RotateD(glm::dvec3(0, 0, 1), rb._theta), offset);
+			const glm::dvec3& now_pos = matrix::Multiply(GetMatrixT() * GetMatrixZ(), offset);
+			if (!block::IsCollidable(pre_pos)&&block::IsCollidable(now_pos)) {
+				const glm::ivec2& pre_posid = block::GetPositionId(pre_pos), now_posid = block::GetPositionId(now_pos);
+				const glm::vec3 points_velocity = rb.GetVelocityAt(offset);
+				if (now_posid.y == pre_posid.y - 1 && points_velocity.y < 0) { // collide down
+					const double t = offset.y * -std::sin(rb.theta) + offset.x * std::cos(rb.theta);
+					const double f = (-bounce - 1) * (rb.velocity.y + rb.omega * t) / (1.0 / rb.mass + t * t / rb.momentOfInertia);
+					//f -= rb.force.Y * secs;
+					rb.velocity.y += f / rb.mass;
+					rb.omega += f * t / rb.momentOfInertia;
+					is_collided = true;
+				}
+				if (now_posid.y == pre_posid.y + 1 && points_velocity.y > 0) { // collide up
+					const double t = offset.y * -std::sin(rb.theta) + offset.x * std::cos(rb.theta);
+					const double f = (-bounce - 1) * (rb.velocity.y + rb.omega * t) / (-1.0 / rb.mass - t * t / rb.momentOfInertia);
+					//f += rb.force.Y * secs;
+					rb.velocity.y -= f / rb.mass;
+					rb.omega -= f * t / rb.momentOfInertia;
+					is_collided = true;
+				}
+				if (now_posid.x == pre_posid.x - 1 && points_velocity.x < 0) { // collide left
+					const double t = offset.x * -std::sin(rb.theta) + offset.y * -std::cos(rb.theta);
+					const double f = (-bounce - 1) * (rb.velocity.x + rb.omega * t) / (1.0 / rb.mass + t * t / rb.momentOfInertia);
+					//f += -rb.force.X * secs;
+					rb.velocity.x += f / rb.mass;
+					rb.omega += f * t / rb.momentOfInertia;
+					is_collided = true;
+				}
+				if (now_posid.x == pre_posid.x + 1 && points_velocity.x > 0) { // collide right
+					const double t = offset.x * -std::sin(rb.theta) + offset.y * -std::cos(rb.theta);
+					const double f = (-bounce - 1) * (rb.velocity.x + rb.omega * t) / (-1.0 / rb.mass - t * t / rb.momentOfInertia);
+					//f += rb.force.X * secs;
+					rb.velocity.x -= f / rb.mass;
+					rb.omega -= f * t / rb.momentOfInertia;
+					is_collided = true;
+				}
+				//std::clog << "collide" << std::endl;
+			}
+		}
+		if (is_collided) { // roll back
+			rb.position = rb._position;
+			rb.theta = rb._theta;
+		}
+		// TODO
+	}
 	bool PodBody::IsRigidBodyMoveTooMuch(const double secs)const {
 		//return true;
 		if (secs > 1e-3) return true;
@@ -186,7 +246,7 @@ namespace pod {
 			AdvanceRigidBody(secs / 2);
 			AdvanceRigidBody(secs / 2);
 		} else {
-			return;
+			InverseVelocityIfCollideWithBlocks();
 		}
 	}
 	void PodBody::Advance(const double secs) {

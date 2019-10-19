@@ -7,6 +7,9 @@ namespace block {
 	Block* GetBlock(const glm::dvec3& position) {
 		return Blocks::instance->GetBlock(position);
 	}
+	glm::ivec2 GetPositionId(const glm::dvec3& position) {
+		return Blocks::instance->GetPositionId(position);
+	}
 	bool Destroy(const Block* block) { return Blocks::instance->Destroy(block); }
 	bool Blocks::Destroy(const int x, const int y) {
 		const int x_offset = x - blocks.front().first;
@@ -52,10 +55,15 @@ namespace block {
 		const double dy = position.y - (y * constants::block_height + anchor.y);
 		return collided->IsCollidable(dx, dy);
 	}
+	glm::ivec2 Blocks::GetPositionId(const glm::dvec2& position)const {
+		return glm::ivec2(
+			(int)std::floor((position.x - anchor.x) / constants::block_width),
+			(int)std::floor((position.y - anchor.y) / constants::block_height)
+		);
+	}
 	Block* Blocks::GetBlock(const glm::dvec2& position)const {
-		const int x = (int)std::floor((position.x - anchor.x) / constants::block_width);
-		const int y = (int)std::floor((position.y - anchor.y) / constants::block_height);
-		return GetBlock(x, y);
+		const glm::ivec2& pos_id = GetPositionId(position);
+		return GetBlock(pos_id.x, pos_id.y);
 	}
 	Block* Blocks::GetBlock(const int x, const int y)const {
 		const int x_offset = x - blocks.front().first;
