@@ -66,6 +66,7 @@ namespace pod {
 		public:
 			glm::dvec3 GetTotalReactForce()const;
 			bool IsOnGround()const;
+			bool IsAnyGearOnGround()const;
 			double GetTrackSpeed()const;
 			void AddTrackSpeed(const double dv);
 			void Advance(const double secs)override;

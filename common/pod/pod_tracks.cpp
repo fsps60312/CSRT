@@ -28,7 +28,7 @@ namespace pod {
 			(environment::IsKeyDown(GLFW_KEY_A) && environment::IsKeyDown(GLFW_KEY_D)) ||
 			(environment::IsKeyDown(GLFW_KEY_S) && !environment::IsKeyDown(GLFW_KEY_W)) ? 100 : 20;
 		double track_cycle_acceleration = track_cycle_speed > 0 ? -deacceleration : deacceleration;
-		if (pod->IsOnGround()) {
+		if (IsAnyGearOnGround()) {
 			if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D))track_cycle_acceleration += 70;
 			if (environment::IsKeyDown(GLFW_KEY_D) && !environment::IsKeyDown(GLFW_KEY_A))track_cycle_acceleration += 70;
 		}
@@ -39,6 +39,10 @@ namespace pod {
 	}
 	double PodTracks::Track::GetTrackSpeed()const {
 		return track_cycle_speed;
+	}
+	bool PodTracks::Track::IsAnyGearOnGround()const {
+		for (Gear* gear : gears)if (gear->IsOnGround())return true;
+		return false;
 	}
 	bool PodTracks::Track::IsOnGround() const{
 		for (Gear* gear : ground_gears)if (!gear->IsOnGround())return false;

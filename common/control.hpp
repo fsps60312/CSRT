@@ -11,7 +11,7 @@ const bool MOVE_VIEW = false;
 const double PI = acos(-1);
 namespace constants {
 	const double gravity = 9.8;
-	const double block_width = 5.0;
-	const double block_height = 4.0;
+	const double block_width = 6.0;
+	const double block_height = 6.0;
 	const double block_depth = 5.0;
 }
