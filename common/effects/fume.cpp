@@ -1,15 +1,19 @@
 #include<common/effects/fume.hpp>
 namespace effects {
-	VisibleObject* Fume::fumes_parent = new VisibleObject();
+	Fume::FumesParent* Fume::fumes_parent = new Fume::FumesParent();
+	void Fume::FumesParent::Update(const double secs) {
+		for (VisibleObject* ch : children)ch->Update(secs);
+		for (VisibleObject* ch : to_erase)VisibleObject::Delete(ch), children.erase(ch);
+		to_erase.clear();
+	}
 	void Fume::AddFume(const glm::dvec3& initial_position, const glm::dvec3& speed, const double initial_radius, const double final_radius, const double initial_alpha, const double period) {
 		fumes_parent->children.insert(new Fume(initial_position, speed, initial_radius, final_radius, initial_alpha, period));
 	}
 	void Fume::Update(const double secs) {
 		time_passed += secs;
 		if (time_passed >= total_period) {
-			fumes_parent->children.erase(this);
+			fumes_parent->to_erase.push_back(this);
 			if (material_counter != -1)Material::DeleteMaterialId("fume_" + std::to_string(material_counter));
-			VisibleObject::Delete(this);
 			return;
 		}
 		theta = std::fmod(theta + omega * secs, 2.0 * PI);

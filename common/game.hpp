@@ -1,7 +1,6 @@
 #pragma once
 
-#include<common/world.hpp>
-#include<common/buffer_system.hpp>
+#include<common/gpu.hpp>
 #include<common/control.hpp>
 #include<common/camera.hpp>
 #include<common/mylib.hpp>
@@ -11,8 +10,7 @@
 class Game {
 private:
 	int money = 150;
-	World world;
-	BufferSystem model;
+	GPU gpu;
 public:
 	enum class Keys {
 		Z, X,

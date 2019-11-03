@@ -1,13 +1,12 @@
 #pragma once
 
-#include <common/buffer_system.hpp>
+#include <common/gpu.hpp>
 #include<common/pod/pod.hpp>
 #include<common/block/blocks.hpp>
 
-BufferSystem::BufferSystem(){}
 
-BufferSystem::BufferSystem(std::string filename)
-{
+GPU::GPU(){
+	LoadShaders();
 	//Material::GetTextureInfo("Picture/Block/Copper.png");
 	{
 		/*std::vector<glm::vec3> vertices;
@@ -48,20 +47,63 @@ BufferSystem::BufferSystem(std::string filename)
 	std::clog << "sizeof(glm::mat3) = " << sizeof(glm::mat3) << std::endl;
 }
 
-int BufferSystem::GetTriangleNum() { return (int)BVHNode::glob_triangles.size(); }
+void GPU::Dispatch() {
+	// --------------------
+	// Compute Shading
+	// --------------------
+	{
+		// make sure writing to image has finished before read
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
+		compute_shader.Use(SCREEN_WIDTH / WORK_GROUP_SIZE_X, SCREEN_HEIGHT / WORK_GROUP_SIZE_Y, 1);
 
-void BufferSystem::Send()
-{
+		glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+		compute_shader.Disable();
+		environment::DrawSubWindow(0, 0, SCREEN_WIDTH * SCREEN_SCALE_X, SCREEN_HEIGHT * SCREEN_SCALE_Y, texture_shader, compute_texture);
+	}
+}
+
+void GPU::LoadShaders() {
+	// --------------------
+	// Load Texture Shader
+	// --------------------
+	// Load Shader & Get a handle for uniform
+	texture_shader.Load("MyTextureVertexShader.glsl", "MyTextureFragmentShader.glsl", 1);
+
+	// --------------------
+	// Load Compute Shader
+	// --------------------
+	// Load Shader & Get a handle for uniform
+	compute_shader.Load("MyComputeShader.glsl");
+
+	// Identify Texture
+	glGenTextures(1, &compute_texture); gl_check_error();
+
+	glActiveTexture(GL_TEXTURE0); gl_check_error();
+	glBindTexture(GL_TEXTURE_2D, compute_texture); gl_check_error();
+
+	// filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); gl_check_error();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
+	glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
+}
+
+int GPU::GetTriangleNum()const { return (int)BVHNode::glob_triangles.size(); }
+
+void GPU::RebuildBVH() {
+	BVHNode::DeleteTree(root);
+	BVHNode::ClearVectors();
+	obj->Build(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+	root = BVHNode::Build();
+	int max_depth = 0;
+	const int v = root->Verify(1, max_depth);
+	assert(v + 1 == (int)BVHNode::glob_bvh_nodes.size());
+	std::clog << "BVH depth = " << max_depth << ", size = " << v << std::endl;
+}
+void GPU::SendStorageBuffers() const{
 	//for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0),float( glm::acos(-1) / 100));
 	{
-		BVHNode::DeleteTree(root);
-		BVHNode::ClearVectors();
-		obj->Build(glm::mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
-		root = BVHNode::Build();
-		int max_depth = 0;
-		const int v = root->Verify(1, max_depth);
-		assert(v == (int)BVHNode::glob_bvh_nodes.size());
-		std::clog << "BVH depth = " << max_depth << ", size = " << v << std::endl;
 		/*std::clog << "triangles.size = " << BVHNode::glob_triangles.size() << std::endl;
 		std::clog << "bvh.size       = " << BVHNode::glob_bvh_nodes.size() << std::endl;
 		std::clog << "traverse       = " << v << std::endl;*/
@@ -76,11 +118,11 @@ void BufferSystem::Send()
 		//for (auto& t : triangles)if (t.material_id != 0)std::clog << "not 0!" << std::endl;
 		//if (materials.size() >= 2) std::clog << "material[1]: " << materials[1].alpha << std::endl;
 		//std::clog << "materials.size() = " << materials.size() << std::endl;
-		const std::vector<glm::ivec3>&nodes = BVHNode::glob_bvh_nodes;
-		const auto &aabbs_raw = BVHNode::glob_bvh_aabbs;
+		const std::vector<glm::ivec3>& nodes = BVHNode::glob_bvh_nodes;
+		const auto& aabbs_raw = BVHNode::glob_bvh_aabbs;
 		std::vector<glm::mat2x3>aabbs;
 		for (const auto& aabb : aabbs_raw)aabbs.push_back(glm::mat2x3(aabb.GetMn(), aabb.GetMx()));
-		const std::vector<glm::ivec2> &ranges = BVHNode::glob_tri_ranges;
+		const std::vector<glm::ivec2>& ranges = BVHNode::glob_tri_ranges;
 		//assert(materials.size() == triangles.size() && aabbs.size() == nodes.size() && ranges.size() == nodes.size());
 
 		const GLenum usage = GL_STATIC_DRAW;
@@ -121,27 +163,46 @@ void BufferSystem::Send()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvhRangeBuffer);
 }
 
-std::vector<glm::vec4> BufferSystem::Padded(const std::vector<glm::vec3>&s)const {
+void GPU::SendUniforms()const {
+	compute_shader.Use();
+	const glm::dvec3& camera_position = camera::GetPosition();
+	const glm::dvec3& camera_direction = camera::GetDirection();
+	const glm::dvec3& camera_up = camera::GetUp();
+	glUniform3f(compute_shader.GetVariable("eye"), camera_position.x, camera_position.y, camera_position.z);
+	glUniform3f(compute_shader.GetVariable("view"), camera_direction.x, camera_direction.y, camera_direction.z);
+	glUniform3f(compute_shader.GetVariable("up"), camera_up.x, camera_up.y, camera_up.z);
+	glUniform1f(compute_shader.GetVariable("fov"), camera::GetFoV());
+	glUniform1i(compute_shader.GetVariable("tri_num"), GetTriangleNum());
+	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), mylib::Rand::NextUint());
+}
+
+void GPU::Send(){
+	RebuildBVH();
+	SendStorageBuffers();
+	SendUniforms();
+}
+
+std::vector<glm::vec4> GPU::Padded(const std::vector<glm::vec3>&s)const {
 	std::vector<glm::vec4>ret;
 	for (const auto& v : s)ret.push_back(glm::vec4(v, 0.0f));
 	return ret;
 }
-std::vector<glm::ivec4> BufferSystem::Padded(const std::vector<glm::ivec3>&s)const {
+std::vector<glm::ivec4> GPU::Padded(const std::vector<glm::ivec3>&s)const {
 	std::vector<glm::ivec4>ret;
 	for (const auto& v : s)ret.push_back(glm::ivec4(v, 0.0f));
 	return ret;
 }
-std::vector<glm::mat2x4> BufferSystem::Padded(const std::vector<glm::mat2x3>&s)const {
+std::vector<glm::mat2x4> GPU::Padded(const std::vector<glm::mat2x3>&s)const {
 	std::vector<glm::mat2x4>ret;
 	for (const auto& v : s)ret.push_back(glm::mat2x3(glm::vec4(v[0], 0.0f), glm::vec4(v[1], 0.0f)));
 	return ret;
 }
-std::vector<glm::mat3x4> BufferSystem::Padded(const std::vector<glm::mat3>&s)const {
+std::vector<glm::mat3x4> GPU::Padded(const std::vector<glm::mat3>&s)const {
 	std::vector<glm::mat3x4>ret;
 	for (const auto& v : s)ret.push_back(glm::mat3x4(glm::vec4(v[0], 0.0f), glm::vec4(v[1], 0.0f), glm::vec4(v[2], 0.0f)));
 	return ret;
 }
-std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>&triangles)const {
+std::vector<uint32_t> GPU::Padded(const std::vector<Triangle>&triangles)const {
 	std::vector<uint32_t>ret;
 	for (const auto& triangle : triangles) {
 		const auto vertices = triangle.GetVertices();
@@ -160,7 +221,7 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Triangle>&triangles
 	}
 	return ret;
 }
-std::vector<uint32_t> BufferSystem::Padded(const std::vector<Material>& materials)const {
+std::vector<uint32_t> GPU::Padded(const std::vector<Material>& materials)const {
 	std::vector<uint32_t>ret;
 	for (const auto& material : materials) {
 		ret.push_back(glm::floatBitsToUint(material.ambient.r));
@@ -186,7 +247,7 @@ std::vector<uint32_t> BufferSystem::Padded(const std::vector<Material>& material
 	return ret;
 }
 
-std::vector<uint32_t>BufferSystem::Padded(const std::vector<Light>& lights)const {
+std::vector<uint32_t>GPU::Padded(const std::vector<Light>& lights)const {
 	std::vector<uint32_t>ret;
 	ret.push_back(lights.size());
 	ret.push_back(0);

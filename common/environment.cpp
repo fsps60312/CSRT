@@ -1,12 +1,8 @@
 #include<common/environment.hpp>
 namespace environment {
 	GLFWwindow* window;
-	Shader texture_shader, compute_shader;
-	GLuint compute_texture;
 	GLuint window_vertex_buffer;
 	bool IsWindowClosed() { return glfwWindowShouldClose(window) != 0; }
-	Shader& GetTextureShader() { return texture_shader; }
-	Shader& GetComputeShader() { return compute_shader; }
 	bool IsKeyDown(int key) {
 		return glfwGetKey(window, key) == GLFW_PRESS;
 	}
@@ -23,32 +19,8 @@ namespace environment {
 		InitWindow();
 		InitGLEW();
 		GLShowInfo();
-		LoadShaders();
 	}
-	void DispatchShaders() {
-		// --------------------
-		// Compute Shading
-		// --------------------
-		{
-			// make sure writing to image has finished before read
-			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
-
-			compute_shader.Use(SCREEN_WIDTH / WORK_GROUP_SIZE_X, SCREEN_HEIGHT / WORK_GROUP_SIZE_Y, 1);
-
-			glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
-
-			compute_shader.Disable();
-
-			DrawSubWindow(0, 0, SCREEN_WIDTH * SCREEN_SCALE_X, SCREEN_HEIGHT * SCREEN_SCALE_Y, GetTextureShader());
-		}
-
-
-		// Swap buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-
-	}
-	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader)
+	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader, GLuint compute_texture)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(x, y, w, h);
@@ -70,48 +42,9 @@ namespace environment {
 		glDrawArrays(GL_TRIANGLES, 0, 3 * 2); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
 		texture_shader.Disable();
-	}
-	void LoadShaders() {
-		// --------------------
-		// Load Texture Shader
-		// --------------------
-		// Load Shader & Get a handle for uniform
-		texture_shader.Load("MyTextureVertexShader.glsl", "MyTextureFragmentShader.glsl", 1);
-
-		// The fullscreen FBO
-		static const GLfloat g_window_vertex_buffer_data[] = {
-			-1.0f, -1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			 1.0f, -1.0f, -1.0f,
-			 1.0f,  1.0f, -1.0f
-		};
-
-		// Identify a vertex Buffer Object
-		glGenBuffers(1, &window_vertex_buffer); gl_check_error();
-		glBindBuffer(GL_ARRAY_BUFFER, window_vertex_buffer); gl_check_error();
-		glBufferData(GL_ARRAY_BUFFER, sizeof(g_window_vertex_buffer_data), g_window_vertex_buffer_data, GL_STATIC_DRAW); gl_check_error();
-
-
-		// --------------------
-		// Load Compute Shader
-		// --------------------
-		// Load Shader & Get a handle for uniform
-		compute_shader.Load("MyComputeShader.glsl");
-
-		// Identify Texture
-		glGenTextures(1, &compute_texture); gl_check_error();
-
-		glActiveTexture(GL_TEXTURE0); gl_check_error();
-		glBindTexture(GL_TEXTURE_2D, compute_texture); gl_check_error();
-
-		// filtering
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); gl_check_error();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
-		glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
+		// Swap buffers
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 	void GLShowInfo() {
 		GLint64 v0, v1, v2;
@@ -136,6 +69,19 @@ namespace environment {
 			system("pause");
 			exit(0);
 		}
+		// The fullscreen FBO
+		static const GLfloat g_window_vertex_buffer_data[] = {
+			-1.0f, -1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			 1.0f, -1.0f, -1.0f,
+			 1.0f,  1.0f, -1.0f
+		};
+		// Identify a vertex Buffer Object
+		glGenBuffers(1, &window_vertex_buffer); gl_check_error();
+		glBindBuffer(GL_ARRAY_BUFFER, window_vertex_buffer); gl_check_error();
+		glBufferData(GL_ARRAY_BUFFER, sizeof(g_window_vertex_buffer_data), g_window_vertex_buffer_data, GL_STATIC_DRAW); gl_check_error();
 	}
 	void InitGLFW() {
 		// Initialise GLFW ( Graphics Library FrameWork )
@@ -147,6 +93,7 @@ namespace environment {
 		}
 	}
 	void InitWindow() {
+
 		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); glfw_check_error();
 
 		// Open a window and create its OpenGL context

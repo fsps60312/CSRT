@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include<common/shader.hpp>
 #include<common/objloader.hpp>
 #include<common/visible_object.hpp>
 #include<common/control.hpp>
@@ -21,7 +22,7 @@
 
 
 // Delete after Assimp finish
-class BufferSystem {
+class GPU {
 
 private:
 	BVHNode* root = NULL;
@@ -32,6 +33,12 @@ private:
 	GLuint bvhNodeBuffer   = 0;
 	GLuint bvhAabbBuffer   = 0;
 	GLuint bvhRangeBuffer  = 0;
+	Shader texture_shader, compute_shader;
+	GLuint compute_texture;
+	void LoadShaders();
+	void RebuildBVH();
+	void SendStorageBuffers()const;
+	void SendUniforms()const;
 	std::vector<glm::vec4> Padded(const std::vector<glm::vec3>& s)const;
 	std::vector<glm::ivec4> Padded(const std::vector<glm::ivec3>& s)const;
 	std::vector<glm::mat2x4> Padded(const std::vector<glm::mat2x3>& s)const;
@@ -41,10 +48,10 @@ private:
 	std::vector<uint32_t> Padded(const std::vector<Light>& s)const;
 public:
 	VisibleObject* obj = NULL;
-	BufferSystem();
-	BufferSystem(std::string filename);
+	GPU();
 	void Send();
-	int GetTriangleNum();
+	void Dispatch();
+	int GetTriangleNum()const;
 };
 
 // Not yet !

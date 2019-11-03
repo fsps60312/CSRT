@@ -1,7 +1,7 @@
 #include<common/game.hpp>
 
 void Game::Init() {
-	model = BufferSystem(NOW_MODEL + std::string(".obj"));
+	gpu = GPU(/*NOW_MODEL + std::string(".obj")*/);
 }
 void Game::Launch() {}
 void Game::Pause(){}
@@ -10,20 +10,8 @@ void Game::ReadSaveFile(std::ifstream& file_stream){}
 void Game::WriteSaveFile(std::ofstream& file_stream){}
 void Game::Render(){
 	camera::ComputeMatricesFromInputs();
-	// Compute Shader
-	auto compute_shader = environment::GetComputeShader();
-	compute_shader.Use();
-	const glm::dvec3& camera_position = camera::GetPosition();
-	const glm::dvec3& camera_direction = camera::GetDirection();
-	const glm::dvec3& camera_up = camera::GetUp();
-	glUniform3f(compute_shader.GetVariable("eye"), camera_position.x, camera_position.y, camera_position.z);
-	glUniform3f(compute_shader.GetVariable("view"), camera_direction.x, camera_direction.y, camera_direction.z);
-	glUniform3f(compute_shader.GetVariable("up"), camera_up.x, camera_up.y, camera_up.z);
-	glUniform1f(compute_shader.GetVariable("fov"), camera::GetFoV());
-	glUniform1i(compute_shader.GetVariable("tri_num"), model.GetTriangleNum());
-	glUniform1ui(compute_shader.GetVariable("initial_random_seed"),mylib::Rand::NextUint());
-	model.Send();
-	world.SendToShader();
+	gpu.Send();
+	gpu.Dispatch();
 }
 void Game::Advance(std::chrono::nanoseconds timespan) {
 	if (timespan.count() == 0)return;
@@ -32,9 +20,9 @@ void Game::Advance(std::chrono::nanoseconds timespan) {
 		Advance(timespan / 2);
 		Advance(timespan / 2);
 	} else {
-		model.obj->PrepareForRound();
-		model.obj->Update(secs);
-		model.obj->Advance(secs);
+		gpu.obj->PrepareForRound();
+		gpu.obj->Update(secs);
+		gpu.obj->Advance(secs);
 	}
 	//model.obj->Advance(0.01);
 }

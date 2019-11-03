@@ -1,10 +1,10 @@
 #include <common/shader.hpp>
 
 #pragma region Shader
-GLuint Shader::GetVariable(char name[]) { return glGetUniformLocation(program, name); }
+GLuint Shader::GetVariable(char name[]) const{ return glGetUniformLocation(program, name); }
 GLuint Shader::GetProgram() { return program; }
-void Shader::Use() { glUseProgram(program); }
-void Shader::Use(GLuint x, GLuint y, GLuint z) {
+void Shader::Use()const { glUseProgram(program); }
+void Shader::Use(GLuint x, GLuint y, GLuint z)const {
 	glUseProgram(program);
 	glDispatchCompute(x, y, z);
 }

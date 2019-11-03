@@ -20,16 +20,12 @@ namespace environment {
 	void InitGLEW();
 	void InitWindow();
 	void GLShowInfo();
-	void LoadShaders();
-	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader);
+	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader, GLuint compute_texture);
 //public:
 	void Init();
 	bool IsKeyDown(int key);
-	void DispatchShaders();
 	glm::dvec2 GetCursorPos();
 	void SetCursorPos(const glm::dvec2& pos);
 	bool IsWindowClosed();
-	Shader& GetTextureShader();
-	Shader& GetComputeShader();
 };
 #endif

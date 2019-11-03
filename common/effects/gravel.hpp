@@ -6,7 +6,13 @@
 namespace effects {
 	class Gravel:public VisibleObject {
 	public:
-		static VisibleObject* gravels_parent;
+		class GravelsParent :public VisibleObject {
+		public:
+			std::vector<VisibleObject*>to_erase;
+			void Advance(const double secs)override;
+		};
+	public:
+		static GravelsParent* gravels_parent;
 		static void AddGravel(const glm::dvec3& initial_position, const glm::dvec3& initial_speed);
 	private:
 		RigidBody rb;

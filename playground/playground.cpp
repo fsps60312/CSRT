@@ -46,7 +46,6 @@ int main(void)
 		lastTime = currentTime;
 		ReceiveKeys(game);
 		game.Render();
-		environment::DispatchShaders();
 
 
 	} // Check if the ESC key was pressed or the window was closed

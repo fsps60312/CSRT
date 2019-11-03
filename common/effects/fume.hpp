@@ -6,7 +6,13 @@
 namespace effects {
 	class Fume :public VisibleObject {
 	public:
-		static VisibleObject* fumes_parent;
+		class FumesParent :public VisibleObject {
+		public:
+			std::vector<VisibleObject*>to_erase;
+			void Update(const double secs)override;
+		};
+	public:
+		static FumesParent* fumes_parent;
 		static void AddFume(const glm::dvec3& initial_position, const glm::dvec3& speed, const double initial_radius, const double final_radius, const double initial_alpha, const double period);
 	private:
 		const glm::dvec3 speed;

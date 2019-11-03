@@ -1,6 +1,11 @@
 #include<common/effects/gravel.hpp>
 namespace effects {
-	VisibleObject* Gravel::gravels_parent = new VisibleObject();
+	Gravel::GravelsParent* Gravel::gravels_parent = new Gravel::GravelsParent();
+	void Gravel::GravelsParent::Advance(const double secs) {
+		for (VisibleObject* ch : children)ch->Advance(secs);
+		for (VisibleObject* ch : to_erase)VisibleObject::Delete(ch), children.erase(ch);
+		to_erase.clear();
+	}
 	void Gravel::AddGravel(const glm::dvec3& initial_position, const glm::dvec3& initial_speed) {
 		gravels_parent->children.insert(new Gravel(initial_position, initial_speed));
 	}
@@ -25,8 +30,7 @@ namespace effects {
 		double x_min, x_max, y_min, y_max;
 		block::Blocks::RegionOnXYPlane(x_min, x_max, y_min, y_max);
 		if (rb.position.x < x_min || x_max < rb.position.x || rb.position.y < y_min || y_max < rb.position.y) {
-			gravels_parent->children.erase(this);
-			VisibleObject::Delete(this);
+			gravels_parent->to_erase.push_back(this);
 			return;
 		}
 		theta_x = std::fmod(theta_x + omega_x * secs, 2.0 * PI);

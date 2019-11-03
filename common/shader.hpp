@@ -30,10 +30,10 @@ private:
 public:
 	void Load(char v[], char f[], int l);
 	void Load(char c[]);
-	GLuint GetVariable(char name[]);
+	GLuint GetVariable(char name[])const;
 	GLuint GetProgram();
-	void Use();
-	void Use(GLuint x, GLuint y, GLuint z);
+	void Use()const;
+	void Use(GLuint x, GLuint y, GLuint z)const;
 	void Disable();
 	void Delete();
 };
