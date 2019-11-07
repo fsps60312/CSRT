@@ -18,6 +18,7 @@ namespace environment {
 		InitGLFW();
 		InitWindow();
 		InitGLEW();
+		InitFBO();
 		GLShowInfo();
 	}
 	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader, GLuint compute_texture)
@@ -69,6 +70,8 @@ namespace environment {
 			system("pause");
 			exit(0);
 		}
+	}
+	void InitFBO() {
 		// The fullscreen FBO
 		static const GLfloat g_window_vertex_buffer_data[] = {
 			-1.0f, -1.0f, -1.0f,
