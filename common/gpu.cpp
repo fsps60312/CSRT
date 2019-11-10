@@ -9,24 +9,31 @@ GPU::GPU(){
 	LoadShaders();
 	//Material::GetTextureInfo("Picture/Block/Copper.png");
 	{
-		/*std::vector<glm::vec3> vertices;
-		std::vector<glm::vec2> uvs;
-		std::vector<glm::vec3> normals;
-		std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
-		loadOBJ(filename.c_str(), vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
-		std::vector<Triangle>triangles;
-		for (int i = 0; i < (int)vertex_ids.size(); i++)
-			triangles.push_back(Triangle(glm::mat3(
-				vertices[vertex_ids[i].x],
-				vertices[vertex_ids[i].y],
-				vertices[vertex_ids[i].z]
-			)));*/
 		obj = new VisibleObject();
 		auto pod = new pod::Pod();
 		obj->children.insert(pod);
 		obj->children.insert(block::Blocks::instance);
 		obj->children.insert(effects::Fume::fumes_parent);
 		obj->children.insert(effects::Gravel::gravels_parent);
+		{
+			std::vector<glm::vec3> vertices;
+			std::vector<glm::vec2> uvs;
+			std::vector<glm::vec3> normals;
+			std::vector<glm::ivec3>vertex_ids, uv_ids, normal_ids;
+			loadOBJ("models/gas_station/GasStation.obj", vertices, vertex_ids, uvs, uv_ids, normals, normal_ids);
+			std::vector<Triangle>triangles;
+			for (int i = 0; i < (int)vertex_ids.size(); i++)
+				triangles.push_back(Triangle(glm::mat3(
+					vertices[vertex_ids[i].x],
+					vertices[vertex_ids[i].y],
+					vertices[vertex_ids[i].z]
+				)));
+			std::clog << triangles.size() << " triangles loaded." << std::endl;
+			auto o = new VisibleObject(triangles);
+			o->Translate(glm::dvec3(0, -4 * constants::block_height, -1.5 * constants::block_depth));
+			o->Rotate(glm::dvec3(0, 1, 0), PI / 2);
+			obj->children.insert(o);
+		}
 		/*if (obj->children.size() > 1)for (int i = 0; i < (int)obj->children.size(); i++) {
 			const float dx = 3, dz = -3;
 			obj->children[i]->Translate(glm::vec3(-dx + 2 * dx * i / (obj->children.size() - 1), 0, dz));

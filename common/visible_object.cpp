@@ -50,3 +50,10 @@ void VisibleObject::Rotate(const glm::dvec3& axis, const float theta) {
 void VisibleObject::RotatePrepend(const glm::dvec3& axis, const float theta) {
 	transform = matrix::RotateD(axis, theta) * transform;
 }
+
+void VisibleObject::Scale(const glm::dvec3& scale) {
+	transform = transform * matrix::ScaleD(scale);
+}
+void VisibleObject::ScalePrepend(const glm::dvec3& scale) {
+	transform = matrix::ScaleD(scale) * transform;
+}

@@ -1,7 +1,7 @@
 #include<common/game.hpp>
 
 void Game::Init() {
-	gpu = GPU(/*NOW_MODEL + std::string(".obj")*/);
+	//gpu = GPU(/*NOW_MODEL + std::string(".obj")*/);
 }
 void Game::Launch() {}
 void Game::Pause(){}

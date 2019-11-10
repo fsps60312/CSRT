@@ -26,4 +26,6 @@ public:
 	void TranslatePrepend(const glm::dvec3& offset);
 	void Rotate(const glm::dvec3& axis, const float theta);
 	void RotatePrepend(const glm::dvec3& axis, const float theta);
+	void Scale(const glm::dvec3& scale);
+	void ScalePrepend(const glm::dvec3& scale);
 };

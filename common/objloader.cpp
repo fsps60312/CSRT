@@ -66,11 +66,24 @@ bool loadOBJ(
 			out_normals.push_back(normal);
 		}else if ( strcmp( lineHeader, "f" ) == 0 ){
 			glm::ivec3 vertex_id,uv_id,normal_id;
-			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertex_id.x, &uv_id.x, &normal_id.x, &vertex_id.y, &uv_id.y, &normal_id.y, &vertex_id.z, &uv_id.z, &normal_id.z );
-			if (matches != 9){
-				printf("File can't be read by our simple parser :-( Try exporting with other options\n");
-				fclose(file);
-				return false;
+			if (true) {
+				auto read_block = [&](int& v_id, int& uv_id, int& n_id)->void {
+					static char buf[1024] = { '\0' };
+					fscanf(file, "%s", buf);
+					if (sscanf(buf, "%d/%d/%d", &v_id, &uv_id, &n_id) == 3)return;
+					if (sscanf(buf, "%d//%d", &v_id, &n_id) == 2)return;
+				};
+				read_block(vertex_id.x, uv_id.x, normal_id.x);
+				read_block(vertex_id.y, uv_id.y, normal_id.y);
+				read_block(vertex_id.z, uv_id.z, normal_id.z);
+			}
+			else {
+				int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d", &vertex_id.x, &uv_id.x, &normal_id.x, &vertex_id.y, &uv_id.y, &normal_id.y, &vertex_id.z, &uv_id.z, &normal_id.z );
+				if (matches != 9){
+					printf("File can't be read by our simple parser :-( Try exporting with other options\n");
+					fclose(file);
+					return false;
+				}
 			}
 			out_vertex_ids.push_back(vertex_id);
 			out_uv_ids.push_back(uv_id);
