@@ -1,3 +1,8 @@
+find_package(Git QUIET)
+if(NOT GIT_FOUND)
+	message(FATAL_ERROR "please install git and try again.")
+endif()
+
 if(MSVC AND NOT "${MSVC_VERSION}" LESS 1400)
 	add_definitions( "/MP" )
 endif()
@@ -15,11 +20,13 @@ add_definitions(
 
 if ((NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glew) OR
 	(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glew/src/glew.c))
-	execute_process(COMMAND git clone
-		#		https://github.com/nigels-com/glew.git
+	execute_process(COMMAND ${GIT_EXECUTABLE} clone
+		#	https://github.com/nigels-com/glew.git
 		https://github.com/Perlmint/glew-cmake.git
 		glew
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		RESULT_VARIABLE rv)
+	message("rv='${rv}'")
 endif()
 
 set(GLEW_SOURCE
@@ -43,7 +50,7 @@ target_link_libraries(GLEW
 ### GLFW ###
 if ((NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glfw) OR
 	(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glfw/include/GLFW))
-	execute_process(COMMAND git clone
+	execute_process(COMMAND ${GIT_EXECUTABLE} clone
 		https://github.com/glfw/glfw.git
 		glfw
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
@@ -74,7 +81,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 ### GLM ###
 if ((NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glm) OR
 	(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/glm/glm))
-	execute_process(COMMAND git clone
+	execute_process(COMMAND ${GIT_EXECUTABLE} clone
 		https://github.com/g-truc/glm.git
 		glm
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
@@ -83,7 +90,7 @@ endif()
 ### rpavlik-cmake-modules ###
 
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/rpavlik-cmake-modules)
-	execute_process(COMMAND git clone
+	execute_process(COMMAND ${GIT_EXECUTABLE} clone
 		https://github.com/rpavlik/cmake-modules.git
 		rpavlik-cmake-modules
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
