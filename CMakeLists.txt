@@ -82,21 +82,21 @@ add_executable(playground
 	common/pod/pod_tracks.cpp
 	common/pod/pod_tracks_gear.cpp
 	common/pod/pod_tracks_tooth.cpp
-	common/control.hpp
 	common/aabb.hpp
 	common/aabb.cpp
-	common/buffer_system.hpp
-	common/buffer_system.cpp
 	common/bvh_node.hpp
 	common/bvh_node.cpp
 	common/camera.hpp
 	common/camera.cpp
+	common/control.hpp
 	common/environment.hpp
 	common/environment.cpp
 	common/game.hpp
 	common/game.cpp
 	common/gl_check_error.hpp
 	common/gl_check_error.cpp
+	common/gpu.cpp
+	common/gpu.hpp
 	common/light.hpp
 	common/light.cpp
 	common/material.hpp
@@ -115,8 +115,6 @@ add_executable(playground
 	common/triangle.cpp
 	common/visible_object.hpp
 	common/visible_object.cpp
-	common/world.hpp
-	common/world.cpp
 )
 target_link_libraries(playground
 	${ALL_LIBS}
