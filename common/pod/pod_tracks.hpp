@@ -44,7 +44,7 @@ namespace pod {
 				block::Block* GetCollided()const;
 				bool IsOnGround()const;
 				glm::dvec3 GetPosition()const;
-				glm::dvec3 GetDesiredPosition()const;
+				glm::dvec3 GetDefaultPosition()const;
 				glm::dvec3 GetReactForce()const;
 				void ApplyTranslate(const glm::dvec3& offset);
 				void PrepareForRound()override;

@@ -23,7 +23,7 @@ namespace pod {
 		///px*fx+a*fx*fx+py*fy+a*fy*fy=0
 		///a=-(px*fx+py*fy)/(fx*fx+fy*fy)
 		if ((f.x * f.x + f.y * f.y) > 1e-9) {
-			const glm::dvec3 &vec = GetDesiredPosition() - pod->GetRigidBody()->position;
+			const glm::dvec3 &vec = GetDefaultPosition() - pod->GetRigidBody()->position;
 			const double a = glm::dot(vec, f) / glm::length(f);
 			const glm::dvec3 &forceArm = vec - f * a;
 			const double torque = glm::cross(forceArm, f).z;
@@ -126,11 +126,11 @@ namespace pod {
 	glm::dvec3 PodTracks::Track::Gear::GetReactForce()const {
 		const glm::dvec3 on_pod_velocity = pod->GetRigidBody()->GetVelocityAt(matrix::Multiply(pod->GetMatrixY(), relative_position));
 		const glm::dvec3&
-			elastic_force = suspension_hardness * (GetPosition() - GetDesiredPosition()),
+			elastic_force = suspension_hardness * (GetPosition() - GetDefaultPosition()),
 			damp_force = -0.5 * (on_pod_velocity - rb.velocity);
 		return elastic_force + damp_force;
 	}
-	glm::dvec3 PodTracks::Track::Gear::GetDesiredPosition()const {
+	glm::dvec3 PodTracks::Track::Gear::GetDefaultPosition()const {
 		return  matrix::Multiply(pod->GetMatrixT() * pod->GetMatrixZ() * pod->GetMatrixY(), relative_position);
 	}
 	glm::dvec3 PodTracks::Track::Gear::GetPosition()const {
@@ -163,7 +163,7 @@ namespace pod {
 		VisibleObject(GetTriangles(radius)) {
 		rb = RigidBody();
 		rb.mass = mass;
-		rb.position = GetDesiredPosition();
+		rb.position = GetDefaultPosition();
 		SetTransform(matrix::TranslateD(relative_position));
 	}
 }

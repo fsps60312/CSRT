@@ -106,7 +106,7 @@ void GPU::RebuildBVH() {
 	int max_depth = 0;
 	const int v = root->Verify(1, max_depth);
 	assert(v + 1 == (int)BVHNode::glob_bvh_nodes.size());
-	std::clog << "BVH depth = " << max_depth << ", size = " << v << std::endl;
+	//std::clog << "BVH depth = " << max_depth << ", size = " << v << std::endl;
 }
 void GPU::SendStorageBuffers() const{
 	//for (auto c : obj->children)c->Rotate(glm::vec3(0, 1, 0),float( glm::acos(-1) / 100));
