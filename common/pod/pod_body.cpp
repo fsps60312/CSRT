@@ -48,7 +48,7 @@ namespace pod {
 	}
 	PodBody::DigIntention PodBody::GetDigIntention()const {
 		if (!pod->IsPodStableOnGround()) {
-			drill->SetFoldTarget(pod->IsOnGround() ? 1 : 0);
+			drill->SetFoldTarget(on_ground_counter > 0 ? 1 : 0);
 			return DigIntention::None;
 		}
 		if (environment::IsKeyDown(GLFW_KEY_A) && !environment::IsKeyDown(GLFW_KEY_D)) {
@@ -141,6 +141,8 @@ namespace pod {
 	}
 	void PodBody::Update(const double secs) {
 		//if (pod->IsPodStableOnGround())std::clog << "stable!" << std::endl;
+		if (pod->IsOnGround())on_ground_counter = 0.5;
+		propeller->default_fold_state = on_ground_counter > 0.0;
 		UpdateDigIntention(secs);
 		UpdateRotationY();
 		UpdateRotationZ();
@@ -149,6 +151,7 @@ namespace pod {
 		Light::glob_lights[0] = Light(rb.position + glm::dvec3(constants::block_width * 10, constants::block_height * 8, 50), 3000);
 		Light::glob_lights[1] = Light(rb.position + glm::dvec3(-constants::block_width * 8, constants::block_height * 6, 20), 2000);
 		for (auto& ch : children)ch->Update(secs);
+		on_ground_counter = std::max(0.0, on_ground_counter - secs);
 	}
 	void PodBody::AdvanceCamera(const double secs) {
 		const double look_offset = 1.3;

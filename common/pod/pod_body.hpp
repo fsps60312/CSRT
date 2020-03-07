@@ -23,6 +23,7 @@ namespace pod {
 		const static double body_radius;
 		double rotation_y = 0;
 		double desired_rotation_y = 0;
+		double on_ground_counter = 0.0;
 		RigidBody rb;
 		PodInterface* pod;
 		PodPropeller* propeller;

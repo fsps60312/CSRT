@@ -40,9 +40,10 @@ namespace pod {
 		else if (environment::IsKeyDown(GLFW_KEY_W)) {
 			torque += std::min(max_torque, omega > 0 ? max_power / omega : FLT_MAX);
 		}
+		bool want_to_fold = false;
 		if (environment::IsKeyDown(GLFW_KEY_W)) want_to_fold = false;
 		else if (environment::IsKeyDown(GLFW_KEY_S) && std::abs(omega) <= PI / 10) want_to_fold = true;
-		else if (!environment::IsKeyDown(GLFW_KEY_W) && !environment::IsKeyDown(GLFW_KEY_S)) want_to_fold = pod->IsOnGround();
+		else if (!environment::IsKeyDown(GLFW_KEY_W) && !environment::IsKeyDown(GLFW_KEY_S)) want_to_fold = default_fold_state;
 
 		torque -= GetLiftForce() / 5 * 2;//風導致轉動
 		//friction

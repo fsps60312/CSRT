@@ -77,13 +77,13 @@ namespace pod {
 		double folding_time = 0.5;
 		double fold_state = 0;
 		double height, max_height;
-		bool want_to_fold = false;
 		std::vector<BladeSet*>bladesets;
 		PodInterface* pod;
 		const glm::dmat4 basic_transform;
 		double GetAirFriction(const double air_speed);
 		double GetDownwardSpeed();
 	public:
+		bool default_fold_state = false;
 		enum class Types { Basic };
 		const static std::map<Types, Description>descriptions;
 		double GetOmegaForBladeSets();
