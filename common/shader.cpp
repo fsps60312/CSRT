@@ -42,7 +42,10 @@ GLuint Shader::LoadAndCompileShaders(const char* vertex_file_path, const char* f
 		fprintf(stderr, "Failed to create program.\n");
 		system("pause"); exit(0);
 	}
-	LinkProgram(program_ID, vertex_ID);
+	glAttachShader(program_ID, vertex_ID);
+	gl_check_error();
+	glAttachShader(program_ID, fragment_ID);
+	gl_check_error();
 	LinkProgram(program_ID, fragment_ID);
 	glDetachShader(program_ID, vertex_ID);
 	gl_check_error();
@@ -79,6 +82,8 @@ GLuint Shader::LoadAndCompileShader(const char* shader_file_path,GLenum shader_t
 		fprintf(stderr, "Failed to create program.\n");
 		system("pause"); exit(0);
 	}
+	glAttachShader(program_ID, shader_ID);
+	gl_check_error();
 	LinkProgram(program_ID, shader_ID);
 	glDetachShader(program_ID, shader_ID);
 	gl_check_error();
@@ -88,8 +93,6 @@ GLuint Shader::LoadAndCompileShader(const char* shader_file_path,GLenum shader_t
 }
 
 void Shader::LinkProgram(const GLuint program_ID,const GLuint shader_ID) {
-	glAttachShader(program_ID, shader_ID);
-	gl_check_error();
 	glLinkProgram(program_ID);
 	gl_check_error();
 	GLsizei program_info_log_length;
