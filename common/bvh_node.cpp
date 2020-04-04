@@ -112,8 +112,8 @@ int BVHNode::CalMid(const int id, std::vector<int>& tri_ids) {
 		// sort along longest axis
 		glm::vec3 c(0);// c[glob_bvh_aabbs[id].LongestAxis()] = 1;
 		c[axis] = 1;
-		std::sort(tri_ids.begin() + l, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
-			//std::nth_element(tri_ids.begin() + l, tri_ids.begin() + (l + r) / 2, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+		//std::sort(tri_ids.begin() + l, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+		std::nth_element(tri_ids.begin() + l, tri_ids.begin() + (l + r) / 2, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
 			return dot_max(glob_triangles[t1].GetVertices(), c) < dot_max(glob_triangles[t2].GetVertices(), c);
 		});
 		// left aabbs
@@ -138,8 +138,8 @@ int BVHNode::CalMid(const int id, std::vector<int>& tri_ids) {
 	assert(best_mid != -1);
 	glm::vec3 c(0);// c[glob_bvh_aabbs[id].LongestAxis()] = 1;
 	c[best_axis] = 1;
-	std::sort(tri_ids.begin() + l, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
-		//std::nth_element(tri_ids.begin() + l, tri_ids.begin() + (l + r) / 2, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+	//std::sort(tri_ids.begin() + l, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
+		std::nth_element(tri_ids.begin() + l, tri_ids.begin() + (l + r) / 2, tri_ids.begin() + r + 1, [&c, &dot_max](const int t1, const int t2)->bool {
 		return dot_max(glob_triangles[t1].GetVertices(), c) < dot_max(glob_triangles[t2].GetVertices(), c);
 	});
 	return best_mid;
