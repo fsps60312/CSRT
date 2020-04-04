@@ -64,7 +64,7 @@ void GPU::Dispatch() {
 		gl_check_error();
 		glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
 		gl_check_error();
-		//compute_shader.Use(SCREEN_WIDTH / WORK_GROUP_SIZE_X, SCREEN_HEIGHT / WORK_GROUP_SIZE_Y, 1);
+		compute_shader.Use(SCREEN_WIDTH / WORK_GROUP_SIZE_X, SCREEN_HEIGHT / WORK_GROUP_SIZE_Y, 1);
 
 		compute_shader.Disable();
 
