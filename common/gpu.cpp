@@ -61,10 +61,13 @@ void GPU::Dispatch() {
 	{
 		// make sure writing to image has finished before read
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
-		compute_shader.Use(SCREEN_WIDTH / WORK_GROUP_SIZE_X, SCREEN_HEIGHT / WORK_GROUP_SIZE_Y, 1);
-
+		gl_check_error();
 		glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F);
+		gl_check_error();
+		//compute_shader.Use(SCREEN_WIDTH / WORK_GROUP_SIZE_X, SCREEN_HEIGHT / WORK_GROUP_SIZE_Y, 1);
+
 		compute_shader.Disable();
+
 		environment::DrawSubWindow(0, 0, SCREEN_WIDTH * SCREEN_SCALE_X, SCREEN_HEIGHT * SCREEN_SCALE_Y, texture_shader, compute_texture);
 	}
 }
@@ -86,14 +89,13 @@ void GPU::LoadShaders() {
 	glGenTextures(1, &compute_texture); gl_check_error();
 
 	glActiveTexture(GL_TEXTURE0); gl_check_error();
-	glBindTexture(GL_TEXTURE_2D, compute_texture); gl_check_error();
+	glBindTexture(GL_TEXTURE_RECTANGLE, compute_texture); gl_check_error();
 
 	// filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); gl_check_error();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
+	glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST); gl_check_error();
+	glTexParameteri(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST); gl_check_error();
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, 0); gl_check_error();
-	glBindImageTexture(0, compute_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA16F); gl_check_error();
+	glTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL); gl_check_error();
 }
 
 int GPU::GetTriangleNum()const { return (int)BVHNode::glob_triangles.size(); }
@@ -135,39 +137,39 @@ void GPU::SendStorageBuffers() const{
 		const GLenum usage = GL_STATIC_DRAW;
 
 		const auto& padded_triangles = Padded(triangles);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_triangles.size(), padded_triangles.data(), usage); // Give vertices to OpenGL.
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesBuffer); gl_check_error();
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_triangles.size(), padded_triangles.data(), usage); gl_check_error(); // Give vertices to OpenGL.
 
 		const auto& padded_materials = Padded(materials);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialsBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_materials.size(), padded_materials.data(), usage);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialsBuffer); gl_check_error();
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_materials.size(), padded_materials.data(), usage); gl_check_error();
 
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, texturesBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * textures.size(), textures.data(), usage);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, texturesBuffer); gl_check_error();
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * textures.size(), textures.data(), usage); gl_check_error();
 
 		const auto& padded_lights = Padded(Light::glob_lights);
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_lights.size(), padded_lights.data(), usage);
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsBuffer); gl_check_error();
+		glBufferData(GL_SHADER_STORAGE_BUFFER, 4U * padded_lights.size(), padded_lights.data(), usage); gl_check_error();
 
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhNodeBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * nodes.size(), Padded(nodes).data(), usage); // Give vertices to OpenGL.
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhNodeBuffer); gl_check_error();
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::ivec3) + 4U) * nodes.size(), Padded(nodes).data(), usage); gl_check_error(); // Give vertices to OpenGL.
 
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhAabbBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3) + 8U) * aabbs.size(), Padded(aabbs).data(), usage); // Give vertices to OpenGL.
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhAabbBuffer); gl_check_error();
+		glBufferData(GL_SHADER_STORAGE_BUFFER, (sizeof(glm::mat2x3) + 8U) * aabbs.size(), Padded(aabbs).data(), usage); gl_check_error(); // Give vertices to OpenGL.
 
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhRangeBuffer);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::ivec2) * ranges.size(), ranges.data(), usage); // Give vertices to OpenGL.
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, bvhRangeBuffer); gl_check_error();
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::ivec2) * ranges.size(), ranges.data(), usage); gl_check_error();// Give vertices to OpenGL.
 	}
 	// 1st buffer : materials
 
 	// 2nd buffer : vertices
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, trianglesBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, materialsBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, texturesBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, lightsBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhNodeBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, bvhAabbBuffer);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvhRangeBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, trianglesBuffer); gl_check_error();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, materialsBuffer); gl_check_error();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, texturesBuffer); gl_check_error();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, lightsBuffer); gl_check_error();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, bvhNodeBuffer); gl_check_error();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, bvhAabbBuffer); gl_check_error();
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, bvhRangeBuffer); gl_check_error();
 }
 
 void GPU::SendUniforms()const {
@@ -175,12 +177,12 @@ void GPU::SendUniforms()const {
 	const glm::dvec3& camera_position = camera::GetPosition();
 	const glm::dvec3& camera_direction = camera::GetDirection();
 	const glm::dvec3& camera_up = camera::GetUp();
-	glUniform3f(compute_shader.GetVariable("eye"), camera_position.x, camera_position.y, camera_position.z);
-	glUniform3f(compute_shader.GetVariable("view"), camera_direction.x, camera_direction.y, camera_direction.z);
-	glUniform3f(compute_shader.GetVariable("up"), camera_up.x, camera_up.y, camera_up.z);
-	glUniform1f(compute_shader.GetVariable("fov"), camera::GetFoV());
-	glUniform1i(compute_shader.GetVariable("tri_num"), GetTriangleNum());
-	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), mylib::Rand::NextUint());
+	glUniform3f(compute_shader.GetVariable("eye"), camera_position.x, camera_position.y, camera_position.z); gl_check_error();
+	glUniform3f(compute_shader.GetVariable("view"), camera_direction.x, camera_direction.y, camera_direction.z); gl_check_error();
+	glUniform3f(compute_shader.GetVariable("up"), camera_up.x, camera_up.y, camera_up.z); gl_check_error();
+	glUniform1f(compute_shader.GetVariable("fov"), camera::GetFoV()); gl_check_error();
+	glUniform1i(compute_shader.GetVariable("tri_num"), GetTriangleNum()); gl_check_error();
+	glUniform1ui(compute_shader.GetVariable("initial_random_seed"), mylib::Rand::NextUint()); gl_check_error();
 }
 
 void GPU::Send(){

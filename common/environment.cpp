@@ -23,24 +23,24 @@ namespace environment {
 	}
 	void DrawSubWindow(GLint x, GLint y, GLsizei w, GLsizei h, Shader& texture_shader, GLuint compute_texture)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(x, y, w, h);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); gl_check_error();
+		glViewport(x, y, w, h); gl_check_error();
 
 		// Use shader
 		texture_shader.Use();
 
 		// Send Texture
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, compute_texture);
-		glUniform1i(texture_shader.GetVariable("RenderedTexture"), 0);
+		//glActiveTexture(GL_TEXTURE0); gl_check_error();
+		//glBindTexture(GL_TEXTURE_RECTANGLE, compute_texture); gl_check_error();
+		//glUniform1i(texture_shader.GetVariable("RenderedTexture"), 0); gl_check_error();
 
 		// 1st attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, window_vertex_buffer);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		glEnableVertexAttribArray(0); gl_check_error();
+		glBindBuffer(GL_ARRAY_BUFFER, window_vertex_buffer); gl_check_error();
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0); gl_check_error();
 
 		/// Draw Rendered Texture
-		glDrawArrays(GL_TRIANGLES, 0, 3 * 2); // Starting from vertex 0; 3 vertices total -> 1 triangle
+		glDrawArrays(GL_TRIANGLES, 0, 3 * 2); gl_check_error(); // Starting from vertex 0; 3 vertices total -> 1 triangle
 
 		texture_shader.Disable();
 		// Swap buffers

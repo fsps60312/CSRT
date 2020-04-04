@@ -3,10 +3,13 @@
 #pragma region Shader
 GLuint Shader::GetVariable(char name[]) const{ return glGetUniformLocation(program, name); }
 GLuint Shader::GetProgram() { return program; }
-void Shader::Use()const { glUseProgram(program); }
-void Shader::Use(GLuint x, GLuint y, GLuint z)const {
+void Shader::Use()const { 
 	glUseProgram(program);
-	glDispatchCompute(x, y, z);
+	gl_check_error();
+}
+void Shader::Use(GLuint x, GLuint y, GLuint z)const {
+	glUseProgram(program); gl_check_error();
+	glDispatchCompute(x, y, z); gl_check_error();
 }
 void Shader::Disable() {
 	for (int i = 0; i < layout_num; ++i)
@@ -101,6 +104,12 @@ void Shader::LinkProgram(const GLuint program_ID,const GLuint shader_ID) {
 	gl_check_error();
 	if (program_info_log_length > 0) {
 		fprintf(stderr, "Program Info Log (%u):\n%s\n", program_info_log_length, program_info_log);
+		system("pause"); exit(0);
+	}
+	int link_status; glGetProgramiv(program_ID, GL_LINK_STATUS, &link_status);
+	gl_check_error();
+	if (link_status != GL_TRUE) {
+		fprintf(stderr, "failed to LinkProgram\n");
 		system("pause"); exit(0);
 	}
 }

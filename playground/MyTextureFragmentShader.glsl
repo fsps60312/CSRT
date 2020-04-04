@@ -7,9 +7,10 @@ in vec2 UV;
 layout (location = 0) out vec4 color;
 
 // Values
-uniform sampler2D RenderedTexture;
+uniform sampler2DRect RenderedTexture;
 
 void main()
 {
-	color = texture(RenderedTexture, UV);
+	ivec2 sz = textureSize(RenderedTexture);
+	color = texture(RenderedTexture, vec2(UV.x*sz.x,UV.y*sz.y));
 }
