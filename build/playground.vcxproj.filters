@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\playground\playground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\block\block.cpp">
+      <Filter>common\block</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\block\blocks.cpp">
+      <Filter>common\block</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\effects\fume.cpp">
+      <Filter>common\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\effects\gravel.cpp">
+      <Filter>common\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_body.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_drill.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_drill_blade.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_propeller.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_propeller_blade.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_propeller_bladeset.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_tracks.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_tracks_gear.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_tracks_tooth.cpp">
+      <Filter>common\pod</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\aabb.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\bvh_node.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\camera.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\environment.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\game.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\gl_check_error.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\gpu.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\light.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\material.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\matrix_d.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\mylib.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\objloader.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\rigid_body.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\shader.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\triangle.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\visible_object.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\block\block.hpp">
+      <Filter>common\block</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\block\blocks.hpp">
+      <Filter>common\block</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\effects\fume.hpp">
+      <Filter>common\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\effects\gravel.hpp">
+      <Filter>common\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod.hpp">
+      <Filter>common\pod</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_body.hpp">
+      <Filter>common\pod</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_drill.hpp">
+      <Filter>common\pod</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_interface.hpp">
+      <Filter>common\pod</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_propeller.hpp">
+      <Filter>common\pod</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\pod\pod_tracks.hpp">
+      <Filter>common\pod</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\aabb.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\bvh_node.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\camera.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\control.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\environment.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\game.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\gl_check_error.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\gpu.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\light.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\material.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\matrix_d.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\mylib.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\objloader.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\rigid_body.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\shader.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\triangle.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\common\visible_object.hpp">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\fsps6\OneDrive - csie.ntu.edu.tw\Sync\Visual C++ Code\CSRT\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{3FE0D015-3953-3CF4-8EC3-9EA8EDF305D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{A27079D6-3E65-380B-BFD8-05D75F66DF61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\block">
+      <UniqueIdentifier>{B6EA72C0-24E3-3ABD-ADC0-CDF13F2C0090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\effects">
+      <UniqueIdentifier>{7A922A9F-9FE6-3200-BB11-E5944C6393B5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\pod">
+      <UniqueIdentifier>{B1180C72-AE8F-3A56-8857-D6D946878B0B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

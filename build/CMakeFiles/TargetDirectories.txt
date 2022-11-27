@@ -1,0 +1,12 @@
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/CMakeFiles/playground.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/CMakeFiles/INSTALL.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/CMakeFiles/GLEW.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/CMakeFiles/SOIL.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/CMakeFiles/INSTALL.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/glfw/CMakeFiles/uninstall.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/glfw/CMakeFiles/INSTALL.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/glfw/CMakeFiles/ALL_BUILD.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/glfw/src/CMakeFiles/glfw.dir
+C:/Users/fsps6/OneDrive - csie.ntu.edu.tw/Sync/Visual C++ Code/CSRT/build/external/glfw/src/CMakeFiles/INSTALL.dir

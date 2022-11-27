@@ -1,0 +1,13 @@
+prefix=C:/Program Files/Compute_Shader_Ray_Tracing
+exec_prefix=${prefix}
+includedir=C:/Program Files/Compute_Shader_Ray_Tracing/include
+libdir=C:/Program Files/Compute_Shader_Ray_Tracing/lib
+
+Name: GLFW
+Description: A multi-platform library for OpenGL, window and input
+Version: 3.4.0
+URL: https://www.glfw.org/
+Requires.private: 
+Libs: -L${libdir} -lglfw3
+Libs.private:  -lgdi32
+Cflags: -I${includedir}
